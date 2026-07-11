@@ -1,0 +1,2046 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>보석 옵션 교환 계산기</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f7f9;
+      --panel: #ffffff;
+      --panel-soft: #f0f4f7;
+      --ink: #17202a;
+      --muted: #66717d;
+      --line: #dce3e8;
+      --damage: #be3b4a;
+      --damage-soft: #fff0f2;
+      --cooldown: #1d6f91;
+      --cooldown-soft: #eaf6fb;
+      --tier1: #0c7b5f;
+      --tier1-soft: #e8f6f1;
+      --tier2: #8d6224;
+      --tier2-soft: #fff3dd;
+      --empty: #eef2f5;
+      --shadow: 0 18px 48px rgba(23, 32, 42, 0.08);
+      --radius: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      letter-spacing: 0;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .app {
+      width: min(1480px, calc(100vw - 32px));
+      margin: 0 auto;
+      padding: 22px 0 36px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .brand {
+      display: grid;
+      gap: 4px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.35rem, 2vw, 2rem);
+      line-height: 1.15;
+      font-weight: 800;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .profile {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: min(380px, 100%);
+    }
+
+    .profile label {
+      color: var(--muted);
+      font-size: 0.9rem;
+      white-space: nowrap;
+    }
+
+    .profile input {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      color: var(--ink);
+      padding: 10px 12px;
+      outline: none;
+    }
+
+    .profile input:focus {
+      border-color: #4e9fb9;
+      box-shadow: 0 0 0 3px rgba(29, 111, 145, 0.14);
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 0 0 16px;
+    }
+
+    .action-button,
+    .small-button {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      color: var(--ink);
+      border-radius: var(--radius);
+      font-weight: 800;
+      min-height: 40px;
+    }
+
+    .action-button {
+      padding: 9px 12px;
+    }
+
+    .small-button {
+      min-height: 32px;
+      padding: 6px 9px;
+      font-size: 0.82rem;
+    }
+
+    .action-button:hover,
+    .small-button:hover {
+      border-color: #a8b5be;
+    }
+
+    .action-button.primary,
+    .small-button.primary {
+      background: #17202a;
+      border-color: #17202a;
+      color: #ffffff;
+    }
+
+    .action-button.danger,
+    .small-button.danger {
+      color: #9e2735;
+    }
+
+    .action-button.gem-reset {
+      background: var(--cooldown);
+      border-color: var(--cooldown);
+      color: #ffffff;
+    }
+
+    .action-button.tier-reset {
+      background: var(--tier2);
+      border-color: var(--tier2);
+      color: #ffffff;
+    }
+
+    .action-button.all-reset {
+      background: var(--damage);
+      border-color: var(--damage);
+      color: #ffffff;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.16fr) minmax(400px, 0.84fr);
+      gap: 16px;
+      align-items: start;
+    }
+
+    .stack {
+      display: grid;
+      gap: 16px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .panel-header h2 {
+      margin: 0;
+      font-size: 1rem;
+      line-height: 1.2;
+    }
+
+    .panel-header small {
+      color: var(--muted);
+      font-weight: 750;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tier-summary {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      padding: 14px 16px 0;
+    }
+
+    .tier-box {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fbfcfd;
+      padding: 10px;
+      display: grid;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .tier-box strong {
+      font-size: 0.86rem;
+    }
+
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      min-height: 26px;
+    }
+
+    .tier-slot-area {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      padding: 16px;
+    }
+
+    .tier-column {
+      min-width: 0;
+      display: grid;
+      align-content: start;
+      gap: 10px;
+    }
+
+    .tier-column-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .tier-column-header strong {
+      font-size: 0.94rem;
+    }
+
+    .target-slot-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .target-slot-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #ffffff;
+      display: grid;
+      gap: 10px;
+      padding: 10px;
+      min-width: 0;
+    }
+
+    .target-slot-card.tier1 {
+      border-color: #b9ded1;
+      background: #ffffff;
+    }
+
+    .target-slot-card.tier2 {
+      border-color: #ecd2a6;
+      background: #ffffff;
+    }
+
+    .target-slot-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .target-slot-header strong {
+      font-size: 0.88rem;
+    }
+
+    .target-set-note {
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 800;
+    }
+
+    .option-name {
+      min-width: 0;
+      color: var(--ink);
+      font-weight: 800;
+      overflow-wrap: anywhere;
+    }
+
+    .gem-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      padding: 16px;
+    }
+
+    .gem-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #ffffff;
+      overflow: hidden;
+    }
+
+    .gem-card.incomplete {
+      border-color: #e7c488;
+    }
+
+    .gem-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 12px;
+      background: #fbfcfd;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .gem-title {
+      display: grid;
+      gap: 2px;
+      min-width: 0;
+    }
+
+    .gem-title strong {
+      font-size: 0.95rem;
+    }
+
+    .gem-title span {
+      color: var(--muted);
+      font-size: 0.8rem;
+      font-weight: 750;
+    }
+
+    .gem-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 6px;
+    }
+
+    .gem-main-row {
+      display: grid;
+      grid-template-columns: minmax(48px, auto) minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+      padding: 10px 12px;
+      background: #fbfcfd;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .gem-main-row strong {
+      white-space: nowrap;
+      font-size: 0.95rem;
+    }
+
+    .slot-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      padding: 12px;
+    }
+
+    .gem-main-row .slot-row {
+      padding: 0;
+    }
+
+    .slot-button {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--empty);
+      color: var(--ink);
+      padding: 8px;
+      min-height: 58px;
+      display: grid;
+      align-content: center;
+      gap: 3px;
+      text-align: center;
+    }
+
+    .slot-button.active {
+      border-color: #17202a;
+      background: #ffffff;
+      box-shadow: 0 0 0 3px rgba(23, 32, 42, 0.08);
+    }
+
+    .slot-button.filled {
+      background: #fbfcfd;
+    }
+
+    .slot-button[class*="cat-"] {
+      border-color: var(--option-border);
+      background: var(--option-soft);
+      color: var(--option-color);
+    }
+
+    .slot-button.active[class*="cat-"] {
+      border-color: var(--option-color);
+      background: var(--option-soft);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--option-color) 18%, transparent);
+    }
+
+    .slot-index {
+      color: var(--muted);
+      font-size: 0.74rem;
+      font-weight: 900;
+    }
+
+    .slot-label {
+      min-width: 0;
+      font-size: 0.86rem;
+      line-height: 1.2;
+      font-weight: 900;
+      overflow-wrap: anywhere;
+    }
+
+    .option-picker {
+      display: grid;
+      gap: 10px;
+      padding: 12px;
+    }
+
+    .target-slot-card .option-picker {
+      padding: 0;
+    }
+
+    .picker-kind {
+      display: grid;
+      gap: 6px;
+    }
+
+    .picker-kind-title {
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 900;
+    }
+
+    .option-grid {
+      display: grid;
+      grid-template-columns: repeat(8, minmax(0, 1fr));
+      gap: 5px;
+    }
+
+    .option-toggle {
+      border: 1px solid var(--option-border, var(--line));
+      border-radius: var(--radius);
+      min-height: 32px;
+      padding: 5px 4px;
+      background: #ffffff;
+      color: var(--option-color, var(--ink));
+      font-size: clamp(0.72rem, 0.92vw, 0.82rem);
+      font-weight: 850;
+      white-space: nowrap;
+      text-align: center;
+    }
+
+    .cat-multi {
+      --option-color: #c62828;
+      --option-soft: #fde8e8;
+      --option-border: #f5b5b5;
+    }
+
+    .cat-heavy {
+      --option-color: #d85b00;
+      --option-soft: #fff0df;
+      --option-border: #ffc489;
+    }
+
+    .cat-support {
+      --option-color: #b28704;
+      --option-soft: #fff7d7;
+      --option-border: #ecd36b;
+    }
+
+    .cat-disrupt {
+      --option-color: #178a3a;
+      --option-soft: #e6f7eb;
+      --option-border: #9bd7aa;
+    }
+
+    .cat-summon {
+      --option-color: #00897b;
+      --option-soft: #e1f7f4;
+      --option-border: #8ed8cf;
+    }
+
+    .cat-move {
+      --option-color: #1565c0;
+      --option-soft: #e7f0fd;
+      --option-border: #9dc2ef;
+    }
+
+    .cat-survive {
+      --option-color: #5e35b1;
+      --option-soft: #f0eafb;
+      --option-border: #c0acec;
+    }
+
+    .cat-element {
+      --option-color: #ad2472;
+      --option-soft: #fde7f2;
+      --option-border: #eda5ca;
+    }
+
+    .option-toggle.damage.is-selected {
+      background: var(--damage);
+      border-color: var(--damage);
+      color: #ffffff;
+    }
+
+    .option-toggle.cooldown.is-selected {
+      background: var(--cooldown);
+      border-color: var(--cooldown);
+      color: #ffffff;
+    }
+
+    .option-toggle.is-used:not(.is-selected) {
+      background: #f7fafb;
+      border-style: dashed;
+      color: var(--muted);
+    }
+
+    .option-toggle:disabled,
+    .option-toggle.is-disabled {
+      background: #f7fafb;
+      border-style: dashed;
+      color: #a7b0b8;
+      cursor: not-allowed;
+      text-decoration: line-through;
+    }
+
+    .option-toggle.tier1.is-selected {
+      background: var(--tier1);
+      border-color: var(--tier1);
+      color: #ffffff;
+    }
+
+    .option-toggle.tier2.is-selected {
+      background: var(--tier2);
+      border-color: var(--tier2);
+      color: #ffffff;
+    }
+
+    .option-toggle.is-selected[class*="cat-"] {
+      background: var(--option-soft);
+      border-color: var(--option-color);
+      color: var(--option-color);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.55);
+    }
+
+    .option-toggle:disabled[class*="cat-"],
+    .option-toggle.is-disabled[class*="cat-"] {
+      background: #f7fafb;
+      border-color: #d8e0e5;
+      color: #a7b0b8;
+      cursor: not-allowed;
+      text-decoration: line-through;
+      box-shadow: none;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      padding: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .metric {
+      background: var(--panel-soft);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 12px;
+      min-height: 86px;
+      display: grid;
+      align-content: space-between;
+      gap: 8px;
+    }
+
+    .metric strong {
+      display: block;
+      font-size: clamp(1.35rem, 3vw, 2rem);
+      line-height: 1;
+    }
+
+    .metric span {
+      color: var(--muted);
+      font-size: 0.84rem;
+      font-weight: 900;
+    }
+
+    .metric.tier1 {
+      background: var(--tier1-soft);
+      border-color: #b9ded1;
+    }
+
+    .metric.tier2 {
+      background: var(--tier2-soft);
+      border-color: #ecd2a6;
+    }
+
+    .metric.damage {
+      background: var(--damage-soft);
+      border-color: #f0c8ce;
+    }
+
+    .metric.cooldown {
+      background: var(--cooldown-soft);
+      border-color: #c7e6f0;
+    }
+
+    .result-body {
+      display: grid;
+      gap: 16px;
+      padding: 16px;
+    }
+
+    .warning {
+      display: none;
+      border: 1px solid #efc88e;
+      background: #fff7e9;
+      border-radius: var(--radius);
+      padding: 10px 12px;
+      color: #6f4b17;
+      font-weight: 800;
+      line-height: 1.45;
+    }
+
+    .warning.show {
+      display: block;
+    }
+
+    .steps,
+    .mapping,
+    .final-gems,
+    .count-summary {
+      display: grid;
+      gap: 8px;
+    }
+
+    .steps h3,
+    .mapping h3,
+    .final-gems h3,
+    .count-summary h3 {
+      margin: 0;
+      font-size: 0.95rem;
+    }
+
+    .step {
+      display: grid;
+      grid-template-columns: 42px minmax(0, 1fr);
+      gap: 10px;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 10px;
+      background: #ffffff;
+    }
+
+    .step-index {
+      display: grid;
+      place-items: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #17202a;
+      color: #ffffff;
+      font-weight: 900;
+      font-size: 0.82rem;
+    }
+
+    .step-main {
+      min-width: 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+      font-weight: 900;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      padding: 4px 8px;
+      min-height: 26px;
+      border: 1px solid var(--line);
+      background: var(--panel-soft);
+      font-size: 0.82rem;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .badge.damage {
+      color: var(--damage);
+      background: var(--damage-soft);
+      border-color: #f0c8ce;
+    }
+
+    .badge.cooldown {
+      color: var(--cooldown);
+      background: var(--cooldown-soft);
+      border-color: #c7e6f0;
+    }
+
+    .badge.tier1 {
+      color: var(--tier1);
+      background: var(--tier1-soft);
+      border-color: #b9ded1;
+    }
+
+    .badge.tier2 {
+      color: var(--tier2);
+      background: var(--tier2-soft);
+      border-color: #ecd2a6;
+    }
+
+    .badge[class*="cat-"] {
+      color: var(--option-color);
+      background: var(--option-soft);
+      border-color: var(--option-border);
+    }
+
+    .empty {
+      border: 1px dashed #b9c4cc;
+      border-radius: var(--radius);
+      padding: 14px;
+      color: var(--muted);
+      background: #fbfcfd;
+      font-weight: 800;
+      line-height: 1.45;
+    }
+
+    .final-gem-list {
+      display: grid;
+      gap: 8px;
+      max-height: 320px;
+      overflow: auto;
+      padding-right: 2px;
+    }
+
+    .final-gem {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #ffffff;
+      padding: 9px;
+      display: grid;
+      gap: 7px;
+    }
+
+    .final-gem strong {
+      font-size: 0.86rem;
+    }
+
+    .mini-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+
+    .count-mini-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .count-mini-kind {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 8px;
+      display: grid;
+      gap: 6px;
+      background: #fbfcfd;
+      min-width: 0;
+    }
+
+    .count-mini-kind strong {
+      color: var(--muted);
+      font-size: 0.78rem;
+    }
+
+    .count-chip-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 5px;
+    }
+
+    .count-chip {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #ffffff;
+      display: flex;
+      justify-content: space-between;
+      gap: 5px;
+      padding: 5px 6px;
+      min-width: 0;
+      font-size: 0.78rem;
+      font-weight: 850;
+    }
+
+    .count-chip.zero {
+      color: var(--muted);
+      background: #f8fafb;
+    }
+
+    .count-chip[class*="cat-"] {
+      color: var(--option-color);
+      background: var(--option-soft);
+      border-color: var(--option-border);
+    }
+
+    .count-chip.zero[class*="cat-"] {
+      color: #a7b0b8;
+      background: #f8fafb;
+      border-color: #d8e0e5;
+    }
+
+    #mappingTables {
+      display: grid;
+      gap: 10px;
+      overflow-x: auto;
+    }
+
+    .mapping-table {
+      width: 100%;
+      min-width: 480px;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      font-size: 0.88rem;
+    }
+
+    .mapping-table th,
+    .mapping-table td {
+      padding: 9px 8px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    .mapping-table tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .mapping-table th {
+      background: var(--panel-soft);
+      color: var(--muted);
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      letter-spacing: 0;
+    }
+
+    .mapping-table td:nth-child(2),
+    .mapping-table td:nth-child(3) {
+      text-align: right;
+      font-weight: 900;
+    }
+
+    .delta-up {
+      color: var(--tier1);
+    }
+
+    .delta-down {
+      color: var(--damage);
+    }
+
+    @media (max-width: 1180px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .topbar {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .profile {
+        min-width: 0;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .app {
+        width: min(100vw - 20px, 1480px);
+        padding-top: 14px;
+      }
+
+      .tier-summary,
+      .tier-slot-area,
+      .gem-list,
+      .summary-grid,
+      .count-mini-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .panel-header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .option-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 480px) {
+      .gem-main-row,
+      .slot-row {
+        grid-template-columns: 1fr;
+      }
+
+      .option-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .profile,
+      .toolbar {
+        display: grid;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand">
+        <h1>보석 옵션 교환 계산기</h1>
+        <p class="subtitle">보유 보석의 3개 옵션을 직접 찍고, 1티어 목표를 가장 많이 만드는 교환 순서를 계산합니다.</p>
+      </div>
+      <div class="profile">
+        <label for="profileName">직업/세팅</label>
+        <input id="profileName" autocomplete="off" placeholder="예: 원소 집중 빌드" />
+      </div>
+    </header>
+
+    <div class="toolbar" aria-label="빠른 작업">
+      <button class="action-button gem-reset" id="clearGemsButton" type="button">소유 보석 초기화</button>
+      <button class="action-button tier-reset" id="clearTargetsButton" type="button">티어 초기화</button>
+      <button class="action-button all-reset" id="resetAllButton" type="button">전체 초기화</button>
+    </div>
+
+    <div class="layout">
+      <div class="stack">
+        <section class="panel" aria-labelledby="targetTitle">
+          <div class="panel-header">
+            <h2 id="targetTitle">1티어/2티어 옵션 설정</h2>
+            <small>각 티어는 옵션 3개로 구성된 세트</small>
+          </div>
+          <div class="tier-summary">
+            <div class="tier-box">
+              <strong>선택된 1티어 세트</strong>
+              <div class="chip-row" id="tier1Chips"></div>
+            </div>
+            <div class="tier-box">
+              <strong>선택된 2티어 세트</strong>
+              <div class="chip-row" id="tier2Chips"></div>
+            </div>
+          </div>
+          <div class="tier-slot-area">
+            <div class="tier-column">
+              <div class="tier-column-header">
+                <strong>1티어 세트</strong>
+                <button class="small-button primary" id="addTier1SetButton" type="button">세트 추가</button>
+              </div>
+              <div class="target-slot-list" id="tier1TargetSlots"></div>
+            </div>
+            <div class="tier-column">
+              <div class="tier-column-header">
+                <strong>2티어 세트</strong>
+                <button class="small-button" id="addTier2SetButton" type="button">세트 추가</button>
+              </div>
+              <div class="target-slot-list" id="tier2TargetSlots"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel" aria-labelledby="gemTitle">
+          <div class="panel-header">
+            <h2 id="gemTitle">현재 소유 보석</h2>
+            <div class="header-actions">
+              <small id="gemStats">보석 0개 / 옵션 0개</small>
+              <button class="small-button primary" id="addGemPanelButton" type="button">보석 추가하기</button>
+            </div>
+          </div>
+          <div class="gem-list" id="gemList"></div>
+        </section>
+      </div>
+
+      <aside class="panel" aria-labelledby="resultTitle">
+        <div class="panel-header">
+          <h2 id="resultTitle">최적 결과</h2>
+          <small id="swapCount">0단계</small>
+        </div>
+        <div class="summary-grid">
+          <div class="metric tier1">
+            <span>1티어</span>
+            <strong id="tier1Total">0</strong>
+          </div>
+          <div class="metric tier2">
+            <span>2티어</span>
+            <strong id="tier2Total">0</strong>
+          </div>
+          <div class="metric damage">
+            <span>대미지 1티어</span>
+            <strong id="damageTier1">0</strong>
+          </div>
+          <div class="metric cooldown">
+            <span>쿨타임 1티어</span>
+            <strong id="cooldownTier1">0</strong>
+          </div>
+        </div>
+        <div class="result-body">
+          <div class="warning" id="gemWarning"></div>
+          <section class="steps" aria-labelledby="stepsTitle">
+            <h3 id="stepsTitle">교환 순서</h3>
+            <div id="stepsList"></div>
+          </section>
+          <section class="final-gems" aria-labelledby="finalGemsTitle">
+            <h3 id="finalGemsTitle">교환 후 보석 옵션</h3>
+            <div class="final-gem-list" id="finalGemList"></div>
+          </section>
+          <section class="count-summary" aria-labelledby="countSummaryTitle">
+            <h3 id="countSummaryTitle">현재 소유 옵션 개수</h3>
+            <div id="countSummary"></div>
+          </section>
+          <section class="mapping" aria-labelledby="mappingTitle">
+            <h3 id="mappingTitle">교환 후 분포</h3>
+            <div id="mappingTables"></div>
+          </section>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <script>
+    const categories = [
+      { id: "multi", name: "연타" },
+      { id: "heavy", name: "강타" },
+      { id: "support", name: "보조" },
+      { id: "disrupt", name: "방해" },
+      { id: "summon", name: "소환" },
+      { id: "move", name: "이동" },
+      { id: "survive", name: "생존" },
+      { id: "element", name: "원소" }
+    ];
+
+    const kinds = [
+      { id: "damage", name: "대미지 증가", short: "대미지", className: "damage" },
+      { id: "cooldown", name: "재사용 대기 시간 감소", short: "쿨타임", className: "cooldown" }
+    ];
+
+    const categoryIndex = Object.fromEntries(categories.map((category, index) => [category.id, index]));
+    const kindMap = Object.fromEntries(kinds.map((kind) => [kind.id, kind]));
+    const optionIds = kinds.flatMap((kind) => categories.map((category) => `${kind.id}:${category.id}`));
+    const storageKey = "gem-option-exchange-v2";
+    const legacyStorageKey = "gem-option-exchange-v1";
+    const permutations = buildPermutations(categories.length);
+
+    let nextGemIndex = 1;
+    const activeSlots = {};
+    const activeTargetSlots = {
+      1: { set: 0, slot: 0 },
+      2: { set: 0, slot: 0 }
+    };
+
+    const state = {
+      profileName: "",
+      targets: Object.fromEntries(optionIds.map((id) => [id, 0])),
+      targetSlots: {
+        1: [[null, null, null]],
+        2: [[null, null, null]]
+      },
+      gems: []
+    };
+
+    function optionId(kindId, categoryId) {
+      return `${kindId}:${categoryId}`;
+    }
+
+    function splitOptionId(id) {
+      const [kindId, categoryId] = id.split(":");
+      return { kindId, categoryId };
+    }
+
+    function getOptionName(id) {
+      if (!id) return "비어 있음";
+      const { kindId, categoryId } = splitOptionId(id);
+      const kind = kindMap[kindId];
+      const category = categories[categoryIndex[categoryId]];
+      return `${category.name} ${kind.name}`;
+    }
+
+    function getShortOptionName(id) {
+      if (!id) return "비어 있음";
+      const { kindId, categoryId } = splitOptionId(id);
+      const kind = kindMap[kindId];
+      const category = categories[categoryIndex[categoryId]];
+      return `${category.name} ${kind.short}`;
+    }
+
+    function getCategoryClass(id) {
+      if (!id) return "";
+      return `cat-${splitOptionId(id).categoryId}`;
+    }
+
+    function toggleOptionInSlots(slots, selectedOptionId) {
+      const selectedIndex = slots.indexOf(selectedOptionId);
+      if (selectedIndex !== -1) {
+        slots[selectedIndex] = null;
+        return selectedIndex;
+      }
+
+      const emptyIndex = slots.findIndex((option) => !option);
+      if (emptyIndex === -1) return -1;
+      slots[emptyIndex] = selectedOptionId;
+      return emptyIndex;
+    }
+
+    function byId(id) {
+      return document.getElementById(id);
+    }
+
+    function createGem(options = [null, null, null]) {
+      const id = `gem-${Date.now().toString(36)}-${nextGemIndex}`;
+      nextGemIndex += 1;
+      return {
+        id,
+        options: [0, 1, 2].map((index) => optionIds.includes(options[index]) ? options[index] : null)
+      };
+    }
+
+    function normalizeGem(rawGem, fallbackIndex) {
+      const id = typeof rawGem?.id === "string" ? rawGem.id : `gem-saved-${fallbackIndex}`;
+      const rawOptions = Array.isArray(rawGem?.options) ? rawGem.options : [];
+      return {
+        id,
+        options: [0, 1, 2].map((index) => optionIds.includes(rawOptions[index]) ? rawOptions[index] : null)
+      };
+    }
+
+    function buildPermutations(size) {
+      const result = [];
+      const used = Array(size).fill(false);
+      const current = [];
+
+      function walk() {
+        if (current.length === size) {
+          const permutation = current.slice();
+          result.push({
+            permutation,
+            swaps: swapsForPermutation(permutation)
+          });
+          return;
+        }
+
+        for (let index = 0; index < size; index += 1) {
+          if (used[index]) continue;
+          used[index] = true;
+          current.push(index);
+          walk();
+          current.pop();
+          used[index] = false;
+        }
+      }
+
+      walk();
+      return result;
+    }
+
+    function swapsForPermutation(permutation) {
+      const visited = Array(permutation.length).fill(false);
+      const swaps = [];
+
+      for (let start = 0; start < permutation.length; start += 1) {
+        if (visited[start]) continue;
+        const cycle = [];
+        let cursor = start;
+
+        while (!visited[cursor]) {
+          visited[cursor] = true;
+          cycle.push(cursor);
+          cursor = permutation[cursor];
+        }
+
+        if (cycle.length > 1) {
+          for (let i = 1; i < cycle.length; i += 1) {
+            swaps.push([cycle[0], cycle[i]]);
+          }
+        }
+      }
+
+      return swaps;
+    }
+
+    function renderTargetControls() {
+      renderTargetSlotGroup(1, byId("tier1TargetSlots"));
+      renderTargetSlotGroup(2, byId("tier2TargetSlots"));
+      renderTierChips();
+    }
+
+    function renderTargetSlotGroup(tier, root) {
+      const tierKey = String(tier);
+      const sets = state.targetSlots[tierKey];
+      root.innerHTML = "";
+
+      sets.forEach((slots, setIndex) => {
+        const activeState = activeTargetSlots[tierKey] || { set: 0, slot: 0 };
+        const isActiveSet = activeState.set === setIndex;
+        const activeSlot = isActiveSet ? activeState.slot : 0;
+        const selectedCount = slots.filter(Boolean).length;
+        const card = document.createElement("div");
+        card.className = `target-slot-card tier${tier}`;
+        card.innerHTML = `
+          <div class="target-slot-header">
+            <strong>${tier}티어 세트 ${setIndex + 1}</strong>
+            <div class="gem-actions">
+              <span class="target-set-note">${selectedCount}/3 선택됨</span>
+              <button class="small-button" type="button" data-reset-target-set="${tier}:${setIndex}">초기화</button>
+            </div>
+          </div>
+          <div class="slot-row">
+            ${slots.map((option, slotIndex) => `
+              <button class="slot-button ${isActiveSet && activeSlot === slotIndex ? "active" : ""} ${option ? `filled ${getCategoryClass(option)}` : ""}" type="button" data-target-slot="${tier}:${setIndex}:${slotIndex}">
+                <span class="slot-index">옵션 ${slotIndex + 1}</span>
+                <span class="slot-label">${option ? getShortOptionName(option) : "비어 있음"}</span>
+              </button>
+            `).join("")}
+          </div>
+          <div class="option-picker">
+            ${kinds.map((kind) => `
+              <div class="picker-kind">
+                <div class="picker-kind-title">${kind.name}</div>
+                <div class="option-grid">
+                  ${categories.map((category) => {
+                    const id = optionId(kind.id, category.id);
+                    const isSelected = slots.includes(id);
+                    return `
+                      <button class="option-toggle ${kind.className} cat-${category.id} tier${tier} ${isSelected ? "is-selected" : ""}" type="button" data-target-option="${tier}:${setIndex}:${id}" aria-pressed="${isSelected}">
+                        ${category.name}
+                      </button>
+                    `;
+                  }).join("")}
+                </div>
+              </div>
+            `).join("")}
+          </div>
+        `;
+        root.appendChild(card);
+      });
+
+      root.querySelectorAll("[data-target-slot]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const [tierValue, setIndex, slotIndex] = button.dataset.targetSlot.split(":");
+          activeTargetSlots[tierValue] = {
+            set: Number(setIndex),
+            slot: Number(slotIndex)
+          };
+          renderTargetControls();
+        });
+      });
+
+      root.querySelectorAll("[data-target-option]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const [tierValue, setIndex, kindId, categoryId] = button.dataset.targetOption.split(":");
+          setTargetSlot(tierValue, Number(setIndex), optionId(kindId, categoryId));
+        });
+      });
+
+      root.querySelectorAll("[data-reset-target-set]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const [tierValue, setIndex] = button.dataset.resetTargetSet.split(":");
+          resetTargetSet(tierValue, Number(setIndex));
+        });
+      });
+    }
+
+    function setTargetSlot(tier, setIndex, selectedOptionId) {
+      const tierKey = String(tier);
+      const changedSlot = toggleOptionInSlots(state.targetSlots[tierKey][setIndex], selectedOptionId);
+      if (changedSlot === -1) return;
+      activeTargetSlots[tierKey] = {
+        set: setIndex,
+        slot: changedSlot
+      };
+
+      syncTargetsFromSlots();
+      saveState();
+      renderTargetControls();
+      updateResults();
+    }
+
+    function addTargetSet(tier) {
+      const tierKey = String(tier);
+      state.targetSlots[tierKey].push([null, null, null]);
+      activeTargetSlots[tierKey] = {
+        set: state.targetSlots[tierKey].length - 1,
+        slot: 0
+      };
+      saveState();
+      renderTargetControls();
+    }
+
+    function resetTargetSet(tier, setIndex) {
+      const tierKey = String(tier);
+      state.targetSlots[tierKey][setIndex] = [null, null, null];
+      activeTargetSlots[tierKey] = {
+        set: setIndex,
+        slot: 0
+      };
+      syncTargetsFromSlots();
+      saveState();
+      renderTargetControls();
+      updateResults();
+    }
+
+    function clearTargetSlot(tier, setIndex, slotIndex) {
+      const tierKey = String(tier);
+      state.targetSlots[tierKey][setIndex][slotIndex] = null;
+      syncTargetsFromSlots();
+      saveState();
+      renderTargetControls();
+      updateResults();
+    }
+
+    function syncTargetsFromSlots() {
+      for (const id of optionIds) state.targets[id] = 0;
+
+      for (const tier of ["2", "1"]) {
+        for (const targetSet of state.targetSlots[tier]) {
+          for (const option of targetSet) {
+            if (optionIds.includes(option)) state.targets[option] = Number(tier);
+          }
+        }
+      }
+    }
+
+    function syncSlotsFromTargets() {
+      const nextSlots = { 1: [[]], 2: [[]] };
+
+      for (const id of optionIds) {
+        const tier = state.targets[id];
+        if (tier === 1 || tier === 2) nextSlots[tier][0].push(id);
+      }
+
+      for (const tier of ["1", "2"]) {
+        nextSlots[tier][0] = nextSlots[tier][0].slice(0, 3);
+        while (nextSlots[tier][0].length < 3) nextSlots[tier][0].push(null);
+      }
+      state.targetSlots = nextSlots;
+    }
+
+    function normalizeTargetSlots(rawSlots) {
+      const nextSlots = { 1: [], 2: [] };
+
+      for (const tier of ["1", "2"]) {
+        const rawTierSlots = Array.isArray(rawSlots?.[tier]) ? rawSlots[tier] : [];
+        const rawSets = Array.isArray(rawTierSlots[0]) ? rawTierSlots : [rawTierSlots];
+        nextSlots[tier] = rawSets.map((rawSet) => {
+          const normalizedSet = Array.isArray(rawSet)
+            ? rawSet.slice(0, 3).map((option) => optionIds.includes(option) ? option : null)
+            : [];
+          while (normalizedSet.length < 3) normalizedSet.push(null);
+          return normalizedSet;
+        });
+        if (nextSlots[tier].length === 0) nextSlots[tier].push([null, null, null]);
+      }
+
+      return nextSlots;
+    }
+
+    function syncTargetControls() {
+      renderTargetControls();
+    }
+
+    function renderTierChips() {
+      renderTierChipGroup(1, byId("tier1Chips"));
+      renderTierChipGroup(2, byId("tier2Chips"));
+    }
+
+    function renderTierChipGroup(tier, root) {
+      const ids = state.targetSlots[String(tier)]
+        .flat()
+        .filter((id) => optionIds.includes(id));
+      root.innerHTML = "";
+
+      if (ids.length === 0) {
+        const empty = document.createElement("span");
+        empty.className = "badge";
+        empty.textContent = "미선택";
+        root.appendChild(empty);
+        return;
+      }
+
+      for (const id of ids) {
+        const { kindId } = splitOptionId(id);
+        const chip = document.createElement("span");
+        chip.className = `badge ${kindMap[kindId].className} ${getCategoryClass(id)} ${tier === 1 ? "tier1" : "tier2"}`;
+        chip.textContent = getShortOptionName(id);
+        root.appendChild(chip);
+      }
+    }
+
+    function renderGems() {
+      const root = byId("gemList");
+      root.innerHTML = "";
+
+      if (state.gems.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "empty";
+        empty.textContent = "보석을 추가해서 옵션 3개를 입력하세요.";
+        root.appendChild(empty);
+        return;
+      }
+
+      state.gems.forEach((gem, index) => {
+        if (!Number.isInteger(activeSlots[gem.id])) {
+          const firstEmpty = gem.options.findIndex((option) => !option);
+          activeSlots[gem.id] = firstEmpty === -1 ? 0 : firstEmpty;
+        }
+
+        const selectedCount = gem.options.filter(Boolean).length;
+        const activeSlot = activeSlots[gem.id];
+        const card = document.createElement("article");
+        card.className = `gem-card ${selectedCount < 3 ? "incomplete" : ""}`;
+        card.dataset.gemId = gem.id;
+
+        card.innerHTML = `
+          <div class="gem-main-row">
+            <strong>보석 ${index + 1}</strong>
+            <div class="slot-row">
+              ${gem.options.map((option, slotIndex) => `
+                <button class="slot-button ${activeSlot === slotIndex ? "active" : ""} ${option ? `filled ${getCategoryClass(option)}` : ""}" type="button" data-gem-slot="${gem.id}:${slotIndex}">
+                  <span class="slot-index">옵션 ${slotIndex + 1}</span>
+                  <span class="slot-label">${option ? getShortOptionName(option) : "비어 있음"}</span>
+                </button>
+              `).join("")}
+            </div>
+            <div class="gem-actions">
+              <button class="small-button" type="button" data-clear-gem="${gem.id}">초기화</button>
+              <button class="small-button danger" type="button" data-remove-gem="${gem.id}">삭제</button>
+            </div>
+          </div>
+          <div class="option-picker">
+            ${kinds.map((kind) => `
+              <div class="picker-kind">
+                <div class="picker-kind-title">${kind.name}</div>
+                <div class="option-grid">
+                  ${categories.map((category) => {
+                    const id = optionId(kind.id, category.id);
+                    const usedSlot = gem.options.indexOf(id);
+                    const isSelected = usedSlot !== -1;
+                    return `
+                      <button class="option-toggle ${kind.className} cat-${category.id} ${isSelected ? "is-selected" : ""}" type="button" data-gem-option="${gem.id}:${id}" aria-pressed="${isSelected}">
+                        ${category.name}
+                      </button>
+                    `;
+                  }).join("")}
+                </div>
+              </div>
+            `).join("")}
+          </div>
+        `;
+
+        root.appendChild(card);
+      });
+
+      root.querySelectorAll("[data-gem-slot]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const [gemId, slotIndex] = button.dataset.gemSlot.split(":");
+          activeSlots[gemId] = Number(slotIndex);
+          renderGems();
+        });
+      });
+
+      root.querySelectorAll("[data-gem-option]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const [gemId, kindId, categoryId] = button.dataset.gemOption.split(":");
+          setGemOption(gemId, optionId(kindId, categoryId));
+        });
+      });
+
+      root.querySelectorAll("[data-clear-gem]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const gem = state.gems.find((item) => item.id === button.dataset.clearGem);
+          if (!gem) return;
+          gem.options = [null, null, null];
+          activeSlots[gem.id] = 0;
+          saveState();
+          renderGems();
+          updateResults();
+        });
+      });
+
+      root.querySelectorAll("[data-remove-gem]").forEach((button) => {
+        button.addEventListener("click", () => {
+          removeGem(button.dataset.removeGem);
+        });
+      });
+    }
+
+    function setGemOption(gemId, selectedOptionId) {
+      const gem = state.gems.find((item) => item.id === gemId);
+      if (!gem) return;
+
+      const changedSlot = toggleOptionInSlots(gem.options, selectedOptionId);
+      if (changedSlot === -1) return;
+      activeSlots[gemId] = changedSlot;
+
+      saveState();
+      renderGems();
+      updateResults();
+    }
+
+    function addGem(options) {
+      const gem = createGem(options);
+      state.gems.push(gem);
+      activeSlots[gem.id] = gem.options.findIndex((option) => !option);
+      if (activeSlots[gem.id] === -1) activeSlots[gem.id] = 0;
+      saveState();
+      renderGems();
+      updateResults();
+    }
+
+    function removeGem(gemId) {
+      state.gems = state.gems.filter((gem) => gem.id !== gemId);
+      delete activeSlots[gemId];
+      saveState();
+      renderGems();
+      updateResults();
+    }
+
+    function getCountsFromGems() {
+      const counts = Object.fromEntries(optionIds.map((id) => [id, 0]));
+
+      for (const gem of state.gems) {
+        for (const option of gem.options) {
+          if (optionIds.includes(option)) counts[option] += 1;
+        }
+      }
+
+      return counts;
+    }
+
+    function saveState() {
+      localStorage.setItem(storageKey, JSON.stringify(state));
+    }
+
+    function loadState() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(storageKey) || "{}");
+        if (saved && typeof saved === "object" && (saved.gems || saved.targets)) {
+          state.profileName = typeof saved.profileName === "string" ? saved.profileName : "";
+          for (const id of optionIds) {
+            state.targets[id] = [0, 1, 2].includes(Number(saved.targets?.[id])) ? Number(saved.targets[id]) : 0;
+          }
+          if (saved.targetSlots) {
+            state.targetSlots = normalizeTargetSlots(saved.targetSlots);
+            syncTargetsFromSlots();
+          } else {
+            syncSlotsFromTargets();
+          }
+          state.gems = Array.isArray(saved.gems)
+            ? saved.gems.map(normalizeGem).filter((gem) => gem.options.length === 3)
+            : [];
+        }
+
+        if (state.gems.length === 0) loadLegacyCounts();
+      } catch {
+        localStorage.removeItem(storageKey);
+        loadLegacyCounts();
+      }
+
+      if (state.gems.length === 0) state.gems = [createGem()];
+      syncTargetsFromSlots();
+    }
+
+    function loadLegacyCounts() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(legacyStorageKey) || "{}");
+        if (!saved || typeof saved !== "object") return;
+
+        state.profileName = typeof saved.profileName === "string" ? saved.profileName : state.profileName;
+        for (const id of optionIds) {
+          state.targets[id] = [0, 1, 2].includes(Number(saved.targets?.[id])) ? Number(saved.targets[id]) : state.targets[id];
+        }
+        syncSlotsFromTargets();
+
+        const flat = [];
+        for (const id of optionIds) {
+          const count = normalizeCount(saved.counts?.[id] || 0);
+          for (let index = 0; index < count; index += 1) flat.push(id);
+        }
+
+        if (flat.length > 0) {
+          state.gems = [];
+          for (let index = 0; index < flat.length; index += 3) {
+            state.gems.push(createGem(flat.slice(index, index + 3)));
+          }
+        }
+      } catch {
+        localStorage.removeItem(legacyStorageKey);
+      }
+    }
+
+    function normalizeCount(value) {
+      const number = Number(value);
+      if (!Number.isFinite(number) || number < 0) return 0;
+      return Math.floor(number);
+    }
+
+    function solveKind(kindId, countsById) {
+      const ids = categories.map((category) => optionId(kindId, category.id));
+      const counts = ids.map((id) => countsById[id] || 0);
+      const tiers = ids.map((id) => state.targets[id] || 0);
+      let best = null;
+
+      for (const item of permutations) {
+        const permutation = item.permutation;
+        let tier1 = 0;
+        let tier2 = 0;
+        let fixedValue = 0;
+        let fixedLabels = 0;
+
+        for (let source = 0; source < permutation.length; source += 1) {
+          const target = permutation[source];
+          if (tiers[target] === 1) tier1 += counts[source];
+          if (tiers[target] === 2) tier2 += counts[source];
+          if (source === target) {
+            fixedValue += counts[source];
+            fixedLabels += 1;
+          }
+        }
+
+        const candidate = {
+          permutation,
+          swaps: item.swaps,
+          tier1,
+          tier2,
+          fixedValue,
+          fixedLabels,
+          swapCount: item.swaps.length
+        };
+
+        if (!best || compareCandidate(candidate, best) > 0) {
+          best = candidate;
+        }
+      }
+
+      const finalCounts = Array(categories.length).fill(0);
+      for (let source = 0; source < best.permutation.length; source += 1) {
+        finalCounts[best.permutation[source]] += counts[source];
+      }
+
+      return {
+        kindId,
+        ids,
+        counts,
+        tiers,
+        finalCounts,
+        ...best
+      };
+    }
+
+    function compareCandidate(a, b) {
+      const fields = [
+        ["tier1", "desc"],
+        ["tier2", "desc"],
+        ["swapCount", "asc"],
+        ["fixedValue", "desc"],
+        ["fixedLabels", "desc"]
+      ];
+
+      for (const [field, direction] of fields) {
+        if (a[field] === b[field]) continue;
+        return direction === "desc" ? a[field] - b[field] : b[field] - a[field];
+      }
+
+      return 0;
+    }
+
+    function updateResults() {
+      const countsById = getCountsFromGems();
+      const damage = solveKind("damage", countsById);
+      const cooldown = solveKind("cooldown", countsById);
+      const total = optionIds.reduce((sum, id) => sum + (countsById[id] || 0), 0);
+      const allSwaps = [...formatSteps(damage), ...formatSteps(cooldown)];
+
+      byId("gemStats").textContent = `보석 ${state.gems.length.toLocaleString("ko-KR")}개 / 옵션 ${total.toLocaleString("ko-KR")}개`;
+      byId("swapCount").textContent = `${allSwaps.length.toLocaleString("ko-KR")}단계`;
+      byId("tier1Total").textContent = (damage.tier1 + cooldown.tier1).toLocaleString("ko-KR");
+      byId("tier2Total").textContent = (damage.tier2 + cooldown.tier2).toLocaleString("ko-KR");
+      byId("damageTier1").textContent = damage.tier1.toLocaleString("ko-KR");
+      byId("cooldownTier1").textContent = cooldown.tier1.toLocaleString("ko-KR");
+
+      renderWarning(total);
+      renderSteps(allSwaps);
+      renderFinalGems({ damage, cooldown });
+      renderCountSummary(countsById);
+      renderMapping([damage, cooldown]);
+    }
+
+    function renderWarning(total) {
+      const warning = byId("gemWarning");
+      const incompleteCount = state.gems.filter((gem) => gem.options.filter(Boolean).length > 0 && gem.options.filter(Boolean).length < 3).length;
+
+      if (total === 0) {
+        warning.classList.add("show");
+        warning.textContent = "보석을 추가한 뒤 옵션 3개를 토글로 선택하면 교환 결과가 계산됩니다.";
+        return;
+      }
+
+      if (incompleteCount > 0) {
+        warning.classList.add("show");
+        warning.textContent = `옵션이 3개 미만인 보석이 ${incompleteCount.toLocaleString("ko-KR")}개 있습니다. 결과는 현재 입력된 옵션만 기준으로 계산됩니다.`;
+        return;
+      }
+
+      warning.classList.remove("show");
+      warning.textContent = "";
+    }
+
+    function formatSteps(solution) {
+      const kind = kindMap[solution.kindId];
+      return solution.swaps.map(([left, right]) => ({
+        kind,
+        left: categories[left].name,
+        leftClass: `cat-${categories[left].id}`,
+        right: categories[right].name,
+        rightClass: `cat-${categories[right].id}`
+      }));
+    }
+
+    function renderSteps(steps) {
+      const root = byId("stepsList");
+      root.innerHTML = "";
+
+      if (steps.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "empty";
+        empty.textContent = "교환 없이 현재 상태가 최적입니다.";
+        root.appendChild(empty);
+        return;
+      }
+
+      for (const [index, step] of steps.entries()) {
+        const item = document.createElement("div");
+        item.className = "step";
+        item.innerHTML = `
+          <div class="step-index">${index + 1}</div>
+          <div class="step-main">
+            <span class="badge ${step.kind.className}">${step.kind.short}</span>
+            <span class="badge ${step.leftClass}">${step.left}</span>
+            <span>&lt;-&gt;</span>
+            <span class="badge ${step.rightClass}">${step.right}</span>
+          </div>
+        `;
+        root.appendChild(item);
+      }
+    }
+
+    function transformOptionId(id, solutions) {
+      if (!id) return null;
+      const { kindId, categoryId } = splitOptionId(id);
+      const solution = solutions[kindId];
+      const sourceIndex = categoryIndex[categoryId];
+      const targetIndex = solution.permutation[sourceIndex];
+      return optionId(kindId, categories[targetIndex].id);
+    }
+
+    function renderFinalGems(solutions) {
+      const root = byId("finalGemList");
+      root.innerHTML = "";
+
+      const gemsWithOptions = state.gems.filter((gem) => gem.options.some(Boolean));
+      if (gemsWithOptions.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "empty";
+        empty.textContent = "입력된 보석 옵션이 없습니다.";
+        root.appendChild(empty);
+        return;
+      }
+
+      gemsWithOptions.forEach((gem) => {
+        const originalIndex = state.gems.indexOf(gem) + 1;
+        const item = document.createElement("div");
+        item.className = "final-gem";
+        item.innerHTML = `
+          <strong>보석 ${originalIndex}</strong>
+          <div class="mini-options">
+            ${gem.options.map((option) => {
+              const transformed = transformOptionId(option, solutions);
+              if (!transformed) return `<span class="badge">비어 있음</span>`;
+              const { kindId } = splitOptionId(transformed);
+              const categoryClass = getCategoryClass(transformed);
+              const tier = state.targets[transformed];
+              const tierClass = tier === 1 ? "tier1" : tier === 2 ? "tier2" : "";
+              return `<span class="badge ${kindMap[kindId].className} ${categoryClass} ${tierClass}">${getShortOptionName(transformed)}</span>`;
+            }).join("")}
+          </div>
+        `;
+        root.appendChild(item);
+      });
+    }
+
+    function renderCountSummary(countsById) {
+      const root = byId("countSummary");
+      root.innerHTML = "";
+
+      const grid = document.createElement("div");
+      grid.className = "count-mini-grid";
+
+      for (const kind of kinds) {
+        const box = document.createElement("div");
+        box.className = "count-mini-kind";
+        box.innerHTML = `
+          <strong>${kind.name}</strong>
+          <div class="count-chip-grid">
+            ${categories.map((category) => {
+              const id = optionId(kind.id, category.id);
+              const count = countsById[id] || 0;
+              return `
+                <div class="count-chip cat-${category.id} ${count === 0 ? "zero" : ""}">
+                  <span>${category.name}</span>
+                  <span>${count.toLocaleString("ko-KR")}</span>
+                </div>
+              `;
+            }).join("")}
+          </div>
+        `;
+        grid.appendChild(box);
+      }
+
+      root.appendChild(grid);
+    }
+
+    function renderMapping(solutions) {
+      const root = byId("mappingTables");
+      root.innerHTML = "";
+
+      for (const solution of solutions) {
+        const kind = kindMap[solution.kindId];
+        const table = document.createElement("table");
+        table.className = "mapping-table";
+        table.setAttribute("aria-label", `${kind.name} 교환 후 분포`);
+
+        const rows = categories.map((category, index) => {
+          const before = solution.counts[index];
+          const after = solution.finalCounts[index];
+          const delta = after - before;
+          const tier = solution.tiers[index];
+          const tierBadge = tier === 1
+            ? `<span class="badge tier1">1티어</span>`
+            : tier === 2
+              ? `<span class="badge tier2">2티어</span>`
+              : `<span class="badge">제외</span>`;
+          const deltaClass = delta > 0 ? "delta-up" : delta < 0 ? "delta-down" : "";
+          const deltaText = delta === 0 ? "0" : `${delta > 0 ? "+" : ""}${delta}`;
+
+          return `
+            <tr>
+              <td><span class="badge cat-${category.id}">${category.name} ${kind.short}</span></td>
+              <td>${before.toLocaleString("ko-KR")}</td>
+              <td>${after.toLocaleString("ko-KR")}</td>
+              <td class="${deltaClass}">${deltaText}</td>
+              <td>${tierBadge}</td>
+            </tr>
+          `;
+        }).join("");
+
+        table.innerHTML = `
+          <thead>
+            <tr>
+              <th>${kind.name}</th>
+              <th>현재</th>
+              <th>교환 후</th>
+              <th>변화</th>
+              <th>목표</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        `;
+
+        root.appendChild(table);
+      }
+    }
+
+    function clearGems() {
+      state.gems = [createGem()];
+      for (const key of Object.keys(activeSlots)) delete activeSlots[key];
+      activeSlots[state.gems[0].id] = 0;
+      saveState();
+      renderGems();
+      updateResults();
+    }
+
+    function clearTargets() {
+      state.targetSlots = {
+        1: [[null, null, null]],
+        2: [[null, null, null]]
+      };
+      activeTargetSlots[1] = {
+        set: 0,
+        slot: 0
+      };
+      activeTargetSlots[2] = {
+        set: 0,
+        slot: 0
+      };
+      syncTargetsFromSlots();
+      saveState();
+      syncTargetControls();
+      updateResults();
+    }
+
+    function resetAll() {
+      state.profileName = "";
+      byId("profileName").value = "";
+      state.targetSlots = {
+        1: [[null, null, null]],
+        2: [[null, null, null]]
+      };
+      activeTargetSlots[1] = {
+        set: 0,
+        slot: 0
+      };
+      activeTargetSlots[2] = {
+        set: 0,
+        slot: 0
+      };
+      syncTargetsFromSlots();
+      clearGems();
+      saveState();
+      syncTargetControls();
+      updateResults();
+    }
+
+    function applySample() {
+      state.profileName = "샘플 세팅";
+      byId("profileName").value = state.profileName;
+
+      state.targetSlots = {
+        1: [
+          [
+            "damage:multi",
+            "damage:heavy",
+            "damage:support"
+          ],
+          [
+            "damage:element",
+            "cooldown:heavy",
+            "cooldown:element"
+          ]
+        ],
+        2: [
+          [
+            "cooldown:support",
+            "cooldown:move",
+            "cooldown:survive"
+          ]
+        ]
+      };
+      activeTargetSlots[1] = {
+        set: 0,
+        slot: 0
+      };
+      activeTargetSlots[2] = {
+        set: 0,
+        slot: 0
+      };
+
+      syncTargetsFromSlots();
+      for (const key of Object.keys(activeSlots)) delete activeSlots[key];
+
+      state.gems = [
+        createGem(["damage:support", "damage:move", "cooldown:heavy"]),
+        createGem(["damage:heavy", "cooldown:move", "cooldown:element"]),
+        createGem(["damage:element", "damage:summon", "cooldown:support"]),
+        createGem(["damage:multi", "cooldown:disrupt", "cooldown:survive"]),
+        createGem(["damage:survive", "damage:heavy", "cooldown:move"]),
+        createGem(["damage:move", "cooldown:heavy", "cooldown:summon"])
+      ];
+
+      state.gems.forEach((gem) => {
+        activeSlots[gem.id] = 0;
+      });
+
+      saveState();
+      syncTargetControls();
+      renderGems();
+      updateResults();
+    }
+
+    byId("profileName").addEventListener("input", (event) => {
+      state.profileName = event.target.value;
+      saveState();
+    });
+
+    byId("addGemPanelButton").addEventListener("click", () => addGem());
+    byId("addTier1SetButton").addEventListener("click", () => addTargetSet(1));
+    byId("addTier2SetButton").addEventListener("click", () => addTargetSet(2));
+    byId("clearGemsButton").addEventListener("click", clearGems);
+    byId("clearTargetsButton").addEventListener("click", clearTargets);
+    byId("resetAllButton").addEventListener("click", resetAll);
+
+    loadState();
+    byId("profileName").value = state.profileName || "";
+    renderTargetControls();
+    renderGems();
+    updateResults();
+  </script>
+</body>
+</html>
