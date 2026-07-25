@@ -2119,14 +2119,29 @@
   </script>
   <script>
     (function () {
+      var lastSent = 0;
       function postHeight() {
-        var h = document.documentElement.scrollHeight;
+        var h = Math.max(
+          document.documentElement.scrollHeight,
+          document.body ? document.body.scrollHeight : 0
+        );
+        if (h < 200 || h === lastSent) return; // ignore transient 0/near-0 layout reads
+        lastSent = h;
         window.parent.postMessage({ type: "mabinogi-planner-resize", height: h }, "*");
       }
-      window.addEventListener("load", postHeight);
+      window.addEventListener("load", function () {
+        postHeight();
+        [100, 300, 800, 1500, 3000].forEach(function (delay) {
+          setTimeout(postHeight, delay);
+        });
+      });
       window.addEventListener("resize", postHeight);
       if (window.ResizeObserver) {
-        new ResizeObserver(postHeight).observe(document.body);
+        var raf = null;
+        new ResizeObserver(function () {
+          if (raf) cancelAnimationFrame(raf);
+          raf = requestAnimationFrame(postHeight);
+        }).observe(document.body);
       } else {
         setInterval(postHeight, 500);
       }
