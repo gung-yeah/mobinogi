@@ -3276,30 +3276,54 @@
   <script>
     (function () {
       var lastSent = 0;
+      var raf = null;
+
+      function measureVisibleHeight() {
+        if (!document.body) return 0;
+        var maxBottom = 0;
+        Array.prototype.forEach.call(document.body.children, function (element) {
+          if (element.tagName === "SCRIPT") return;
+          var style = window.getComputedStyle(element);
+          if (style.display === "none" || style.position === "fixed") return;
+          var rect = element.getBoundingClientRect();
+          maxBottom = Math.max(maxBottom, rect.bottom + window.scrollY);
+        });
+        return Math.ceil(maxBottom);
+      }
+
       function postHeight() {
-        var h = Math.max(
-          document.documentElement.scrollHeight,
-          document.body ? document.body.scrollHeight : 0
-        );
+        var h = measureVisibleHeight();
         if (h < 200 || h === lastSent) return; // ignore transient 0/near-0 layout reads
         lastSent = h;
         window.parent.postMessage({ type: "mabinogi-planner-resize", height: h }, "*");
       }
+      function schedulePostHeight() {
+        if (raf) cancelAnimationFrame(raf);
+        raf = requestAnimationFrame(function () {
+          postHeight();
+          setTimeout(postHeight, 80);
+          setTimeout(postHeight, 220);
+        });
+      }
+      window.mabinogiPlannerPostHeight = schedulePostHeight;
       window.addEventListener("load", function () {
-        postHeight();
+        schedulePostHeight();
         [100, 300, 800, 1500, 3000].forEach(function (delay) {
-          setTimeout(postHeight, delay);
+          setTimeout(schedulePostHeight, delay);
         });
       });
-      window.addEventListener("resize", postHeight);
+      window.addEventListener("resize", schedulePostHeight);
+      document.addEventListener("click", function (event) {
+        if (event.target.closest(".tab, .gear-toggle, .gear-set-tab, .class-type, .recipe-type, #selectAll, #clearAll, #hideUnusedRecipes")) {
+          schedulePostHeight();
+        }
+      });
       if (window.ResizeObserver) {
-        var raf = null;
         new ResizeObserver(function () {
-          if (raf) cancelAnimationFrame(raf);
-          raf = requestAnimationFrame(postHeight);
+          schedulePostHeight();
         }).observe(document.body);
       } else {
-        setInterval(postHeight, 500);
+        setInterval(schedulePostHeight, 500);
       }
     })();
   </script>
