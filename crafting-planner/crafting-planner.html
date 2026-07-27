@@ -162,7 +162,8 @@
       opacity: 0.68;
     }
 
-    #refreshMarket {
+    #refreshMarket,
+    #refreshEquipmentMarket {
       min-height: 30px;
       padding: 0 9px;
       font-size: 12px;
@@ -251,6 +252,22 @@
       justify-content: flex-end;
       gap: 6px;
       min-width: 0;
+    }
+
+    body.equipment-view-active .panel-head .market-tools {
+      display: none;
+    }
+
+    .equipment-panel-tools {
+      display: none;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    body.equipment-view-active .equipment-panel-tools {
+      display: flex;
     }
 
     .market-progress {
@@ -724,6 +741,121 @@
       height: 24px;
       border-radius: 6px;
       flex: 0 0 auto;
+    }
+
+    .equipment-market {
+      display: grid;
+      gap: 10px;
+    }
+
+    .equipment-summary-head {
+      display: flex;
+      align-items: center;
+      color: var(--ink);
+      font-size: 14px;
+      font-weight: 850;
+    }
+
+    .equipment-summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .equipment-summary-card {
+      min-width: 0;
+      padding: 6px 8px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+    }
+
+    .equipment-summary-label {
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+      min-width: 0;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .equipment-summary-label strong {
+      flex: 0 0 auto;
+      color: var(--blue);
+      font-weight: 850;
+    }
+
+    .equipment-summary-price {
+      margin-top: 2px;
+      color: var(--ink);
+      font-size: 14px;
+      font-weight: 900;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    .equipment-summary-name {
+      min-width: 0;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.25;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .equipment-table {
+      min-width: 0;
+    }
+
+    .equipment-table th,
+    .equipment-table td {
+      text-align: center;
+    }
+
+    .equipment-table th:first-child,
+    .equipment-table td:first-child {
+      text-align: left;
+    }
+
+    .equipment-cell {
+      min-width: 0;
+      display: grid;
+      grid-template-columns: 24px minmax(0, 1fr);
+      align-items: center;
+      gap: 5px;
+    }
+
+    .equipment-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      object-fit: contain;
+      background: #0c0f16;
+      box-shadow: 0 1px 4px rgba(9, 16, 28, 0.16);
+    }
+
+    .equipment-price {
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 850;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    .equipment-price.best {
+      color: var(--blue);
+    }
+
+    .equipment-name {
+      margin-top: 1px;
+      color: var(--muted);
+      font-size: 10px;
+      line-height: 1.2;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .num {
@@ -1298,6 +1430,14 @@
       #view-materials .price-change {
         min-width: 42px;
       }
+
+      .equipment-summary-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .equipment-table {
+        min-width: 840px;
+      }
     }
   </style>
   <style>
@@ -1385,13 +1525,23 @@
             <div class="panel-title-row">
               <h2 class="panel-title">계산표</h2>
               <div class="market-tools">
-                <button class="btn primary" id="refreshMarket" type="button">시세 반영</button>
+                <button class="btn primary" id="refreshMarket" type="button">재료 시세 반영</button>
                 <div class="market-progress" id="marketProgress" aria-label="시세 갱신 진행률">
                   <div class="progress-meta">
                     <span id="marketProgressText">시세 갱신 대기</span>
                     <span id="marketProgressCount">0/9</span>
                   </div>
                   <div class="progress-track" aria-hidden="true"><div class="progress-bar" id="marketProgressBar"></div></div>
+                </div>
+              </div>
+              <div class="equipment-panel-tools">
+                <button class="btn primary" id="refreshEquipmentMarket" type="button">장비 시세 반영</button>
+                <div class="market-progress" id="equipmentMarketProgress" aria-label="장비 시세 갱신 진행률">
+                  <div class="progress-meta">
+                    <span id="equipmentMarketProgressText">장비 시세 갱신 대기</span>
+                    <span id="equipmentMarketProgressCount">0/38</span>
+                  </div>
+                  <div class="progress-track" aria-hidden="true"><div class="progress-bar" id="equipmentMarketProgressBar"></div></div>
                 </div>
               </div>
             </div>
@@ -1402,6 +1552,7 @@
                 <button class="tab active" type="button" data-view="materials">재료</button>
                 <button class="tab" type="button" data-view="priority">던전</button>
                 <button class="tab" type="button" data-view="recipes">제작식</button>
+                <button class="tab" type="button" data-view="equipment">장비 시세</button>
               </div>
               <div class="build-types">
                 <div class="class-types" id="classTypes" role="group" aria-label="계열">
@@ -1453,6 +1604,10 @@
                 <label class="recipe-collapse-toggle"><input id="hideUnusedRecipes" type="checkbox"> 미사용 재료 접기</label>
               </div>
               <div id="recipeGrid" class="recipe-grid"></div>
+            </div>
+
+            <div class="view" id="view-equipment">
+              <div id="equipmentMarket" class="equipment-market"></div>
             </div>
 
           </div>
@@ -1648,6 +1803,144 @@
     const materialAliases = {
       "백금 강괴": "백금강괴"
     };
+
+    const equipmentSlots = [
+      { id: "weapon", label: "무기" },
+      { id: "helmet", label: "투구" },
+      { id: "armor", label: "상의" },
+      { id: "pants", label: "하의" },
+      { id: "gloves", label: "장갑" },
+      { id: "shoes", label: "신발" },
+      { id: "necklace", label: "목걸이" },
+      { id: "ring", label: "반지" }
+    ];
+
+    const equipmentJobs = Object.entries(drakeinJobsByClass).flatMap(([classId, jobs]) =>
+      jobs.map((job) => ({ ...job, classId }))
+    );
+
+    const equipmentArmorTypeByClass = {
+      warrior: "heavy",
+      archer: "light",
+      mage: "cloth",
+      healer: "cloth",
+      bard: "light",
+      rogue: "light"
+    };
+
+    const equipmentArmorKeywords = {
+      light: "가죽 갑옷",
+      heavy: "비늘 갑옷",
+      cloth: "전투복"
+    };
+
+    const equipmentArmorLabels = {
+      light: "경갑",
+      heavy: "중갑",
+      cloth: "천옷"
+    };
+
+    const equipmentPartKeywords = {
+      helmet: "투구",
+      armor: "상의",
+      pants: "하의",
+      gloves: "장갑",
+      shoes: "신발"
+    };
+
+    const equipmentArmorExactNames = {
+      light: {
+        helmet: "해연의 가죽 갑옷 투구ZZ",
+        armor: "해연의 가죽 갑옷 상의ZZ",
+        pants: "해연의 가죽 갑옷 하의ZZ",
+        gloves: "해연의 가죽 갑옷 장갑ZZ",
+        shoes: "해연의 가죽 갑옷 신발ZZ"
+      },
+      heavy: {
+        helmet: "해연의 비늘 갑옷 투구ZZ",
+        armor: "해연의 비늘 갑옷 상의ZZ",
+        pants: "해연의 비늘 갑옷 하의ZZ",
+        gloves: "해연의 비늘 갑옷 장갑ZZ",
+        shoes: "해연의 비늘 갑옷 신발ZZ"
+      },
+      cloth: {
+        helmet: "해연의 전투복 투구ZZ",
+        armor: "해연의 전투복 상의ZZ",
+        pants: "해연의 전투복 하의ZZ",
+        gloves: "해연의 전투복 장갑ZZ",
+        shoes: "해연의 전투복 신발ZZ"
+      }
+    };
+
+    const equipmentWeaponSpecs = {
+      warrior: { label: "해연의 숏소드ZZ", queries: ["해연의 숏소드ZZ", "해연의 쇼소드ZZ"], icon: "./equipment-icons/weapon-warrior.png" },
+      swordsman: { label: "해연의 론 엣지소드ZZ", queries: ["해연의 론 엣지소드ZZ"], icon: "./equipment-icons/weapon-swordsman.png" },
+      greatsword: { label: "해연의 그레이트 소드ZZ", queries: ["해연의 그레이트 소드ZZ"], icon: "./equipment-icons/weapon-greatsword.png" },
+      knight: { label: "해연의 라이트 핼버드ZZ", queries: ["해연의 라이트 핼버드ZZ"], icon: "./equipment-icons/weapon-knight.png" },
+      archer: { label: "해연의 숏보우ZZ", queries: ["해연의 숏보우ZZ"], icon: "./equipment-icons/weapon-archer.png" },
+      crossbow: { label: "해연의 라이트 크로스보우ZZ", queries: ["해연의 라이트 크로스보우ZZ"], icon: "./equipment-icons/weapon-crossbow.png" },
+      longbow: { label: "해연의 라이트 롱보우ZZ", queries: ["해연의 라이트 롱보우ZZ"], icon: "./equipment-icons/weapon-longbow.png" },
+      mage: { label: "해연의 우드 완드ZZ", queries: ["해연의 우드 완드ZZ"], icon: "./equipment-icons/weapon-mage.png" },
+      cryomancer: { label: "해연의 스노우 오브ZZ", queries: ["해연의 스노우 오브ZZ"], icon: "./equipment-icons/weapon-cryomancer.png" },
+      pyromancer: { label: "해연의 라운드헤드 케인ZZ", queries: ["해연의 라운드헤드 케인ZZ"], icon: "./equipment-icons/weapon-pyromancer.png" },
+      electromancer: { label: "해연의 라운드 코일ZZ", queries: ["해연의 라운드 코일ZZ"], icon: "./equipment-icons/weapon-electromancer.png" },
+      healer: { label: "해연의 마블 힐링 완드ZZ", queries: ["해연의 마블 힐링 완드ZZ"], icon: "./equipment-icons/weapon-healer.png" },
+      priest: { label: "해연의 크리스탈 스태프ZZ", queries: ["해연의 크리스탈 스태프ZZ"], icon: "./equipment-icons/weapon-priest.png" },
+      monk: { label: "해연의 블런트 쿼터스태프ZZ", queries: ["해연의 블런트 쿼터스태프ZZ"], icon: "./equipment-icons/weapon-monk.png" },
+      darkmage: { label: "해연의 서펜트 의식용 단검ZZ", queries: ["해연의 서펜트 의식용 단검ZZ"], icon: "./equipment-icons/weapon-darkmage.png" },
+      bard: { label: "해연의 켈틱 류트ZZ", queries: ["해연의 켈틱 류트ZZ"], icon: "./equipment-icons/weapon-bard.png" },
+      musician: { label: "해연의 커브드 하프ZZ", queries: ["해연의 커브드 하프ZZ"], icon: "./equipment-icons/weapon-musician.png" },
+      dancer: { label: "꽃잎 접부채ZZ", queries: ["꽃잎 접부채ZZ"], icon: "./equipment-icons/weapon-dancer.png" },
+      rogue: { label: "해연의 플랫 대거ZZ", queries: ["해연의 플랫 대거ZZ"], icon: "./equipment-icons/weapon-rogue.png" },
+      dualblade: { label: "해연의 샤프 듀얼소드ZZ", queries: ["해연의 샤프 듀얼소드ZZ", "해연의 샤프 듀얼소트ZZ"], icon: "./equipment-icons/weapon-dualblade.png" },
+      fighter: { label: "해연의 라이트 너클ZZ", queries: ["해연의 라이트 너클ZZ"], icon: "./equipment-icons/weapon-fighter.png" }
+    };
+
+    const equipmentCatalog = {};
+
+    Object.entries(equipmentWeaponSpecs).forEach(([jobId, spec]) => {
+      equipmentCatalog[`weapon-${jobId}`] = {
+        id: `weapon-${jobId}`,
+        slot: "weapon",
+        label: spec.label,
+        queries: spec.queries,
+        icon: spec.icon
+      };
+    });
+
+    Object.entries(equipmentArmorKeywords).forEach(([armorType, armorKeyword]) => {
+      Object.entries(equipmentPartKeywords).forEach(([partId, partKeyword]) => {
+        const exactName = equipmentArmorExactNames[armorType][partId];
+        equipmentCatalog[`armor-${armorType}-${partId}`] = {
+          id: `armor-${armorType}-${partId}`,
+          slot: partId,
+          label: exactName,
+          queries: partId === "armor" && armorType === "cloth" ? [exactName, "해연의 전투복상의ZZ"] : [exactName],
+          keywords: ["해연", ...armorKeyword.split(" "), partKeyword],
+          icon: `./equipment-icons/armor-${armorType}-${partId}.png`
+        };
+      });
+    });
+
+    equipmentCatalog["accessory-necklace"] = {
+      id: "accessory-necklace",
+      slot: "necklace",
+      label: "해연의 페리도트 네크리스ZZ",
+      queries: ["해연의 페리도트 네크리스ZZ"],
+      keywords: ["해연", "페리도트", "네크리스"],
+      icon: "./equipment-icons/accessory-necklace.png"
+    };
+
+    equipmentCatalog["accessory-ring"] = {
+      id: "accessory-ring",
+      slot: "ring",
+      label: "해연의 페리도트 링ZZ",
+      queries: ["해연의 페리도트 링ZZ"],
+      keywords: ["해연", "페리도트", "링"],
+      icon: "./equipment-icons/accessory-ring.png"
+    };
+
+    const equipmentMarketItems = Object.values(equipmentCatalog);
 
     const drakeinCommonRecipe = { "마력 깃든 용비늘": 3 };
     const drakeinRecipe = (mats) => ({ ...drakeinCommonRecipe, ...mats });
@@ -1883,6 +2176,9 @@
         owned: {},
         prices: {},
         priceChanges: {},
+        equipmentPrices: {},
+        equipmentMarketNames: {},
+        equipmentPriceStamp: "",
         priceStamp: "",
         classType: "warrior",
         drakeinClassType: "warrior",
@@ -1922,6 +2218,9 @@
           owned: parsed.owned || {},
           prices: parsed.prices || {},
           priceChanges: normalizePriceChanges(parsed.priceChanges || {}),
+          equipmentPrices: parsed.equipmentPrices || {},
+          equipmentMarketNames: parsed.equipmentMarketNames || {},
+          equipmentPriceStamp: parsed.equipmentPriceStamp || "",
           classType: savedClassType,
           drakeinClassType: savedDrakeinClassType,
           drakeinJobType: savedDrakeinJobType,
@@ -2077,7 +2376,7 @@
           } else {
             nextSelected = [...currentSelected, id];
           }
-          setActiveSelected(nextSelected, { emptyFallback: true });
+          setActiveSelected(nextSelected, { emptyFallback: false });
           if (isDrakein()) {
             const item = drakeinItems.find((entry) => entry.id === id);
             if (item) {
@@ -2386,6 +2685,126 @@
       });
     }
 
+    function getEquipmentSpecForJobSlot(job, slotId) {
+      if (slotId === "weapon") return equipmentCatalog[`weapon-${job.id}`];
+      if (slotId === "necklace") return equipmentCatalog["accessory-necklace"];
+      if (slotId === "ring") return equipmentCatalog["accessory-ring"];
+      const armorType = equipmentArmorTypeByClass[job.classId];
+      return equipmentCatalog[`armor-${armorType}-${slotId}`];
+    }
+
+    function getEquipmentPrice(spec) {
+      return parseNumber(state.equipmentPrices?.[spec.id]);
+    }
+
+    function getEquipmentName(spec) {
+      const savedName = state.equipmentMarketNames?.[spec.id];
+      if (!savedName || !String(savedName).includes("ZZ")) return spec.label;
+      return savedName;
+    }
+
+    function getEquipmentCandidates(slotId) {
+      if (slotId === "weapon") {
+        return equipmentJobs.map((job) => getEquipmentSpecForJobSlot(job, slotId));
+      }
+      if (slotId === "necklace") return [equipmentCatalog["accessory-necklace"]];
+      if (slotId === "ring") return [equipmentCatalog["accessory-ring"]];
+      return Object.keys(equipmentArmorKeywords).map((armorType) => equipmentCatalog[`armor-${armorType}-${slotId}`]);
+    }
+
+    function getLowestEquipment(slotId) {
+      return getEquipmentCandidates(slotId)
+        .map((spec) => ({ spec, price: getEquipmentPrice(spec) }))
+        .filter(({ price }) => price > 0)
+        .sort((a, b) => a.price - b.price)[0] || null;
+    }
+
+    function getEquipmentSummaryQualifier(slotId, spec) {
+      if (!spec) return "";
+      if (slotId === "weapon") {
+        const job = equipmentJobs.find((entry) => getEquipmentSpecForJobSlot(entry, "weapon")?.id === spec.id);
+        return job?.label || "";
+      }
+      if (["helmet", "armor", "pants", "gloves", "shoes"].includes(slotId)) {
+        const armorType = spec.id.split("-")[1];
+        return equipmentArmorLabels[armorType] || "";
+      }
+      return "";
+    }
+
+    function renderEquipmentCell(spec, lowest) {
+      const price = getEquipmentPrice(spec);
+      const name = getEquipmentName(spec);
+      const isBest = lowest && lowest.spec.id === spec.id && price > 0;
+      return `
+        <div class="equipment-cell" title="${name}">
+          <img class="equipment-icon" src="${spec.icon}" alt="${name}">
+          <div>
+            <div class="equipment-price ${isBest ? "best" : ""}">${price > 0 ? formatNumber(price) : "-"}</div>
+            <div class="equipment-name">${name}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderEquipmentMarket() {
+      const container = document.getElementById("equipmentMarket");
+      if (!container) return;
+
+      const lowestBySlot = Object.fromEntries(equipmentSlots.map((slot) => [slot.id, getLowestEquipment(slot.id)]));
+      const summary = equipmentSlots.map((slot) => {
+        const lowest = lowestBySlot[slot.id];
+        const name = lowest ? getEquipmentName(lowest.spec) : "시세 미반영";
+        const qualifier = lowest ? getEquipmentSummaryQualifier(slot.id, lowest.spec) : "";
+        const summaryName = qualifier ? `(${qualifier}) ${name}` : name;
+        return `
+          <article class="equipment-summary-card">
+            <div class="equipment-summary-label"><strong>${slot.label}</strong><span class="equipment-summary-name">${summaryName}</span></div>
+            <div class="equipment-summary-price">${lowest ? formatNumber(lowest.price) : "-"}</div>
+          </article>
+        `;
+      }).join("");
+
+      const rows = equipmentJobs.map((job) => {
+        const armorType = equipmentArmorTypeByClass[job.classId];
+        const armorLabel = equipmentArmorLabels[armorType] || "";
+        const cells = equipmentSlots.map((slot) => {
+          const spec = getEquipmentSpecForJobSlot(job, slot.id);
+          return `<td data-label="${slot.label}">${renderEquipmentCell(spec, lowestBySlot[slot.id])}</td>`;
+        }).join("");
+        return `
+          <tr>
+            <td data-label="직업"><strong>${job.label}</strong><div class="equipment-name">${armorLabel}</div></td>
+            ${cells}
+          </tr>
+        `;
+      }).join("");
+
+      container.innerHTML = `
+        <div class="equipment-summary-head">
+          <span>현재 최저가</span>
+        </div>
+        <div class="equipment-summary-grid">${summary}</div>
+        <div class="table-wrap">
+          <table class="equipment-table">
+            <thead>
+              <tr>
+                <th>직업</th>
+                ${equipmentSlots.map((slot) => `<th>${slot.label}</th>`).join("")}
+              </tr>
+            </thead>
+            <tbody>${rows}</tbody>
+          </table>
+        </div>
+      `;
+
+      if (state.equipmentPriceStamp) {
+        setEquipmentMarketProgress(equipmentMarketItems.length, equipmentMarketItems.length, formatMarketTimestamp(state.equipmentPriceStamp), "ok");
+      } else {
+        setEquipmentMarketProgress(0, equipmentMarketItems.length, "장비 시세 갱신 대기");
+      }
+    }
+
     function setStatus(kind, message) {
       const status = document.getElementById("marketStatus");
       if (!status) return;
@@ -2394,11 +2813,11 @@
       status.querySelector("span:last-child").textContent = message;
     }
 
-    function setMarketProgress(current, total = getActiveMaterialOrder().length, message = "시세 갱신 대기", kind = "") {
-      const progress = document.getElementById("marketProgress");
-      const text = document.getElementById("marketProgressText");
-      const count = document.getElementById("marketProgressCount");
-      const bar = document.getElementById("marketProgressBar");
+    function setProgress(current, total, message, kind, ids) {
+      const progress = document.getElementById(ids.progress);
+      const text = document.getElementById(ids.text);
+      const count = document.getElementById(ids.count);
+      const bar = document.getElementById(ids.bar);
       if (!progress || !text || !count || !bar) return;
 
       const safeTotal = Math.max(1, total);
@@ -2410,15 +2829,44 @@
       bar.style.width = `${percent}%`;
     }
 
+    function setMarketProgress(current, total = getActiveMaterialOrder().length, message = "시세 갱신 대기", kind = "") {
+      setProgress(current, total, message, kind, {
+        progress: "marketProgress",
+        text: "marketProgressText",
+        count: "marketProgressCount",
+        bar: "marketProgressBar"
+      });
+    }
+
+    function setEquipmentMarketProgress(current, total = equipmentMarketItems.length, message = "장비 시세 갱신 대기", kind = "") {
+      setProgress(current, total, message, kind, {
+        progress: "equipmentMarketProgress",
+        text: "equipmentMarketProgressText",
+        count: "equipmentMarketProgressCount",
+        bar: "equipmentMarketProgressBar"
+      });
+    }
+
+    function formatMarketTimestamp(value) {
+      const date = new Date(value);
+      return Number.isNaN(date.getTime()) ? "시세 갱신 대기" : date.toLocaleString("ko-KR");
+    }
+
     function renderTabs() {
+      const syncActiveView = () => {
+        const activeTab = document.querySelector(".tab.active");
+        document.body.classList.toggle("equipment-view-active", activeTab?.dataset.view === "equipment");
+      };
       document.querySelectorAll(".tab").forEach((tab) => {
         tab.addEventListener("click", () => {
           document.querySelectorAll(".tab").forEach((item) => item.classList.remove("active"));
           document.querySelectorAll(".view").forEach((view) => view.classList.remove("active"));
           tab.classList.add("active");
           document.getElementById(`view-${tab.dataset.view}`).classList.add("active");
+          syncActiveView();
         });
       });
+      syncActiveView();
     }
 
     function renderGearSetTabs() {
@@ -2434,8 +2882,7 @@
           saveState();
           renderAll();
           if (state.priceStamp) {
-            const stamp = new Date(state.priceStamp);
-            setMarketProgress(getActiveMaterialOrder().length, getActiveMaterialOrder().length, `저장된 시세 ${stamp.toLocaleString("ko-KR")}`, "ok");
+            setMarketProgress(getActiveMaterialOrder().length, getActiveMaterialOrder().length, formatMarketTimestamp(state.priceStamp), "ok");
           } else {
             setMarketProgress(0, getActiveMaterialOrder().length, "시세 갱신 대기");
           }
@@ -2538,16 +2985,18 @@
       renderMaterials();
       renderPriority();
       renderRecipes();
+      renderEquipmentMarket();
     }
 
-    function buildMarketApiUrl(itemName) {
+    function buildMarketApiUrl(itemName, options = {}) {
+      const parentCategory = Object.prototype.hasOwnProperty.call(options, "parentCategory") ? options.parentCategory : "아이템";
       const params = new URLSearchParams({
-        parent_category: "아이템",
         search: itemName,
         sort: "price_asc",
-        limit: "10",
+        limit: String(options.limit || 10),
         offset: "0"
       });
+      if (parentCategory) params.set("parent_category", parentCategory);
       return `${MARKET_API_URL}?${params.toString()}`;
     }
 
@@ -2572,30 +3021,60 @@
       return JSON.parse(body.slice(start, end + 1).trim());
     }
 
-    function pickMarketItem(data, itemName) {
+    function getMarketQueries(itemSpec) {
+      if (typeof itemSpec === "string") return [itemSpec];
+      return itemSpec.queries?.length ? itemSpec.queries : [itemSpec.label];
+    }
+
+    function getMarketLabel(itemSpec) {
+      return typeof itemSpec === "string" ? itemSpec : itemSpec.label;
+    }
+
+    function getMarketParentCategory(itemSpec) {
+      if (typeof itemSpec === "string") return "아이템";
+      return Object.prototype.hasOwnProperty.call(itemSpec, "parentCategory") ? itemSpec.parentCategory : null;
+    }
+
+    function pickMarketItem(data, itemSpec) {
       const list = Array.isArray(data?.items) ? data.items : [];
-      return list.find((item) => item.name === itemName)
-        || list.find((item) => String(item.name || "").includes(itemName))
+      const queries = getMarketQueries(itemSpec);
+      const keywords = typeof itemSpec === "string" ? [] : (itemSpec.keywords || []);
+      return list.find((item) => queries.some((query) => item.name === query))
+        || list.find((item) => keywords.length && keywords.every((keyword) => String(item.name || "").includes(keyword)))
+        || list.find((item) => queries.some((query) => String(item.name || "").includes(query)))
         || null;
     }
 
-    async function fetchMarketItem(itemName, mode) {
-      const apiUrl = buildMarketApiUrl(itemName);
+    async function fetchMarketItem(itemSpec, mode) {
+      for (const query of getMarketQueries(itemSpec)) {
+        const apiUrl = buildMarketApiUrl(query, { parentCategory: getMarketParentCategory(itemSpec) });
+        const data = mode === "proxy"
+          ? parseReaderJson(await fetchText(`${MARKET_PROXY_URL}${apiUrl}`))
+          : await fetchJson(apiUrl);
+        const item = pickMarketItem(data, itemSpec);
+        if (item && Number.isFinite(Number(item.min_price))) return item;
+      }
+      return null;
+    }
+
+    async function fetchMarketList(search, mode, options = {}) {
+      const apiUrl = buildMarketApiUrl(search, {
+        parentCategory: Object.prototype.hasOwnProperty.call(options, "parentCategory") ? options.parentCategory : null,
+        limit: options.limit || 120
+      });
       const data = mode === "proxy"
         ? parseReaderJson(await fetchText(`${MARKET_PROXY_URL}${apiUrl}`))
         : await fetchJson(apiUrl);
-      const item = pickMarketItem(data, itemName);
-      if (!item || !Number.isFinite(Number(item.min_price))) return null;
-      return item;
+      return Array.isArray(data?.items) ? data.items : [];
     }
 
-    async function fetchMarketPrices(mode) {
+    async function fetchMarketPrices(mode, offset = 0, total = getActiveMaterialOrder().length) {
       const found = {};
       const missing = [];
       const activeMaterialOrder = getActiveMaterialOrder();
 
       for (const [index, name] of activeMaterialOrder.entries()) {
-        setMarketProgress(index, activeMaterialOrder.length, `확인 중: ${name}`);
+        setMarketProgress(offset + index, total, `확인 중: ${name}`);
         try {
           const item = await fetchMarketItem(name, mode);
           if (item) {
@@ -2607,31 +3086,76 @@
           if (mode === "direct") throw error;
           missing.push(name);
         } finally {
-          setMarketProgress(index + 1, activeMaterialOrder.length, `확인 중: ${name}`);
+          setMarketProgress(offset + index + 1, total, `확인 중: ${name}`);
         }
       }
 
       return { found, missing };
     }
 
+    async function fetchEquipmentPrices(mode, offset = 0, total = equipmentMarketItems.length) {
+      const found = {};
+      const names = {};
+      const missing = [];
+      const marketItems = [];
+      const seenIds = new Set();
+
+      const addMarketItems = (items) => {
+        items.forEach((item) => {
+          const key = item.id || item.name;
+          if (seenIds.has(key)) return;
+          seenIds.add(key);
+          marketItems.push(item);
+        });
+      };
+
+      setEquipmentMarketProgress(offset, total, "장비 목록 확인 중");
+
+      addMarketItems(await fetchMarketList("해연", mode, { parentCategory: null, limit: 120 }));
+      try {
+        addMarketItems(await fetchMarketList("꽃잎 접부채", mode, { parentCategory: null, limit: 20 }));
+      } catch (error) {
+        if (mode === "direct") throw error;
+      }
+
+      for (const [index, spec] of equipmentMarketItems.entries()) {
+        setEquipmentMarketProgress(offset + index, total, `장비 확인 중: ${spec.label}`);
+        try {
+          const item = pickMarketItem({ items: marketItems }, spec) || await fetchMarketItem(spec, mode);
+          if (item) {
+            found[spec.id] = Number(item.min_price);
+            names[spec.id] = item.name || spec.label;
+          } else {
+            missing.push(spec.label);
+          }
+        } catch (error) {
+          if (mode === "direct") throw error;
+          missing.push(spec.label);
+        } finally {
+          setEquipmentMarketProgress(offset + index + 1, total, `장비 확인 중: ${spec.label}`);
+        }
+      }
+
+      return { found, names, missing };
+    }
+
     async function refreshMarketPrices() {
       const button = document.getElementById("refreshMarket");
       const errors = [];
       const activeMaterialOrder = getActiveMaterialOrder();
+      const refreshTotal = activeMaterialOrder.length;
       const previousPrices = Object.fromEntries(activeMaterialOrder.map((name) => [name, parseNumber(state.prices[name])]));
       button.disabled = true;
-      setMarketProgress(0, activeMaterialOrder.length, "시세 갱신 시작");
+      setMarketProgress(0, refreshTotal, "재료 시세 갱신 시작");
 
       try {
         let result;
-        let sourceLabel = "모비라이프 API";
 
         try {
-          result = await fetchMarketPrices("direct");
+          result = await fetchMarketPrices("direct", 0, refreshTotal);
         } catch (error) {
           errors.push(`직접 호출: ${error.message}`);
-          sourceLabel = "Reader 경유 API";
-          result = await fetchMarketPrices("proxy");
+          result = await fetchMarketPrices("proxy", 0, refreshTotal);
         }
 
         const entries = Object.entries(result.found);
@@ -2657,15 +3181,60 @@
         renderAll();
 
         if (result.missing.length) {
-          setMarketProgress(activeMaterialOrder.length, activeMaterialOrder.length, `${sourceLabel} ${entries.length}개 반영, ${result.missing.length}개 누락`, "warn");
+          setMarketProgress(refreshTotal, refreshTotal, formatMarketTimestamp(state.priceStamp), "warn");
         } else {
-          setMarketProgress(activeMaterialOrder.length, activeMaterialOrder.length, `${sourceLabel} 모든 재료 반영`, "ok");
+          setMarketProgress(refreshTotal, refreshTotal, formatMarketTimestamp(state.priceStamp), "ok");
         }
       } catch (error) {
         errors.push(error.message);
-        setMarketProgress(activeMaterialOrder.length, activeMaterialOrder.length, "자동 갱신 실패", "error");
+        setMarketProgress(refreshTotal, refreshTotal, "자동 갱신 실패", "error");
       } finally {
         button.disabled = false;
+      }
+    }
+
+    async function refreshEquipmentMarketPrices() {
+      const button = document.getElementById("refreshEquipmentMarket");
+      const refreshTotal = equipmentMarketItems.length;
+      if (button) button.disabled = true;
+      setEquipmentMarketProgress(0, refreshTotal, "장비 시세 갱신 시작");
+
+      try {
+        let result;
+
+        try {
+          result = await fetchEquipmentPrices("direct", 0, refreshTotal);
+        } catch (error) {
+          result = await fetchEquipmentPrices("proxy", 0, refreshTotal);
+        }
+
+        const entries = Object.entries(result.found);
+        if (!entries.length) {
+          throw new Error("대상 장비 시세를 찾지 못함");
+        }
+
+        state.equipmentPrices = {
+          ...(state.equipmentPrices || {}),
+          ...result.found
+        };
+        state.equipmentMarketNames = {
+          ...(state.equipmentMarketNames || {}),
+          ...result.names
+        };
+        state.equipmentPriceStamp = new Date().toISOString();
+        saveState();
+        renderAll();
+
+        if (result.missing.length) {
+          setEquipmentMarketProgress(refreshTotal, refreshTotal, formatMarketTimestamp(state.equipmentPriceStamp), "warn");
+        } else {
+          setEquipmentMarketProgress(refreshTotal, refreshTotal, formatMarketTimestamp(state.equipmentPriceStamp), "ok");
+        }
+      } catch (error) {
+        setEquipmentMarketProgress(refreshTotal, refreshTotal, "장비 갱신 실패", "error");
+      } finally {
+        const nextButton = document.getElementById("refreshEquipmentMarket");
+        if (nextButton) nextButton.disabled = false;
       }
     }
 
@@ -2682,6 +3251,7 @@
     });
 
     document.getElementById("refreshMarket").addEventListener("click", refreshMarketPrices);
+    document.getElementById("refreshEquipmentMarket").addEventListener("click", refreshEquipmentMarketPrices);
 
     document.getElementById("hideUnusedRecipes").addEventListener("change", (event) => {
       state.hideUnusedRecipes = event.target.checked;
@@ -2690,8 +3260,7 @@
     });
 
     if (state.priceStamp) {
-      const stamp = new Date(state.priceStamp);
-      setMarketProgress(getActiveMaterialOrder().length, getActiveMaterialOrder().length, `저장된 시세 ${stamp.toLocaleString("ko-KR")}`, "ok");
+      setMarketProgress(getActiveMaterialOrder().length, getActiveMaterialOrder().length, formatMarketTimestamp(state.priceStamp), "ok");
     } else {
       setMarketProgress(0, getActiveMaterialOrder().length, "시세 갱신 대기");
     }
