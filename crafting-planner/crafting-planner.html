@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="ko">
 <head>
   <meta charset="utf-8">
@@ -40,6 +40,11 @@
       color: var(--ink);
       font-family: Pretendard, "Noto Sans KR", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
       line-height: 1.5;
+      overflow-x: hidden;
+    }
+
+    html {
+      overflow-x: hidden;
     }
 
     button,
@@ -113,25 +118,19 @@
       color: var(--ink);
     }
 
-    .market-actions {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-      gap: 8px;
-    }
-
     .btn {
-      min-height: 40px;
+      min-height: 32px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-      padding: 0 14px;
+      gap: 5px;
+      padding: 0 10px;
       border-radius: 8px;
       border: 1px solid var(--line);
       background: var(--surface);
       color: var(--ink);
       font-weight: 720;
+      font-size: 13px;
       white-space: nowrap;
       box-shadow: 0 1px 0 rgba(255, 255, 255, 0.75) inset;
     }
@@ -147,9 +146,9 @@
     }
 
     .btn.small {
-      min-height: 32px;
-      padding: 0 10px;
-      font-size: 13px;
+      min-height: 30px;
+      padding: 0 9px;
+      font-size: 12px;
     }
 
     .btn:disabled {
@@ -157,15 +156,10 @@
       opacity: 0.68;
     }
 
-    .btn-icon {
-      width: 18px;
-      height: 18px;
-      display: inline-grid;
-      place-items: center;
-      border-radius: 6px;
-      background: rgba(255, 255, 255, 0.18);
+    #refreshMarket {
+      min-height: 30px;
+      padding: 0 9px;
       font-size: 12px;
-      font-weight: 800;
     }
 
     main {
@@ -210,11 +204,46 @@
       letter-spacing: 0;
     }
 
+    .target-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .gear-set-tabs {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+    }
+
+    .gear-set-tab {
+      min-height: 30px;
+      padding: 0 12px;
+      border-radius: 6px;
+      background: transparent;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+
+    .gear-set-tab.active {
+      background: var(--blue-2);
+      color: var(--blue);
+      box-shadow: 0 1px 6px rgba(37, 111, 210, 0.12);
+    }
+
     .market-tools {
       display: flex;
       align-items: center;
       justify-content: flex-end;
-      gap: 8px;
+      gap: 6px;
       min-width: 0;
     }
 
@@ -298,6 +327,36 @@
       --group-soft: #e5f0ff;
     }
 
+    .gear-group.group-warrior {
+      --group-color: #d64242;
+      --group-soft: #ffe5e5;
+    }
+
+    .gear-group.group-archer {
+      --group-color: #198a57;
+      --group-soft: #e0f6ea;
+    }
+
+    .gear-group.group-mage {
+      --group-color: #256fd2;
+      --group-soft: #e5f0ff;
+    }
+
+    .gear-group.group-healer {
+      --group-color: #cb4f91;
+      --group-soft: #ffe7f3;
+    }
+
+    .gear-group.group-bard {
+      --group-color: #b87900;
+      --group-soft: #fff2c9;
+    }
+
+    .gear-group.group-rogue {
+      --group-color: #646b78;
+      --group-soft: #eef1f5;
+    }
+
     .gear-group-label {
       margin: 0 0 5px 2px;
       color: var(--group-color);
@@ -318,18 +377,25 @@
       --item-soft: var(--blue-2);
       width: 100%;
       min-width: 0;
-      height: 40px;
-      min-height: 40px;
+      height: 42px;
+      min-height: 42px;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 7px 8px;
+      padding: 8px 9px;
       border-radius: 8px;
       border: 1px solid color-mix(in srgb, var(--item-color) 26%, var(--line));
       background: rgba(255, 255, 255, 0.78);
       color: color-mix(in srgb, var(--item-color) 78%, var(--ink));
+      font-size: 14px;
       text-align: center;
       overflow: hidden;
+    }
+
+    .gear-toggle[data-id="drakein-dualblade"] .gear-name {
+      font-size: 12px;
+      white-space: nowrap;
+      overflow-wrap: normal;
     }
 
     .gear-toggle.kind-weapon {
@@ -345,6 +411,36 @@
     .gear-toggle.kind-accessory {
       --item-color: #256fd2;
       --item-soft: #e5f0ff;
+    }
+
+    .gear-toggle.kind-warrior {
+      --item-color: #d64242;
+      --item-soft: #ffe5e5;
+    }
+
+    .gear-toggle.kind-archer {
+      --item-color: #198a57;
+      --item-soft: #e0f6ea;
+    }
+
+    .gear-toggle.kind-mage {
+      --item-color: #256fd2;
+      --item-soft: #e5f0ff;
+    }
+
+    .gear-toggle.kind-healer {
+      --item-color: #cb4f91;
+      --item-soft: #ffe7f3;
+    }
+
+    .gear-toggle.kind-bard {
+      --item-color: #b87900;
+      --item-soft: #fff2c9;
+    }
+
+    .gear-toggle.kind-rogue {
+      --item-color: #646b78;
+      --item-soft: #eef1f5;
     }
 
     .gear-toggle[aria-pressed="true"] {
@@ -445,51 +541,73 @@
 
     .build-types {
       display: flex;
-      align-items: flex-start;
-      align-content: flex-start;
-      justify-content: flex-end;
-      gap: 8px;
-      flex: 1 1 440px;
+      flex-direction: column;
+      align-items: flex-end;
+      align-content: flex-end;
+      justify-content: flex-start;
+      gap: 4px;
+      flex: 0 1 auto;
       min-width: 0;
-      flex-wrap: wrap;
     }
 
     .class-types {
       width: fit-content;
       min-width: 0;
       flex: 0 1 auto;
-      align-self: flex-start;
+      align-self: flex-end;
       justify-content: flex-end;
+    }
+
+    .class-types.drakein-types .class-type {
+      width: 58px;
+      padding: 0 5px;
+      text-align: center;
     }
 
     .recipe-types {
       width: fit-content;
       min-width: 0;
       flex: 0 1 auto;
-      align-self: flex-start;
+      align-self: flex-end;
       justify-content: flex-end;
+    }
+
+    .recipe-types.job-types {
+      display: grid;
+      grid-template-columns: auto repeat(4, 58px);
+      width: fit-content;
+      justify-content: stretch;
+      overflow-x: visible;
     }
 
     .tab,
     .class-type,
     .recipe-type {
-      min-height: 30px;
-      padding: 0 12px;
+      min-height: 28px;
+      padding: 0 9px;
       border-radius: 6px;
       border: 1px solid transparent;
       color: var(--muted);
       background: transparent;
+      font-size: 13px;
       font-weight: 800;
       white-space: nowrap;
     }
 
+    .recipe-types.job-types .recipe-type {
+      width: 58px;
+      padding: 0 6px;
+      font-size: 13px;
+      text-align: center;
+    }
+
     .selector-label {
-      min-height: 30px;
+      min-height: 28px;
       display: inline-flex;
       align-items: center;
       padding: 0 6px;
       color: var(--red);
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 850;
       white-space: nowrap;
     }
@@ -512,7 +630,9 @@
     }
 
     .table-wrap {
+      width: 100%;
       max-width: 100%;
+      min-width: 0;
       overflow-x: auto;
       -webkit-overflow-scrolling: touch;
       border: 1px solid var(--line);
@@ -588,7 +708,7 @@
       height: 32px;
       display: inline-block;
       border-radius: 8px;
-      object-fit: cover;
+      object-fit: contain;
       vertical-align: middle;
       box-shadow: 0 3px 10px rgba(37, 111, 210, 0.18);
     }
@@ -692,11 +812,11 @@
     #view-materials th:nth-child(2) { width: 8%; }
     #view-materials th:nth-child(3) { width: 7%; }
     #view-materials th:nth-child(4) { width: 8%; }
-    #view-materials th:nth-child(5) { width: 7%; }
+    #view-materials th:nth-child(5) { width: 8.5%; }
     #view-materials th:nth-child(6) { width: 9%; }
     #view-materials th:nth-child(7) { width: 8%; }
     #view-materials th:nth-child(8) { width: 10%; }
-    #view-materials th:nth-child(9) { width: 29%; }
+    #view-materials th:nth-child(9) { width: 27.5%; }
 
     #view-materials table {
       min-width: 760px;
@@ -711,6 +831,12 @@
     #view-materials td:nth-child(8),
     #view-materials td:nth-child(8).num {
       text-align: right;
+    }
+
+    #view-materials th:nth-child(5),
+    #view-materials td:nth-child(5) {
+      padding-left: 10px;
+      padding-right: 10px;
     }
 
     #view-materials .material-name,
@@ -1007,10 +1133,6 @@
         grid-template-columns: 1fr;
       }
 
-      .market-actions {
-        justify-content: flex-start;
-      }
-
       .market-progress {
         width: min(310px, 52vw);
         min-width: 220px;
@@ -1027,7 +1149,7 @@
       }
 
       .control-row {
-        align-items: stretch;
+        align-items: flex-start;
         flex-direction: column;
       }
 
@@ -1038,18 +1160,38 @@
 
       .build-types {
         flex: 0 0 auto;
+        align-items: flex-end;
         justify-content: flex-start;
       }
 
       .class-types,
       .recipe-types {
         width: fit-content;
-        justify-content: flex-start;
+        align-self: flex-end;
+        justify-content: flex-end;
+      }
+
+      .recipe-types.job-types {
+        grid-template-columns: auto repeat(4, 56px);
+        width: fit-content;
+      }
+
+      .recipe-types.job-types .recipe-type {
+        width: 56px;
+        padding: 0 4px;
+        font-size: 12px;
+      }
+
+      .class-types.drakein-types .class-type {
+        width: 46px;
+        padding: 0 3px;
+        font-size: 12px;
       }
 
       .class-type,
       .recipe-type {
         padding: 0 6px;
+        font-size: 12px;
       }
 
       .selector-label {
@@ -1057,17 +1199,18 @@
       }
 
       .panel-title-row {
-        align-items: stretch;
-        flex-direction: column;
+        align-items: center;
+        flex-direction: row;
+        flex-wrap: wrap;
       }
 
       .market-progress {
-        width: 100%;
+        width: min(250px, 52vw);
         min-width: 0;
       }
 
       .market-tools {
-        justify-content: flex-start;
+        justify-content: flex-end;
         min-width: 0;
       }
 
@@ -1086,10 +1229,14 @@
       }
 
       .gear-toggle {
-        height: 38px;
-        min-height: 38px;
-        padding: 6px 5px;
+        height: 40px;
+        min-height: 40px;
+        padding: 7px 6px;
         font-size: 13px;
+      }
+
+      .gear-toggle[data-id="drakein-dualblade"] .gear-name {
+        font-size: 11px;
       }
 
       .priority-row {
@@ -1193,10 +1340,7 @@
           <span class="creator-name">By 알리사 르구댕뿐예</span>
         </div>
       </div>
-      <div class="market-actions">
-        <button class="btn primary" id="refreshMarket" type="button"><span class="btn-icon">↻</span>시세 반영</button>
-        <a class="btn" href="https://mabimobi.life/market" target="_blank" rel="noreferrer"><span class="btn-icon">↗</span>거래소</a>
-      </div>
+      <div></div>
     </div>
   </header>
 
@@ -1204,7 +1348,13 @@
     <div class="shell dashboard">
       <aside class="panel">
         <div class="panel-head">
-          <h2 class="panel-title">제작 목표</h2>
+          <div class="target-head">
+            <h2 class="panel-title">제작 목표</h2>
+            <div class="gear-set-tabs" id="gearSetTabs" role="group" aria-label="장비 종류">
+              <button class="gear-set-tab active" type="button" data-gear-set="haeyeon">해연</button>
+              <button class="gear-set-tab" type="button" data-gear-set="drakein">드레케인</button>
+            </div>
+          </div>
         </div>
         <div class="panel-body">
           <div class="gear-grid" id="gearGrid"></div>
@@ -1229,6 +1379,7 @@
             <div class="panel-title-row">
               <h2 class="panel-title">계산표</h2>
               <div class="market-tools">
+                <button class="btn primary" id="refreshMarket" type="button">시세 반영</button>
                 <div class="market-progress" id="marketProgress" aria-label="시세 갱신 진행률">
                   <div class="progress-meta">
                     <span id="marketProgressText">시세 갱신 대기</span>
@@ -1247,7 +1398,7 @@
                 <button class="tab" type="button" data-view="recipes">제작식</button>
               </div>
               <div class="build-types">
-                <div class="class-types" role="group" aria-label="계열">
+                <div class="class-types" id="classTypes" role="group" aria-label="계열">
                   <span class="selector-label">계열</span>
                   <button class="class-type active" type="button" data-class-type="warrior">전사</button>
                   <button class="class-type" type="button" data-class-type="archer">궁수</button>
@@ -1256,7 +1407,7 @@
                   <button class="class-type" type="button" data-class-type="bard">음유</button>
                   <button class="class-type" type="button" data-class-type="rogue">도적</button>
                 </div>
-                <div class="recipe-types" role="group" aria-label="방어구">
+                <div class="recipe-types" id="recipeTypes" role="group" aria-label="방어구">
                   <span class="selector-label">방어구</span>
                   <button class="recipe-type" type="button" data-recipe-type="light">경갑</button>
                   <button class="recipe-type" type="button" data-recipe-type="heavy">중갑</button>
@@ -1322,6 +1473,29 @@
       "파동의 영혼석": { type: "영혼석", source: "룬다 던전 2층 어려움", icon: "data:image/png;base64,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" }
     };
 
+    Object.assign(materials, {
+      "백금강괴": {
+        type: "제작 재료",
+        source: "거래소 및 제작 재료 수급처",
+        icon: "./platinum-ingot.png"
+      },
+      "특급 목재": {
+        type: "제작 재료",
+        source: "거래소 및 제작 재료 수급처",
+        icon: "./premium-wood.png"
+      },
+      "특급 가죽": {
+        type: "제작 재료",
+        source: "거래소 및 제작 재료 수급처",
+        icon: "./premium-leather.png"
+      },
+      "마력 깃든 용비늘": {
+        type: "용비늘",
+        source: "먼 바다의 바위 협곡 <strong>카브락</strong>",
+        icon: "./magic-dragon-scale.png"
+      }
+    });
+
     const items = [
       { id: "weapon", label: "무기", kind: "무기", kindClass: "weapon", icon: "무", mats: { "심해의 마력석": 15, "망령의 영혼석": 80, "삼림의 영혼석": 75, "공명의 영혼석": 90 } },
       { id: "helmet", label: "투구", kind: "방어구", kindClass: "armor", icon: "투", mats: { "허상의 마력석": 8, "망령의 영혼석": 40, "야생의 영혼석": 35, "공명의 영혼석": 55 } },
@@ -1366,6 +1540,134 @@
       { id: "bard", label: "음유" },
       { id: "rogue", label: "도적" }
     ];
+
+    const gearSetTypes = [
+      { id: "haeyeon", label: "해연" },
+      { id: "drakein", label: "드레케인" }
+    ];
+
+    const drakeinClassTypes = [
+      { id: "warrior", label: "전사" },
+      { id: "archer", label: "궁수" },
+      { id: "mage", label: "마법사" },
+      { id: "healer", label: "힐러" },
+      { id: "bard", label: "음유시인" },
+      { id: "rogue", label: "도적" }
+    ];
+
+    const haeyeonRecipeTypeByClass = {
+      warrior: "heavy",
+      archer: "light",
+      mage: "cloth",
+      healer: "cloth",
+      bard: "light",
+      rogue: "light"
+    };
+
+    const haeyeonClassTypeByRecipe = {
+      light: "archer",
+      heavy: "warrior",
+      cloth: "mage"
+    };
+
+    const drakeinJobsByClass = {
+      warrior: [
+        { id: "warrior", label: "전사" },
+        { id: "greatsword", label: "대검전사" },
+        { id: "swordsman", label: "검술사" },
+        { id: "knight", label: "기사" }
+      ],
+      archer: [
+        { id: "archer", label: "궁수" },
+        { id: "crossbow", label: "석궁사수" },
+        { id: "longbow", label: "장궁병" }
+      ],
+      mage: [
+        { id: "mage", label: "마법사" },
+        { id: "pyromancer", label: "화염술사" },
+        { id: "cryomancer", label: "빙결술사" },
+        { id: "electromancer", label: "전격술사" }
+      ],
+      healer: [
+        { id: "healer", label: "힐러" },
+        { id: "priest", label: "사제" },
+        { id: "monk", label: "수도사" },
+        { id: "darkmage", label: "암흑술사" }
+      ],
+      bard: [
+        { id: "bard", label: "음유시인" },
+        { id: "dancer", label: "댄서" },
+        { id: "musician", label: "악사" }
+      ],
+      rogue: [
+        { id: "rogue", label: "도적" },
+        { id: "fighter", label: "격투가" },
+        { id: "dualblade", label: "듀얼블레이드" }
+      ]
+    };
+
+    const drakeinItems = Object.entries(drakeinJobsByClass).flatMap(([classId, jobs]) => {
+      const classLabel = drakeinClassTypes.find(({ id }) => id === classId)?.label || classId;
+      return jobs.map((job) => ({
+        id: `drakein-${job.id}`,
+        jobId: job.id,
+        label: job.label,
+        kind: classLabel,
+        kindClass: classId,
+        icon: job.label.slice(0, 1),
+        mats: {}
+      }));
+    });
+
+    const drakeinGearGroups = drakeinClassTypes.map(({ id, label }) => ({ label, kindClass: id }));
+
+    const drakeinMaterialOrder = [
+      "마력 깃든 용비늘",
+      "심해의 마력석",
+      "허상의 마력석",
+      "포식의 마력석",
+      "망령의 영혼석",
+      "원념의 영혼석",
+      "야생의 영혼석",
+      "삼림의 영혼석",
+      "공명의 영혼석",
+      "파동의 영혼석",
+      "백금강괴",
+      "특급 목재",
+      "특급 가죽"
+    ];
+
+    const allMaterialOrder = [...new Set([...materialOrder, ...drakeinMaterialOrder])];
+
+    const materialAliases = {
+      "백금 강괴": "백금강괴"
+    };
+
+    const drakeinCommonRecipe = { "마력 깃든 용비늘": 3 };
+    const drakeinRecipe = (mats) => ({ ...drakeinCommonRecipe, ...mats });
+    const drakeinJobRecipes = {
+      warrior: drakeinRecipe({ "백금강괴": 30, "특급 목재": 30, "허상의 마력석": 50, "포식의 마력석": 50, "망령의 영혼석": 250, "원념의 영혼석": 250, "야생의 영혼석": 1500, "파동의 영혼석": 1500 }),
+      greatsword: drakeinRecipe({ "백금강괴": 30, "특급 목재": 30, "허상의 마력석": 50, "포식의 마력석": 50, "망령의 영혼석": 250, "원념의 영혼석": 250, "야생의 영혼석": 1500, "파동의 영혼석": 1500 }),
+      swordsman: drakeinRecipe({ "백금강괴": 30, "특급 가죽": 30, "허상의 마력석": 50, "포식의 마력석": 50, "망령의 영혼석": 250, "원념의 영혼석": 250, "야생의 영혼석": 1500, "파동의 영혼석": 1500 }),
+      knight: drakeinRecipe({ "백금강괴": 30, "특급 목재": 30, "허상의 마력석": 50, "포식의 마력석": 50, "망령의 영혼석": 250, "원념의 영혼석": 250, "야생의 영혼석": 1500, "파동의 영혼석": 1500 }),
+      archer: drakeinRecipe({ "특급 목재": 30, "특급 가죽": 30, "허상의 마력석": 50, "포식의 마력석": 50, "망령의 영혼석": 250, "원념의 영혼석": 250, "삼림의 영혼석": 1500, "공명의 영혼석": 1500 }),
+      crossbow: drakeinRecipe({ "특급 목재": 30, "백금강괴": 30, "허상의 마력석": 50, "포식의 마력석": 50, "망령의 영혼석": 250, "원념의 영혼석": 250, "삼림의 영혼석": 1500, "공명의 영혼석": 1500 }),
+      longbow: drakeinRecipe({ "특급 목재": 30, "특급 가죽": 30, "허상의 마력석": 50, "포식의 마력석": 50, "망령의 영혼석": 250, "원념의 영혼석": 250, "삼림의 영혼석": 1500, "공명의 영혼석": 1500 }),
+      mage: drakeinRecipe({ "특급 목재": 30, "특급 가죽": 30, "포식의 마력석": 50, "심해의 마력석": 50, "망령의 영혼석": 250, "원념의 영혼석": 250, "야생의 영혼석": 1500, "파동의 영혼석": 1500 }),
+      pyromancer: drakeinRecipe({ "백금강괴": 30, "특급 목재": 30, "포식의 마력석": 50, "심해의 마력석": 50, "망령의 영혼석": 250, "원념의 영혼석": 250, "야생의 영혼석": 1500, "파동의 영혼석": 1500 }),
+      cryomancer: drakeinRecipe({ "특급 목재": 30, "백금강괴": 30, "포식의 마력석": 50, "심해의 마력석": 50, "망령의 영혼석": 250, "원념의 영혼석": 250, "야생의 영혼석": 1500, "파동의 영혼석": 1500 }),
+      electromancer: drakeinRecipe({ "백금강괴": 30, "특급 가죽": 30, "포식의 마력석": 50, "심해의 마력석": 50, "망령의 영혼석": 250, "원념의 영혼석": 250, "야생의 영혼석": 1500, "파동의 영혼석": 1500 }),
+      healer: drakeinRecipe({ "특급 목재": 30, "백금강괴": 30, "포식의 마력석": 50, "심해의 마력석": 50, "망령의 영혼석": 250, "원념의 영혼석": 250, "삼림의 영혼석": 1500, "공명의 영혼석": 1500 }),
+      priest: drakeinRecipe({ "특급 목재": 30, "백금강괴": 30, "포식의 마력석": 50, "심해의 마력석": 50, "망령의 영혼석": 250, "원념의 영혼석": 250, "삼림의 영혼석": 1500, "공명의 영혼석": 1500 }),
+      monk: drakeinRecipe({ "백금강괴": 30, "특급 목재": 30, "포식의 마력석": 50, "심해의 마력석": 50, "망령의 영혼석": 250, "원념의 영혼석": 250, "삼림의 영혼석": 1500, "공명의 영혼석": 1500 }),
+      darkmage: drakeinRecipe({ "백금강괴": 30, "특급 가죽": 30, "포식의 마력석": 50, "심해의 마력석": 50, "망령의 영혼석": 250, "원념의 영혼석": 250, "삼림의 영혼석": 1500, "공명의 영혼석": 1500 }),
+      bard: drakeinRecipe({ "특급 목재": 30, "백금강괴": 30, "허상의 마력석": 50, "포식의 마력석": 50, "망령의 영혼석": 250, "원념의 영혼석": 250, "야생의 영혼석": 1500, "파동의 영혼석": 1500 }),
+      dancer: drakeinRecipe({ "특급 목재": 30, "백금강괴": 30, "허상의 마력석": 50, "포식의 마력석": 50, "망령의 영혼석": 250, "원념의 영혼석": 250, "야생의 영혼석": 1500, "파동의 영혼석": 1500 }),
+      musician: drakeinRecipe({ "특급 목재": 30, "백금강괴": 30, "허상의 마력석": 50, "포식의 마력석": 50, "망령의 영혼석": 250, "원념의 영혼석": 250, "야생의 영혼석": 1500, "파동의 영혼석": 1500 }),
+      rogue: drakeinRecipe({ "백금강괴": 30, "특급 가죽": 30, "허상의 마력석": 50, "포식의 마력석": 50, "망령의 영혼석": 250, "원념의 영혼석": 250, "삼림의 영혼석": 1500, "공명의 영혼석": 1500 }),
+      fighter: drakeinRecipe({ "백금강괴": 30, "특급 가죽": 30, "허상의 마력석": 50, "포식의 마력석": 50, "망령의 영혼석": 250, "원념의 영혼석": 250, "삼림의 영혼석": 1500, "공명의 영혼석": 1500 }),
+      dualblade: drakeinRecipe({ "백금강괴": 30, "특급 가죽": 30, "허상의 마력석": 50, "포식의 마력석": 50, "망령의 영혼석": 250, "원념의 영혼석": 250, "삼림의 영혼석": 1500, "공명의 영혼석": 1500 })
+    };
 
     const weaponRecipePresets = {
       warrior: { "포식의 마력석": 15, "망령의 영혼석": 80, "야생의 영혼석": 75, "파동의 영혼석": 90 },
@@ -1416,9 +1718,15 @@
     let ownedStepperActive = false;
 
     function normalizeRecipe(recipe = {}) {
+      const recipeWithAliases = { ...recipe };
+      for (const [from, to] of Object.entries(materialAliases)) {
+        if (Object.prototype.hasOwnProperty.call(recipeWithAliases, from)) {
+          recipeWithAliases[to] = parseNumber(recipeWithAliases[to]) + parseNumber(recipeWithAliases[from]);
+        }
+      }
       const normalized = {};
-      for (const name of materialOrder) {
-        const qty = Math.max(0, Math.floor(parseNumber(recipe[name])));
+      for (const name of allMaterialOrder) {
+        const qty = Math.max(0, Math.floor(parseNumber(recipeWithAliases[name])));
         if (qty > 0) normalized[name] = qty;
       }
       return normalized;
@@ -1426,7 +1734,7 @@
 
     function normalizePriceChanges(changes = {}) {
       const normalized = {};
-      for (const name of materialOrder) {
+      for (const name of allMaterialOrder) {
         const change = Number(changes[name]);
         if (Number.isFinite(change)) normalized[name] = change;
       }
@@ -1459,6 +1767,25 @@
       return Object.fromEntries(recipeTypes.map(({ id }) => [id, getPresetRecipes(id)]));
     }
 
+    function getDefaultDrakeinRecipe(item) {
+      return normalizeRecipe(drakeinJobRecipes[item.jobId] || {});
+    }
+
+    function mergeMissingDefaultDrakeinMaterials(recipe, item) {
+      const normalized = normalizeRecipe(recipe);
+      const defaults = getDefaultDrakeinRecipe(item);
+      for (const [name, qty] of Object.entries(defaults)) {
+        if (!Object.prototype.hasOwnProperty.call(normalized, name)) {
+          normalized[name] = qty;
+        }
+      }
+      return normalized;
+    }
+
+    function getDefaultDrakeinRecipesByJob() {
+      return Object.fromEntries(drakeinItems.map((item) => [item.id, getDefaultDrakeinRecipe(item)]));
+    }
+
     function migrateRecipeSet(recipes = {}, type = "cloth") {
       const preset = getPresetRecipes(type);
       const migrated = {};
@@ -1474,6 +1801,14 @@
       return Object.fromEntries(recipeTypes.map(({ id }) => [id, migrateRecipeSet(savedByType[id] || {}, id)]));
     }
 
+    function migrateDrakeinRecipesByJob(parsed = {}) {
+      const savedByJob = parsed.drakeinRecipesByJob && typeof parsed.drakeinRecipesByJob === "object" ? parsed.drakeinRecipesByJob : {};
+      return Object.fromEntries(drakeinItems.map((item) => {
+        const hasSavedRecipe = Object.prototype.hasOwnProperty.call(savedByJob, item.id);
+        return [item.id, hasSavedRecipe ? mergeMissingDefaultDrakeinMaterials(savedByJob[item.id], item) : getDefaultDrakeinRecipe(item)];
+      }));
+    }
+
     function getActiveRecipeType() {
       if (!recipeTypes.some(({ id }) => id === state.recipeType)) {
         state.recipeType = "cloth";
@@ -1482,10 +1817,25 @@
     }
 
     function getActiveClassType() {
+      if (isDrakein()) {
+        if (!drakeinClassTypes.some(({ id }) => id === state.drakeinClassType)) {
+          state.drakeinClassType = "warrior";
+        }
+        return state.drakeinClassType;
+      }
       if (!classTypes.some(({ id }) => id === state.classType)) {
         state.classType = "warrior";
       }
       return state.classType;
+    }
+
+    function getActiveDrakeinJobType() {
+      const classType = getActiveClassType();
+      const jobs = drakeinJobsByClass[classType] || drakeinJobsByClass.warrior;
+      if (!jobs.some(({ id }) => id === state.drakeinJobType)) {
+        state.drakeinJobType = jobs[0].id;
+      }
+      return state.drakeinJobType;
     }
 
     function getActiveRecipes() {
@@ -1503,6 +1853,13 @@
     }
 
     function getRecipe(item) {
+      if (isDrakein()) {
+        if (!state.drakeinRecipesByJob) state.drakeinRecipesByJob = getDefaultDrakeinRecipesByJob();
+        state.drakeinRecipesByJob[item.id] = state.drakeinRecipesByJob[item.id]
+          ? mergeMissingDefaultDrakeinMaterials(state.drakeinRecipesByJob[item.id], item)
+          : getDefaultDrakeinRecipe(item);
+        return state.drakeinRecipesByJob[item.id];
+      }
       if (item.id === "weapon") return getActiveWeaponRecipe();
       const recipes = getActiveRecipes();
       if (!recipes[item.id]) recipes[item.id] = {};
@@ -1511,37 +1868,62 @@
 
     function loadState() {
       const fallback = {
+        gearSet: "haeyeon",
         selected: items.map((item) => item.id),
+        selectedBySet: {
+          haeyeon: items.map((item) => item.id),
+          drakein: drakeinItems.map((item) => item.id)
+        },
         owned: {},
         prices: {},
         priceChanges: {},
         priceStamp: "",
         classType: "warrior",
+        drakeinClassType: "warrior",
+        drakeinJobType: "warrior",
         recipeType: "cloth",
         hideUnusedRecipes: true,
         weaponRecipesByClass: getDefaultWeaponRecipesByClass(),
-        recipesByType: getDefaultRecipesByType()
+        recipesByType: getDefaultRecipesByType(),
+        drakeinRecipesByJob: getDefaultDrakeinRecipesByJob()
       };
 
       try {
         const raw = localStorage.getItem(STORE_KEY);
         if (!raw) return fallback;
         const parsed = JSON.parse(raw);
-        const { recipes, recipesByType, recipeType, classType, weaponRecipesByClass, ...rest } = parsed;
+        const { recipes, recipesByType, recipeType, classType, weaponRecipesByClass, drakeinRecipesByJob, ...rest } = parsed;
+        const savedGearSet = gearSetTypes.some(({ id }) => id === parsed.gearSet) ? parsed.gearSet : fallback.gearSet;
         const savedType = recipeTypes.some(({ id }) => id === recipeType) ? recipeType : fallback.recipeType;
         const savedClassType = classTypes.some(({ id }) => id === classType) ? classType : fallback.classType;
+        const savedDrakeinClassType = drakeinClassTypes.some(({ id }) => id === parsed.drakeinClassType) ? parsed.drakeinClassType : fallback.drakeinClassType;
+        const savedDrakeinJobs = drakeinJobsByClass[savedDrakeinClassType] || drakeinJobsByClass.warrior;
+        const savedDrakeinJobType = savedDrakeinJobs.some(({ id }) => id === parsed.drakeinJobType) ? parsed.drakeinJobType : savedDrakeinJobs[0].id;
+        const savedSelectedBySet = parsed.selectedBySet && typeof parsed.selectedBySet === "object" ? parsed.selectedBySet : {};
+        const haeyeonSelected = Array.isArray(savedSelectedBySet.haeyeon)
+          ? savedSelectedBySet.haeyeon
+          : (Array.isArray(parsed.selected) ? parsed.selected : fallback.selectedBySet.haeyeon);
+        const drakeinSelected = Array.isArray(savedSelectedBySet.drakein) ? savedSelectedBySet.drakein : fallback.selectedBySet.drakein;
         return {
           ...fallback,
           ...rest,
-          selected: Array.isArray(parsed.selected) ? parsed.selected : fallback.selected,
+          gearSet: savedGearSet,
+          selected: haeyeonSelected,
+          selectedBySet: {
+            haeyeon: haeyeonSelected,
+            drakein: drakeinSelected
+          },
           owned: parsed.owned || {},
           prices: parsed.prices || {},
           priceChanges: normalizePriceChanges(parsed.priceChanges || {}),
           classType: savedClassType,
+          drakeinClassType: savedDrakeinClassType,
+          drakeinJobType: savedDrakeinJobType,
           recipeType: savedType,
           hideUnusedRecipes: typeof parsed.hideUnusedRecipes === "boolean" ? parsed.hideUnusedRecipes : fallback.hideUnusedRecipes,
           weaponRecipesByClass: weaponRecipesByClass ? migrateWeaponRecipesByClass({ weaponRecipesByClass }) : getDefaultWeaponRecipesByClass(),
-          recipesByType: recipesByType ? migrateRecipesByType({ recipesByType }) : getDefaultRecipesByType()
+          recipesByType: recipesByType ? migrateRecipesByType({ recipesByType }) : getDefaultRecipesByType(),
+          drakeinRecipesByJob: drakeinRecipesByJob ? migrateDrakeinRecipesByJob({ drakeinRecipesByJob }) : getDefaultDrakeinRecipesByJob()
         };
       } catch (error) {
         return fallback;
@@ -1550,6 +1932,57 @@
 
     function saveState() {
       localStorage.setItem(STORE_KEY, JSON.stringify(state));
+    }
+
+    function isDrakein() {
+      return state.gearSet === "drakein";
+    }
+
+    function getActiveItems() {
+      return isDrakein() ? drakeinItems : items;
+    }
+
+    function getActiveGearGroups() {
+      return isDrakein() ? drakeinGearGroups : gearGroups;
+    }
+
+    function getActiveMaterialOrder() {
+      return isDrakein() ? drakeinMaterialOrder : materialOrder;
+    }
+
+    function getRecipeMaterialOrder() {
+      if (!isDrakein()) return materialOrder;
+      return ["마력 깃든 용비늘", ...drakeinMaterialOrder.filter((name) => name !== "마력 깃든 용비늘")];
+    }
+
+    function getDefaultActiveSelected() {
+      return getActiveItems().map((item) => item.id);
+    }
+
+    function getActiveSelected(options = {}) {
+      const fallbackToDefault = options.fallbackToDefault !== false;
+      if (!state.selectedBySet) {
+        state.selectedBySet = {
+          haeyeon: Array.isArray(state.selected) ? state.selected : items.map((item) => item.id),
+          drakein: drakeinItems.map((item) => item.id)
+        };
+      }
+      const key = isDrakein() ? "drakein" : "haeyeon";
+      if (!Array.isArray(state.selectedBySet[key])) {
+        state.selectedBySet[key] = getActiveItems().map((item) => item.id);
+      }
+      if (key === "haeyeon") state.selected = state.selectedBySet.haeyeon;
+      if (fallbackToDefault && state.selectedBySet[key].length === 0) {
+        return getDefaultActiveSelected();
+      }
+      return state.selectedBySet[key];
+    }
+
+    function setActiveSelected(nextSelected) {
+      if (!state.selectedBySet) state.selectedBySet = {};
+      const key = isDrakein() ? "drakein" : "haeyeon";
+      state.selectedBySet[key] = nextSelected;
+      if (key === "haeyeon") state.selected = nextSelected;
     }
 
     function formatNumber(value) {
@@ -1579,11 +2012,14 @@
     }
 
     function getAggregates() {
-      const totals = Object.fromEntries(materialOrder.map((name) => [name, 0]));
-      const selectedItems = items.filter((item) => state.selected.includes(item.id));
+      const activeMaterialOrder = getActiveMaterialOrder();
+      const selected = getActiveSelected();
+      const totals = Object.fromEntries(activeMaterialOrder.map((name) => [name, 0]));
+      const selectedItems = getActiveItems().filter((item) => selected.includes(item.id));
 
       for (const item of selectedItems) {
         for (const [name, qty] of Object.entries(getRecipe(item))) {
+          if (!Object.prototype.hasOwnProperty.call(totals, name)) totals[name] = 0;
           totals[name] += qty;
         }
       }
@@ -1593,10 +2029,11 @@
 
     function renderGear() {
       const grid = document.getElementById("gearGrid");
-      grid.innerHTML = gearGroups.map((group) => {
-        const groupItems = items.filter((item) => item.kindClass === group.kindClass);
+      const selected = getActiveSelected();
+      grid.innerHTML = getActiveGearGroups().map((group) => {
+        const groupItems = getActiveItems().filter((item) => item.kindClass === group.kindClass);
         const buttons = groupItems.map((item) => {
-          const active = state.selected.includes(item.id);
+          const active = selected.includes(item.id);
           return `
             <button class="gear-toggle kind-${item.kindClass}" type="button" aria-pressed="${active}" data-id="${item.id}">
               <span class="gear-name">${item.label}</span>
@@ -1614,10 +2051,18 @@
       grid.querySelectorAll(".gear-toggle").forEach((button) => {
         button.addEventListener("click", () => {
           const id = button.dataset.id;
-          if (state.selected.includes(id)) {
-            state.selected = state.selected.filter((selectedId) => selectedId !== id);
+          const currentSelected = getActiveSelected({ fallbackToDefault: false });
+          if (currentSelected.includes(id)) {
+            setActiveSelected(currentSelected.filter((selectedId) => selectedId !== id));
           } else {
-            state.selected.push(id);
+            setActiveSelected([...currentSelected, id]);
+          }
+          if (isDrakein()) {
+            const item = drakeinItems.find((entry) => entry.id === id);
+            if (item) {
+              state.drakeinClassType = item.kindClass;
+              state.drakeinJobType = item.jobId;
+            }
           }
           saveState();
           renderAll();
@@ -1627,11 +2072,12 @@
 
     function renderMaterials() {
       const { totals } = getAggregates();
+      const activeMaterialOrder = getActiveMaterialOrder();
       const body = document.getElementById("materialsBody");
       let totalCost = 0;
       let pricedShortage = 0;
 
-      body.innerHTML = materialOrder.map((name) => {
+      body.innerHTML = activeMaterialOrder.map((name) => {
         const required = totals[name] || 0;
         const owned = parseNumber(state.owned[name]);
         const shortage = Math.max(0, required - owned);
@@ -1722,7 +2168,7 @@
 
     function renderPriority() {
       const { totals } = getAggregates();
-      const rows = materialOrder.map((name) => {
+      const rows = getActiveMaterialOrder().map((name) => {
         const required = totals[name] || 0;
         const owned = parseNumber(state.owned[name]);
         const shortage = Math.max(0, required - owned);
@@ -1820,7 +2266,10 @@
     }
 
     function updateRecipeMaterial(itemId, materialName, qty) {
-      const recipes = itemId === "weapon" ? { weapon: getActiveWeaponRecipe() } : getActiveRecipes();
+      if (isDrakein() && !state.drakeinRecipesByJob) state.drakeinRecipesByJob = getDefaultDrakeinRecipesByJob();
+      const recipes = isDrakein()
+        ? state.drakeinRecipesByJob
+        : (itemId === "weapon" ? { weapon: getActiveWeaponRecipe() } : getActiveRecipes());
       if (!recipes[itemId]) recipes[itemId] = {};
 
       const numericQty = Math.max(0, Math.floor(parseNumber(qty)));
@@ -1839,17 +2288,30 @@
       const grid = document.getElementById("recipeGrid");
       const hideToggle = document.getElementById("hideUnusedRecipes");
       if (hideToggle) hideToggle.checked = !!state.hideUnusedRecipes;
-      const presetRecipes = {
-        ...getPresetRecipes(getActiveRecipeType()),
-        weapon: getWeaponPreset(getActiveClassType())
-      };
-      grid.innerHTML = items.map((item) => {
-        const selected = state.selected.includes(item.id);
+      const activeSelected = getActiveSelected();
+      const activeItems = [...getActiveItems()].sort((a, b) => {
+        const activeJobId = isDrakein() ? `drakein-${getActiveDrakeinJobType()}` : "";
+        if (a.id === activeJobId) return -1;
+        if (b.id === activeJobId) return 1;
+        const aSelected = activeSelected.includes(a.id);
+        const bSelected = activeSelected.includes(b.id);
+        if (aSelected !== bSelected) return aSelected ? -1 : 1;
+        return 0;
+      });
+      const activeRecipeMaterialOrder = getRecipeMaterialOrder();
+      const presetRecipes = isDrakein()
+        ? getDefaultDrakeinRecipesByJob()
+        : {
+          ...getPresetRecipes(getActiveRecipeType()),
+          weapon: getWeaponPreset(getActiveClassType())
+        };
+      grid.innerHTML = activeItems.map((item) => {
+        const selected = activeSelected.includes(item.id);
         const recipe = getRecipe(item);
         const presetRecipe = presetRecipes[item.id] || {};
         const visibleMaterials = state.hideUnusedRecipes
-          ? materialOrder.filter((name) => parseNumber(recipe[name]) > 0)
-          : materialOrder;
+          ? activeRecipeMaterialOrder.filter((name) => parseNumber(recipe[name]) > 0)
+          : activeRecipeMaterialOrder;
         const lines = visibleMaterials.map((name) => {
           const qty = parseNumber(recipe[name]);
           const checked = qty > 0;
@@ -1911,7 +2373,7 @@
       status.querySelector("span:last-child").textContent = message;
     }
 
-    function setMarketProgress(current, total = materialOrder.length, message = "시세 갱신 대기", kind = "") {
+    function setMarketProgress(current, total = getActiveMaterialOrder().length, message = "시세 갱신 대기", kind = "") {
       const progress = document.getElementById("marketProgress");
       const text = document.getElementById("marketProgressText");
       const count = document.getElementById("marketProgressCount");
@@ -1938,56 +2400,120 @@
       });
     }
 
-    function renderRecipeTypes() {
-      document.querySelectorAll("[data-recipe-type]").forEach((button) => {
-        const active = button.dataset.recipeType === getActiveRecipeType();
+    function renderGearSetTabs() {
+      document.querySelectorAll("[data-gear-set]").forEach((button) => {
+        const active = button.dataset.gearSet === state.gearSet;
         button.classList.toggle("active", active);
         button.setAttribute("aria-pressed", String(active));
-      });
-    }
-
-    function renderClassTypes() {
-      document.querySelectorAll("[data-class-type]").forEach((button) => {
-        const active = button.dataset.classType === getActiveClassType();
-        button.classList.toggle("active", active);
-        button.setAttribute("aria-pressed", String(active));
-      });
-    }
-
-    function bindRecipeTypes() {
-      document.querySelectorAll("[data-recipe-type]").forEach((button) => {
-        button.addEventListener("click", () => {
-          const nextType = button.dataset.recipeType;
-          if (!recipeTypes.some(({ id }) => id === nextType) || state.recipeType === nextType) return;
-          state.recipeType = nextType;
-          getActiveRecipes();
+        button.onclick = () => {
+          const nextSet = button.dataset.gearSet;
+          if (!gearSetTypes.some(({ id }) => id === nextSet) || state.gearSet === nextSet) return;
+          state.gearSet = nextSet;
+          getActiveSelected();
           saveState();
-          renderAll({ keepGear: true });
-          const label = recipeTypes.find(({ id }) => id === nextType)?.label || "제작식";
-          setStatus("ok", `${label} 제작식으로 계산했습니다.`);
-        });
+          renderAll();
+          if (state.priceStamp) {
+            const stamp = new Date(state.priceStamp);
+            setMarketProgress(getActiveMaterialOrder().length, getActiveMaterialOrder().length, `저장된 시세 ${stamp.toLocaleString("ko-KR")}`, "ok");
+          } else {
+            setMarketProgress(0, getActiveMaterialOrder().length, "시세 갱신 대기");
+          }
+          const label = gearSetTypes.find(({ id }) => id === nextSet)?.label || "장비";
+          setStatus("ok", `${label} 제작 목표로 계산했습니다.`);
+        };
       });
     }
 
-    function bindClassTypes() {
-      document.querySelectorAll("[data-class-type]").forEach((button) => {
+    function renderBuildControls() {
+      const classBox = document.getElementById("classTypes");
+      const recipeBox = document.getElementById("recipeTypes");
+      const activeClassTypes = drakeinClassTypes;
+      const activeClassType = getActiveClassType();
+      classBox.classList.add("drakein-types");
+
+      classBox.innerHTML = `
+        <span class="selector-label">계열</span>
+        ${activeClassTypes.map(({ id, label }) => `
+          <button class="class-type ${id === activeClassType ? "active" : ""}" type="button" data-class-type="${id}" aria-pressed="${id === activeClassType}">${label}</button>
+        `).join("")}
+      `;
+
+      classBox.querySelectorAll("[data-class-type]").forEach((button) => {
         button.addEventListener("click", () => {
           const nextType = button.dataset.classType;
-          if (!classTypes.some(({ id }) => id === nextType) || state.classType === nextType) return;
-          state.classType = nextType;
-          getActiveWeaponRecipe();
+          if (!activeClassTypes.some(({ id }) => id === nextType)) return;
+          if (isDrakein()) {
+            if (nextType === getActiveClassType() && getActiveSelected({ fallbackToDefault: false }).length > 0) return;
+            state.drakeinClassType = nextType;
+            const firstJob = drakeinJobsByClass[nextType][0];
+            state.drakeinJobType = firstJob.id;
+            setActiveSelected([`drakein-${firstJob.id}`]);
+          } else {
+            state.classType = nextType;
+            state.recipeType = haeyeonRecipeTypeByClass[nextType] || state.recipeType;
+            getActiveWeaponRecipe();
+            getActiveRecipes();
+          }
           saveState();
-          renderAll({ keepGear: true });
-          const label = classTypes.find(({ id }) => id === nextType)?.label || "계열";
-          setStatus("ok", `${label} 계열 무기 제작식으로 계산했습니다.`);
+          renderAll();
+          const label = activeClassTypes.find(({ id }) => id === nextType)?.label || "계열";
+          setStatus("ok", `${label} 계열 제작식으로 계산했습니다.`);
         });
       });
+
+      if (isDrakein()) {
+        const activeJobType = getActiveDrakeinJobType();
+        const jobs = drakeinJobsByClass[activeClassType] || drakeinJobsByClass.warrior;
+        recipeBox.classList.add("job-types");
+        recipeBox.setAttribute("aria-label", "직업");
+        recipeBox.innerHTML = `
+          <span class="selector-label">직업</span>
+          ${jobs.map(({ id, label }) => `
+            <button class="recipe-type ${id === activeJobType ? "active" : ""}" type="button" data-drakein-job-type="${id}" aria-pressed="${id === activeJobType}">${label}</button>
+          `).join("")}
+        `;
+        recipeBox.querySelectorAll("[data-drakein-job-type]").forEach((button) => {
+          button.addEventListener("click", () => {
+            const nextJob = button.dataset.drakeinJobType;
+            if (!jobs.some(({ id }) => id === nextJob) || state.drakeinJobType === nextJob) return;
+            state.drakeinJobType = nextJob;
+            setActiveSelected([`drakein-${nextJob}`]);
+            saveState();
+            renderAll();
+            const label = jobs.find(({ id }) => id === nextJob)?.label || "직업";
+            setStatus("ok", `${label} 제작 목표로 계산했습니다.`);
+          });
+        });
+      } else {
+        recipeBox.classList.remove("job-types");
+        recipeBox.setAttribute("aria-label", "방어구");
+        recipeBox.innerHTML = `
+          <span class="selector-label">방어구</span>
+          ${recipeTypes.map(({ id, label }) => `
+            <button class="recipe-type ${id === getActiveRecipeType() ? "active" : ""}" type="button" data-recipe-type="${id}" aria-pressed="${id === getActiveRecipeType()}">${label}</button>
+          `).join("")}
+        `;
+        recipeBox.querySelectorAll("[data-recipe-type]").forEach((button) => {
+          button.addEventListener("click", () => {
+            const nextType = button.dataset.recipeType;
+            if (!recipeTypes.some(({ id }) => id === nextType)) return;
+            state.recipeType = nextType;
+            state.classType = haeyeonClassTypeByRecipe[nextType] || state.classType;
+            getActiveWeaponRecipe();
+            getActiveRecipes();
+            saveState();
+            renderAll({ keepGear: true });
+            const label = recipeTypes.find(({ id }) => id === nextType)?.label || "제작식";
+            setStatus("ok", `${label} 제작식으로 계산했습니다.`);
+          });
+        });
+      }
     }
 
     function renderAll(options = {}) {
+      renderGearSetTabs();
+      renderBuildControls();
       if (!options.keepGear) renderGear();
-      renderClassTypes();
-      renderRecipeTypes();
       renderMaterials();
       renderPriority();
       renderRecipes();
@@ -2045,9 +2571,10 @@
     async function fetchMarketPrices(mode) {
       const found = {};
       const missing = [];
+      const activeMaterialOrder = getActiveMaterialOrder();
 
-      for (const [index, name] of materialOrder.entries()) {
-        setMarketProgress(index, materialOrder.length, `확인 중: ${name}`);
+      for (const [index, name] of activeMaterialOrder.entries()) {
+        setMarketProgress(index, activeMaterialOrder.length, `확인 중: ${name}`);
         try {
           const item = await fetchMarketItem(name, mode);
           if (item) {
@@ -2059,7 +2586,7 @@
           if (mode === "direct") throw error;
           missing.push(name);
         } finally {
-          setMarketProgress(index + 1, materialOrder.length, `확인 중: ${name}`);
+          setMarketProgress(index + 1, activeMaterialOrder.length, `확인 중: ${name}`);
         }
       }
 
@@ -2069,9 +2596,10 @@
     async function refreshMarketPrices() {
       const button = document.getElementById("refreshMarket");
       const errors = [];
-      const previousPrices = Object.fromEntries(materialOrder.map((name) => [name, parseNumber(state.prices[name])]));
+      const activeMaterialOrder = getActiveMaterialOrder();
+      const previousPrices = Object.fromEntries(activeMaterialOrder.map((name) => [name, parseNumber(state.prices[name])]));
       button.disabled = true;
-      setMarketProgress(0, materialOrder.length, "시세 갱신 시작");
+      setMarketProgress(0, activeMaterialOrder.length, "시세 갱신 시작");
 
       try {
         let result;
@@ -2092,7 +2620,7 @@
 
         if (!state.priceChanges) state.priceChanges = {};
 
-        for (const name of materialOrder) {
+        for (const name of activeMaterialOrder) {
           if (Object.prototype.hasOwnProperty.call(result.found, name)) {
             const price = Number(result.found[name]);
             const previous = previousPrices[name];
@@ -2108,26 +2636,26 @@
         renderAll();
 
         if (result.missing.length) {
-          setMarketProgress(materialOrder.length, materialOrder.length, `${sourceLabel} ${entries.length}개 반영, ${result.missing.length}개 누락`, "warn");
+          setMarketProgress(activeMaterialOrder.length, activeMaterialOrder.length, `${sourceLabel} ${entries.length}개 반영, ${result.missing.length}개 누락`, "warn");
         } else {
-          setMarketProgress(materialOrder.length, materialOrder.length, `${sourceLabel} 모든 재료 반영`, "ok");
+          setMarketProgress(activeMaterialOrder.length, activeMaterialOrder.length, `${sourceLabel} 모든 재료 반영`, "ok");
         }
       } catch (error) {
         errors.push(error.message);
-        setMarketProgress(materialOrder.length, materialOrder.length, "자동 갱신 실패", "error");
+        setMarketProgress(activeMaterialOrder.length, activeMaterialOrder.length, "자동 갱신 실패", "error");
       } finally {
         button.disabled = false;
       }
     }
 
     document.getElementById("selectAll").addEventListener("click", () => {
-      state.selected = items.map((item) => item.id);
+      setActiveSelected(getActiveItems().map((item) => item.id));
       saveState();
       renderAll();
     });
 
     document.getElementById("clearAll").addEventListener("click", () => {
-      state.selected = [];
+      setActiveSelected([]);
       saveState();
       renderAll();
     });
@@ -2142,13 +2670,11 @@
 
     if (state.priceStamp) {
       const stamp = new Date(state.priceStamp);
-      setMarketProgress(materialOrder.length, materialOrder.length, `저장된 시세 ${stamp.toLocaleString("ko-KR")}`, "ok");
+      setMarketProgress(getActiveMaterialOrder().length, getActiveMaterialOrder().length, `저장된 시세 ${stamp.toLocaleString("ko-KR")}`, "ok");
     } else {
-      setMarketProgress(0, materialOrder.length, "시세 갱신 대기");
+      setMarketProgress(0, getActiveMaterialOrder().length, "시세 갱신 대기");
     }
 
-    bindClassTypes();
-    bindRecipeTypes();
     renderTabs();
     renderAll();
   </script>
