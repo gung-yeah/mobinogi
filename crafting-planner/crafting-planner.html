@@ -573,6 +573,10 @@
       min-width: 0;
     }
 
+    body.equipment-view-active .build-types {
+      display: none;
+    }
+
     .class-types {
       width: fit-content;
       min-width: 0;
@@ -845,7 +849,7 @@
     }
 
     .equipment-price.best {
-      color: var(--blue);
+      color: var(--red);
     }
 
     .equipment-name {
@@ -2732,10 +2736,10 @@
       return "";
     }
 
-    function renderEquipmentCell(spec, lowest) {
+    function renderEquipmentCell(spec, lowest, options = {}) {
       const price = getEquipmentPrice(spec);
       const name = getEquipmentName(spec);
-      const isBest = lowest && lowest.spec.id === spec.id && price > 0;
+      const isBest = lowest && lowest.spec.id === spec.id && price > 0 && options.highlight !== false;
       return `
         <div class="equipment-cell" title="${name}">
           <img class="equipment-icon" src="${spec.icon}" alt="${name}">
@@ -2765,12 +2769,13 @@
         `;
       }).join("");
 
-      const rows = equipmentJobs.map((job) => {
+      const rows = equipmentJobs.map((job, rowIndex) => {
         const armorType = equipmentArmorTypeByClass[job.classId];
         const armorLabel = equipmentArmorLabels[armorType] || "";
         const cells = equipmentSlots.map((slot) => {
           const spec = getEquipmentSpecForJobSlot(job, slot.id);
-          return `<td data-label="${slot.label}">${renderEquipmentCell(spec, lowestBySlot[slot.id])}</td>`;
+          const accessoryRepeat = (slot.id === "necklace" || slot.id === "ring") && rowIndex > 0;
+          return `<td data-label="${slot.label}">${renderEquipmentCell(spec, lowestBySlot[slot.id], { highlight: !accessoryRepeat })}</td>`;
         }).join("");
         return `
           <tr>
