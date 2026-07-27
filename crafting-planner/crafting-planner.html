@@ -36,15 +36,21 @@
 
     body {
       margin: 0;
+      border: 0;
+      outline: 0;
       background: var(--bg);
       color: var(--ink);
       font-family: Pretendard, "Noto Sans KR", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
       line-height: 1.5;
       overflow-x: hidden;
+      box-shadow: none;
     }
 
     html {
+      border: 0;
+      outline: 0;
       overflow-x: hidden;
+      box-shadow: none;
     }
 
     button,
@@ -1959,29 +1965,42 @@
       return getActiveItems().map((item) => item.id);
     }
 
+    function getSelectionKey() {
+      return isDrakein() ? "drakein" : "haeyeon";
+    }
+
+    function getEmptySelectionFallbackMap() {
+      if (!state.emptySelectionFallbackBySet || typeof state.emptySelectionFallbackBySet !== "object") {
+        state.emptySelectionFallbackBySet = {};
+      }
+      return state.emptySelectionFallbackBySet;
+    }
+
     function getActiveSelected(options = {}) {
-      const fallbackToDefault = options.fallbackToDefault !== false;
+      const useEmptyFallback = options.useEmptyFallback !== false;
       if (!state.selectedBySet) {
         state.selectedBySet = {
           haeyeon: Array.isArray(state.selected) ? state.selected : items.map((item) => item.id),
           drakein: drakeinItems.map((item) => item.id)
         };
       }
-      const key = isDrakein() ? "drakein" : "haeyeon";
+      const key = getSelectionKey();
       if (!Array.isArray(state.selectedBySet[key])) {
         state.selectedBySet[key] = getActiveItems().map((item) => item.id);
       }
       if (key === "haeyeon") state.selected = state.selectedBySet.haeyeon;
-      if (fallbackToDefault && state.selectedBySet[key].length === 0) {
+      if (useEmptyFallback && state.selectedBySet[key].length === 0 && getEmptySelectionFallbackMap()[key]) {
         return getDefaultActiveSelected();
       }
       return state.selectedBySet[key];
     }
 
-    function setActiveSelected(nextSelected) {
+    function setActiveSelected(nextSelected, options = {}) {
       if (!state.selectedBySet) state.selectedBySet = {};
-      const key = isDrakein() ? "drakein" : "haeyeon";
+      const key = getSelectionKey();
+      const emptyFallback = !!options.emptyFallback && nextSelected.length === 0;
       state.selectedBySet[key] = nextSelected;
+      getEmptySelectionFallbackMap()[key] = emptyFallback;
       if (key === "haeyeon") state.selected = nextSelected;
     }
 
@@ -2051,12 +2070,14 @@
       grid.querySelectorAll(".gear-toggle").forEach((button) => {
         button.addEventListener("click", () => {
           const id = button.dataset.id;
-          const currentSelected = getActiveSelected({ fallbackToDefault: false });
+          const currentSelected = getActiveSelected();
+          let nextSelected;
           if (currentSelected.includes(id)) {
-            setActiveSelected(currentSelected.filter((selectedId) => selectedId !== id));
+            nextSelected = currentSelected.filter((selectedId) => selectedId !== id);
           } else {
-            setActiveSelected([...currentSelected, id]);
+            nextSelected = [...currentSelected, id];
           }
+          setActiveSelected(nextSelected, { emptyFallback: true });
           if (isDrakein()) {
             const item = drakeinItems.find((entry) => entry.id === id);
             if (item) {
@@ -2443,7 +2464,7 @@
           const nextType = button.dataset.classType;
           if (!activeClassTypes.some(({ id }) => id === nextType)) return;
           if (isDrakein()) {
-            if (nextType === getActiveClassType() && getActiveSelected({ fallbackToDefault: false }).length > 0) return;
+            if (nextType === getActiveClassType() && getActiveSelected({ useEmptyFallback: false }).length > 0) return;
             state.drakeinClassType = nextType;
             const firstJob = drakeinJobsByClass[nextType][0];
             state.drakeinJobType = firstJob.id;
@@ -2649,13 +2670,13 @@
     }
 
     document.getElementById("selectAll").addEventListener("click", () => {
-      setActiveSelected(getActiveItems().map((item) => item.id));
+      setActiveSelected(getActiveItems().map((item) => item.id), { emptyFallback: false });
       saveState();
       renderAll();
     });
 
     document.getElementById("clearAll").addEventListener("click", () => {
-      setActiveSelected([]);
+      setActiveSelected([], { emptyFallback: false });
       saveState();
       renderAll();
     });
