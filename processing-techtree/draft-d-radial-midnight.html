@@ -1,0 +1,594 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>시안 D - 방사형 오버뷰 (미드나이트 블루)</title>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+  :root{
+    --bg-a:#10182a; --bg-b:#05070c;
+    --panel:#0e131c; --line:#1e2733; --ink:#e8edf4; --muted:#8a97a8;
+    --chip-radius:6px; --glow-blur:8px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:radial-gradient(ellipse at 50% 50%, var(--bg-a) 0%, var(--bg-b) 60%);
+    color:var(--ink);
+    font-family:"Pretendard","Noto Sans KR",system-ui,-apple-system,sans-serif;
+    height:100vh; overflow:hidden;
+  }
+  header{
+    position:absolute; top:0; left:0; right:0; padding:14px 20px; z-index:5;
+    pointer-events:none;
+  }
+  header *{ pointer-events:auto; }
+  .title h1{ margin:0; font-size:18px; font-weight:800; }
+  .title p{ margin:2px 0 0; font-size:12px; color:var(--muted); }
+  .badge-draft{
+    display:inline-block; padding:1px 8px; border-radius:999px;
+    background:#3a2416; color:#f0b980; font-size:11px; font-weight:700; margin-left:6px;
+  }
+
+  .side-panel{
+    position:absolute; top:70px; left:20px; z-index:5;
+    background:rgba(14,19,28,.85); border:1px solid var(--line); border-radius:10px;
+    padding:12px; backdrop-filter:blur(6px); width:190px;
+  }
+  .legend-title{ font-size:11px; font-weight:800; color:var(--muted); text-transform:uppercase; margin-bottom:8px; }
+  .legend-item{
+    display:flex; align-items:center; gap:8px; padding:5px 6px; border-radius:6px;
+    cursor:pointer; font-size:12.5px; font-weight:600; user-select:none; opacity:1;
+    transition:opacity .15s ease;
+  }
+  .legend-item.off{ opacity:.3; }
+  .legend-item:hover{ background:rgba(255,255,255,.06); }
+  .legend-item .dot{ width:9px;height:9px;border-radius:50%; }
+  .legend-divider{ height:1px; background:var(--line); margin:10px 0; }
+  .membership-toggle{ display:flex; align-items:center; gap:8px; padding:5px 6px; border-radius:6px; cursor:pointer; user-select:none; }
+  .membership-toggle:hover{ background:rgba(255,255,255,.06); }
+  .membership-toggle .switch{
+    width:32px; height:18px; border-radius:999px; background:var(--line);
+    position:relative; transition:background .15s ease; flex:0 0 auto;
+  }
+  .membership-toggle.on .switch{ background:#2fbf71; }
+  .membership-toggle .knob{
+    position:absolute; top:2px; left:2px; width:14px; height:14px; border-radius:50%;
+    background:#fff; transition:left .15s ease; box-shadow:0 1px 2px rgba(0,0,0,.3);
+  }
+  .membership-toggle.on .knob{ left:16px; }
+  .membership-toggle .ms-label{ font-size:12.5px; font-weight:600; color:var(--ink); }
+  .membership-toggle .ms-label b{ color:var(--muted); }
+  .membership-toggle.on .ms-label b{ color:#2fbf71; }
+  .cross-dot{ width:6px; height:6px; border-radius:50%; display:inline-block; }
+
+  svg{ display:block; width:100%; height:100%; cursor:grab; }
+  svg:active{ cursor:grabbing; }
+
+  .sector-divider{ stroke:#aab2c0; stroke-width:1.2px; stroke-dasharray:5 4; opacity:.35; }
+  .sector-label{ font-size:13px; font-weight:800; text-anchor:middle; pointer-events:none; fill:#c7ccd6; }
+  .tier-dot{ width:9px;height:9px;border-radius:50%; }
+
+  .node-chip rect{
+    stroke-width:1.1px;
+    filter:drop-shadow(0 2px 4px rgba(0,0,0,.5));
+    cursor:pointer;
+    transition:filter .15s ease, stroke-width .15s ease, opacity .15s ease;
+  }
+  .node-chip:hover rect{ stroke-width:2px; filter:drop-shadow(0 0 var(--glow-blur) var(--glow, #fff)); }
+  .node-chip text{ fill:#fff; font-size:10.5px; font-weight:600; pointer-events:none; text-shadow:0 1px 2px rgba(0,0,0,.6); }
+  .node-chip.selected rect{ stroke:#fff; stroke-width:2.4px; }
+  .node-chip.dim{ opacity:.16; }
+  .node-chip.faint{ opacity:.05; }
+
+  .hub-circle{ stroke-width:1.5px; }
+  .hub-label{ font-size:11px; font-weight:800; text-anchor:middle; pointer-events:none; }
+
+  .link{ fill:none; stroke-width:1.1px; opacity:.5; transition:opacity .15s ease; }
+  .link.dim{ opacity:.05; }
+  .cross-link{ fill:none; stroke-width:1.8px; stroke-dasharray:5 3; opacity:0; pointer-events:none; transition:opacity .15s ease; }
+  .cross-link.show{ opacity:.95; }
+
+  .panel{
+    position:fixed; top:0; right:0; width:360px; height:100vh;
+    background:var(--panel); border-left:1px solid var(--line);
+    transform:translateX(100%); transition:transform .22s ease;
+    padding:20px; overflow-y:auto; box-shadow:-16px 0 40px rgba(0,0,0,.4); z-index:10;
+  }
+  .panel.open{ transform:translateX(0); }
+  .panel .close{
+    position:absolute; top:14px; right:14px; width:28px;height:28px; border-radius:8px;
+    border:1px solid var(--line); background:transparent; color:var(--muted); font-size:16px; cursor:pointer;
+  }
+  .panel .close:hover{ color:var(--ink); border-color:var(--ink); }
+  .panel .cat-label{ font-size:12px; font-weight:700; margin-bottom:6px; }
+  .panel h2{ margin:0 0 4px; font-size:22px; display:flex; align-items:center; gap:8px; color:var(--ink); }
+  .tier-badge{ font-size:11px; font-weight:800; padding:2px 8px; border-radius:999px; border:1px solid var(--line); color:var(--muted); }
+  .section-title{ margin:20px 0 8px; font-size:12px; font-weight:800; color:var(--muted); text-transform:uppercase; letter-spacing:.4px; }
+  .pill-list{ display:flex; flex-wrap:wrap; gap:6px; }
+  .pill{
+    display:inline-flex; align-items:center; gap:6px; padding:6px 10px;
+    border-radius:8px; background:rgba(255,255,255,.05); border:1px solid var(--line); font-size:12.5px;
+    color:var(--ink);
+  }
+  .pill .qty{ color:var(--muted); font-size:11px; }
+  .pill-icon{ width:18px; height:18px; border-radius:4px; object-fit:cover; flex:0 0 auto; }
+  .title-icon{ width:34px; height:34px; border-radius:7px; object-fit:cover; vertical-align:middle; margin-right:4px; }
+  .empty-hint{ font-size:12.5px; color:var(--muted); font-style:italic; }
+  .disclaimer{
+    margin-top:24px; padding:10px 12px; border-radius:8px;
+    background:#1a1408; border:1px solid #4a3a1a; color:#f0c980; font-size:11.5px; line-height:1.5;
+  }
+  .hint{
+    position:absolute; left:20px; bottom:14px; font-size:11.5px; color:var(--muted);
+    background:rgba(14,19,28,.7); padding:6px 10px; border-radius:8px; border:1px solid var(--line); z-index:5;
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="title">
+    <h1>마비노기 모바일 · 가공 테크트리 <span class="badge-draft">시안 D · 방사형 오버뷰</span></h1>
+    <p>미드나이트 블루 고정 · 노드를 클릭하면 카테고리를 넘나드는 재료 연결선이 진하게, 나머지는 흐리게 표시됩니다</p>
+  </div>
+</header>
+
+<div class="side-panel" id="sidePanel">
+  <div class="legend-title">카테고리 (클릭해 켜고 끄기)</div>
+  <div id="legendItems"></div>
+  <div class="legend-divider"></div>
+  <div class="legend-title">아이템 티어</div>
+  <div id="tierLegend"></div>
+  <div class="legend-divider"></div>
+  <div class="legend-title">가공 시간 옵션</div>
+  <div class="membership-toggle" id="membershipToggle">
+    <span class="switch"><span class="knob"></span></span>
+    <span class="ms-label">멤버십 모드 <b id="msState">ON</b></span>
+  </div>
+</div>
+
+<svg id="svg"></svg>
+<div class="hint">노드 클릭 → 상세 정보 + 재료 연결선 강조 · 빈 곳 클릭 → 강조 해제 · 드래그로 이동, 휠로 확대/축소</div>
+
+<div class="panel" id="panel">
+  <button class="close" id="closeBtn">✕</button>
+  <div id="panelBody"></div>
+</div>
+
+<script src="data.js"></script>
+<script>
+// ============ 고정 테마: 미드나이트 블루 ============
+const THEME = { hubFill:'#0e131c', hubStroke:'#2a3a4d', chipRadius:6, glowBlur:8, linkColor:'#aab2c0' };
+
+// 게임 등급 체계: 일반(실버) - 고급(초록) - 레어(파랑) - 엘리트(보라) - 에픽(핑크) - 전설(주황)
+const RARITY_TIERS = {
+  silver: { name:'일반',   color:'#b9c2cc', fill:'#2a2e33' },
+  green:  { name:'고급',   color:'#5fd76a', fill:'#173420' },
+  blue:   { name:'레어',   color:'#5b9bf5', fill:'#132a42' },
+  purple: { name:'엘리트', color:'#a970e0', fill:'#2c1f3d' },
+  pink:   { name:'에픽',   color:'#e05fb0', fill:'#3d1f30' },
+  orange: { name:'전설',   color:'#f0a030', fill:'#3d2c14' },
+};
+function tierOf(node){ return node.rarity || 'silver'; }
+function nodeColorOf(node){ return RARITY_TIERS[tierOf(node)].color; }
+function nodeFillOf(node){ return RARITY_TIERS[tierOf(node)].fill; }
+
+// 카테고리 자체 색은 더 이상 노드에 쓰지 않고, 패널의 "다른 카테고리 재료" 표시용으로만 남겨둠
+const CAT_ACCENT = {
+  metal:'#8fb4d9', wood:'#d6a15b', leather:'#c97a45',
+  cloth:'#8fd0e0', potion:'#b98af0', food:'#e3cf6a'
+};
+function catAccent(catId){ return CAT_ACCENT[catId]; }
+const catById = Object.fromEntries(CATEGORIES.map(c=>[c.id,c]));
+
+// ============ 범례 ============
+const activeCats = new Set(CATEGORIES.map(c=>c.id));
+function renderLegend(){
+  const legendItems = document.getElementById('legendItems');
+  legendItems.innerHTML = '';
+  CATEGORIES.forEach(c=>{
+    const el = document.createElement('div');
+    el.className = 'legend-item' + (activeCats.has(c.id) ? '' : ' off');
+    el.innerHTML = `<span class="dot" style="background:${catAccent(c.id)}"></span>${c.icon} ${c.name}`;
+    el.addEventListener('click', ()=>{
+      if(activeCats.has(c.id)) activeCats.delete(c.id); else activeCats.add(c.id);
+      el.classList.toggle('off');
+      updateOpacity();
+    });
+    legendItems.appendChild(el);
+  });
+
+  const tierLegend = document.getElementById('tierLegend');
+  tierLegend.innerHTML = '';
+  Object.entries(RARITY_TIERS).forEach(([key,t])=>{
+    const el = document.createElement('div');
+    el.className = 'legend-item';
+    el.style.cursor = 'default';
+    el.innerHTML = `<span class="tier-dot" style="background:${t.color}"></span>${t.name}`;
+    tierLegend.appendChild(el);
+  });
+}
+
+// ---- svg / zoom ----
+const svg = d3.select('#svg');
+const g = svg.append('g');
+const zoomBehavior = d3.zoom().scaleExtent([0.15, 3]).on('zoom', ev=>g.attr('transform', ev.transform));
+svg.call(zoomBehavior);
+svg.on('click', ()=>{ clearSelection(); closePanel(); });
+
+const HUB_R = 90;
+const ICON_SIZE = 22, ICON_GAP = 5, CHIP_PAD = 16, MIN_ARC_GAP = 26;
+
+const measureCtx = document.createElement('canvas').getContext('2d');
+measureCtx.font = '600 10.5px Pretendard, "Noto Sans KR", system-ui, sans-serif';
+const chipWidthCache = {};
+function chipWidthOf(name){
+  if(chipWidthCache[name] != null) return chipWidthCache[name];
+  const w = ICON_SIZE + ICON_GAP + measureCtx.measureText(name).width + CHIP_PAD;
+  return chipWidthCache[name] = w;
+}
+
+const nodeById = Object.fromEntries(NODES.map(n=>[n.id,n]));
+const tierCache = {};
+function getTier(id){
+  if(tierCache[id]!=null) return tierCache[id];
+  const node = nodeById[id];
+  if(!node || !node.parents || !node.parents.length) return tierCache[id] = 1;
+  return tierCache[id] = 1 + Math.max(...node.parents.map(getTier));
+}
+const nodeByName = {};
+NODES.forEach(n=>{ nodeByName[n.name] = n; });
+function iconUrl(name){ return `icons/${name}.png`; }
+
+function parseTimeToSeconds(str){
+  if(!str) return 0;
+  let sec = 0;
+  const h = str.match(/(\d+)\s*시간/); if(h) sec += parseInt(h[1],10)*3600;
+  const m = str.match(/(\d+)\s*분/); if(m) sec += parseInt(m[1],10)*60;
+  const s = str.match(/(\d+)\s*초/); if(s) sec += parseInt(s[1],10);
+  return sec;
+}
+function formatSeconds(total){
+  total = Math.round(total);
+  const h = Math.floor(total/3600); total -= h*3600;
+  const m = Math.floor(total/60); const s = total - m*60;
+  const parts = [];
+  if(h) parts.push(h+'시간');
+  if(m) parts.push(m+'분');
+  if(s) parts.push(s+'초');
+  return parts.length ? parts.join(' ') : '0초';
+}
+let membershipOn = true;
+
+// 서로 연결되지 않은 노드(뿌리)들은 굳이 한 줄로 나란히 펼치지 않고,
+// 촘촘한 격자(여러 개의 동심 링)로 압축해서 배치한다. 링 간격도 훨씬 좁게(ROOT_RING_STEP) 써서
+// "연결 안 된 뿌리 20개 때문에 전체 반지름이 폭발"하는 문제를 없앤다.
+// 뿌리에 자손이 있으면, 그 자손들만 자기 칸(slot) 안에서 필요한 만큼만 더 넓게 퍼진다(CHILD_TIER_GAP).
+const ROOTS_PER_RING = 3; // 뿌리를 한 링에 몇 개까지 욱여넣을지 (좁을수록 반지름이 커짐)
+// 칩은 항상 가로로 그려지므로, 각도가 0°/180°(가로) 부근일 땐 각도 차이가 아니라
+// "반지름 차이"가 그대로 칩 폭과 부딪힌다. 그래서 반지름 방향 간격도 칩 폭 이상으로 잡아야
+// 각도 계산과 무관하게 항상 안전하다.
+const MAX_CHIP_W = Math.max(...NODES.map(n=>chipWidthOf(n.name)));
+const ROOT_RING_STEP = Math.round((MAX_CHIP_W + 24) * 1.15);
+// 뿌리 링 간격과 정확히 같은 배수로 겹치면(예: 자식 1단계 반지름 == 다음 링 반지름) 서로 다른
+// 노드가 같은 칸에 정확히 포개질 수 있어, 두 간격이 우연히 배수로 맞아떨어지지 않게 다르게 잡는다.
+const CHILD_TIER_GAP = Math.round((MAX_CHIP_W + 24) * 1.6);
+
+function angleNeedLocal(n, depth, ringGap, baseRadius){
+  const r = baseRadius + depth*ringGap;
+  const own = (chipWidthOf(n.name) + MIN_ARC_GAP) / r;
+  if(!n.children.length) return own;
+  return Math.max(own, n.children.reduce((s,c)=>s+angleNeedLocal(c, depth+1, ringGap, baseRadius), 0));
+}
+function assignLocal(list, depth, s0, s1, ringGap, baseRadius){
+  const weights = list.map(n=>angleNeedLocal(n, depth, ringGap, baseRadius));
+  const total = weights.reduce((s,w)=>s+w,0) || 1;
+  let cursor = s0;
+  list.forEach((n,i)=>{
+    const span = (s1-s0) * (weights[i]/total);
+    n.angle = cursor + span/2;
+    n.radius = baseRadius + depth*ringGap;
+    assignLocal(n.children, depth+1, cursor, cursor+span, ringGap, baseRadius);
+    cursor += span;
+  });
+}
+function maxRadiusOf(n, depth, ringGap, baseRadius){
+  let r = baseRadius + depth*ringGap;
+  n.children.forEach(c=>{ r = Math.max(r, maxRadiusOf(c, depth+1, ringGap, baseRadius)); });
+  return r;
+}
+
+function layoutCategory(catId, a0, a1){
+  const nodes = NODES.filter(n=>n.category===catId);
+  const byId = new Map(nodes.map(n=>[n.id, {...n, children:[]}]));
+  byId.forEach(n=>{ (n.parents||[]).forEach(pid=>{ const p=byId.get(pid); if(p) p.children.push(n); }); });
+  const roots = [...byId.values()].filter(n=>!n.parents || n.parents.length===0);
+
+  const sectorSpan = a1 - a0;
+  const rootsPerRing = Math.max(1, Math.min(ROOTS_PER_RING, roots.length));
+  const slotWidth = sectorSpan / rootsPerRing;
+  const slotSpan = slotWidth * 0.6;
+  const pad = (slotWidth - slotSpan) / 2;
+
+  // 이 슬롯 각도(slotSpan)에 뿌리 칩 하나가 겹치지 않고 들어가려면 최소 이 정도 반지름이 필요.
+  // (링 간격을 아무리 늘려도 뿌리 자신의 폭 요구량은 줄지 않으므로, 첫 링부터 이 반지름에서 시작해야 함)
+  const maxRootChipW = Math.max(...roots.map(r=>chipWidthOf(r.name)), 1);
+  const minBaseRadius = HUB_R + (maxRootChipW + MIN_ARC_GAP) / slotSpan;
+  let maxOuterR = HUB_R;
+  roots.forEach((root, i)=>{
+    const ringIndex = Math.floor(i / rootsPerRing);
+    const slotIndex = i % rootsPerRing;
+    // 같은 슬롯을 다른 링이 재사용하면, 그 자손들이 같은 각도로 겹칠 수 있어
+    // 링마다 슬롯 안에서 살짝 좌우로 흔들어(jitter) 같은 각도가 되는 걸 피한다.
+    const jitter = (((ringIndex * 0.618033988) % 1) - 0.5) * pad * 1.2;
+    const s0 = a0 + slotIndex*slotWidth + pad + jitter;
+    const rootRadius = minBaseRadius + ringIndex * ROOT_RING_STEP;
+    root.angle = s0 + slotSpan/2;
+    root.radius = rootRadius;
+    maxOuterR = Math.max(maxOuterR, rootRadius);
+
+    if(root.children.length){
+      // 자손은 "이 뿌리 자신의 반지름" 기준으로 뻗어나간다 (카테고리 공용 반지름을 쓰지 않음 →
+      // 서로 다른 뿌리의 자손들이 같은 원 위에서 만날 일이 없음)
+      let ringGap = CHILD_TIER_GAP;
+      for(let k=0;k<10;k++){
+        const total = root.children.reduce((s,c)=>s+angleNeedLocal(c, 1, ringGap, rootRadius), 0);
+        if(total <= slotSpan) break;
+        ringGap *= Math.max(total/slotSpan, 1.05) * 1.03;
+        if(ringGap > 20000) break;
+      }
+      assignLocal(root.children, 1, s0, s0+slotSpan, ringGap, rootRadius);
+      root.children.forEach(c=>{ maxOuterR = Math.max(maxOuterR, maxRadiusOf(c, 1, ringGap, rootRadius)); });
+    }
+  });
+
+  return { nodes:[...byId.values()], maxOuterR };
+}
+
+let allLayoutNodes = [];
+let crossLinks = [];
+let selectedId = null;
+
+function build(){
+  g.selectAll('*').remove();
+  allLayoutNodes = [];
+
+  // 카테고리마다 동일한 부채꼴(360/6)을 배정하되, 반지름은 카테고리별로 필요한 만큼만 사용
+  // (연결 안 된 뿌리들을 격자로 압축했기 때문에 카테고리마다 필요한 반지름이 다름)
+  const n = CATEGORIES.length;
+  const sectorSpan = (Math.PI*2)/n;
+  const sectors = CATEGORIES.map((cat,i)=>({ cat, a0:-Math.PI/2+i*sectorSpan, a1:-Math.PI/2+(i+1)*sectorSpan }));
+
+  const catMaxR = {};
+  sectors.forEach(({cat,a0,a1})=>{
+    const res = layoutCategory(cat.id, a0, a1);
+    res.nodes.forEach(x=>{ x.__cat = cat.id; });
+    allLayoutNodes.push(...res.nodes);
+    catMaxR[cat.id] = res.maxOuterR;
+  });
+
+  // 안전장치: 각도 기반 계산은 근사치라 이름이 아주 긴 칩 등 드물게 딱 붙는 경우가 남을 수 있어,
+  // 실제 사각형끼리 겹치는 쌍이 있으면 더 바깥쪽 노드를 살짝 더 밀어내는 보정을 몇 차례 반복한다.
+  for(let pass=0; pass<6; pass++){
+    let anyFix = false;
+    for(let i=0;i<allLayoutNodes.length;i++){
+      for(let j=i+1;j<allLayoutNodes.length;j++){
+        const a = allLayoutNodes[i], b = allLayoutNodes[j];
+        const aw = chipWidthOf(a.name)+CHIP_PAD-2, ah = ICON_SIZE+12;
+        const bw = chipWidthOf(b.name)+CHIP_PAD-2, bh = ICON_SIZE+12;
+        const ax = Math.cos(a.angle)*a.radius, ay = Math.sin(a.angle)*a.radius;
+        const bx = Math.cos(b.angle)*b.radius, by = Math.sin(b.angle)*b.radius;
+        const overlapX = Math.min(ax+aw/2,bx+bw/2) - Math.max(ax-aw/2,bx-bw/2);
+        const overlapY = Math.min(ay+ah/2,by+bh/2) - Math.max(ay-ah/2,by-bh/2);
+        if(overlapX>0 && overlapY>0){
+          const far = a.radius >= b.radius ? a : b;
+          far.radius += Math.max(overlapX, overlapY) * 1.15;
+          catMaxR[far.__cat] = Math.max(catMaxR[far.__cat], far.radius);
+          anyFix = true;
+        }
+      }
+    }
+    if(!anyFix) break;
+  }
+
+  // 카테고리 경계 = 은색 점선 (색상 구분은 더 이상 채우기 색으로 하지 않음), 각자 필요한 만큼만 길이를 뻗음
+  sectors.forEach(({cat,a0,a1})=>{
+    const maxR = catMaxR[cat.id] + 30;
+    g.append('line').attr('class','sector-divider')
+      .attr('x1', Math.cos(a0)*HUB_R).attr('y1', Math.sin(a0)*HUB_R)
+      .attr('x2', Math.cos(a0)*maxR).attr('y2', Math.sin(a0)*maxR);
+    const midA = (a0+a1)/2;
+    const lx = Math.cos(midA)*(maxR+22), ly = Math.sin(midA)*(maxR+22);
+    g.append('text').attr('class','sector-label').attr('x',lx).attr('y',ly)
+      .text(`${cat.icon} ${cat.name}`);
+  });
+
+  g.append('circle').attr('class','hub-circle').attr('r', HUB_R)
+    .attr('fill', THEME.hubFill).attr('stroke', THEME.hubStroke);
+  g.append('text').attr('class','hub-label').attr('dy','.35em').attr('fill', '#fff').text('마비노기 모바일');
+  g.append('text').attr('class','hub-label').attr('dy','1.8em').attr('fill', '#8a97a8').text('가공 테크트리');
+
+  g.append('g').attr('id','linkLayer').selectAll('path')
+    .data(allLayoutNodes.filter(d=>d.parents && d.parents.length))
+    .join('path')
+    .attr('class','link')
+    .attr('data-cat', d=>d.__cat)
+    .attr('stroke', THEME.linkColor)
+    .attr('d', d=>{
+      const pid = d.parents[0];
+      const p = allLayoutNodes.find(x=>x.id===pid);
+      const [x1,y1] = p ? [Math.cos(p.angle)*p.radius, Math.sin(p.angle)*p.radius] : [0,0];
+      const [x2,y2] = [Math.cos(d.angle)*d.radius, Math.sin(d.angle)*d.radius];
+      const mx=(x1+x2)/2, my=(y1+y2)/2;
+      return `M${x1},${y1} Q${mx},${my} ${x2},${y2}`;
+    });
+
+  // 카테고리를 넘나드는 재료 연결선 (선택 전엔 숨김)
+  crossLinks = [];
+  allLayoutNodes.forEach(n=>{
+    (n.materials||[]).forEach(m=>{
+      const ref = nodeByName[m.name];
+      if(ref && ref.category !== n.category){
+        const src = allLayoutNodes.find(x=>x.id===ref.id);
+        if(src) crossLinks.push({from:src, to:n});
+      }
+    });
+  });
+  const crossG = g.append('g').attr('id','crossLinkLayer').selectAll('path')
+    .data(crossLinks)
+    .join('path')
+    .attr('class','cross-link')
+    .attr('stroke', THEME.linkColor)
+    .attr('d', d=>{
+      const x1=Math.cos(d.from.angle)*d.from.radius, y1=Math.sin(d.from.angle)*d.from.radius;
+      const x2=Math.cos(d.to.angle)*d.to.radius, y2=Math.sin(d.to.angle)*d.to.radius;
+      const mx=(x1+x2)/2, my=(y1+y2)/2;
+      return `M${x1},${y1} Q${mx*0.3},${my*0.3} ${x2},${y2}`;
+    });
+  window.__crossG = crossG;
+
+  const chip = g.append('g').attr('id','chipLayer').selectAll('g')
+    .data(allLayoutNodes)
+    .join('g')
+    .attr('class','node-chip')
+    .attr('data-id', d=>d.id)
+    .attr('data-cat', d=>d.__cat)
+    .attr('transform', d=>`translate(${Math.cos(d.angle)*d.radius},${Math.sin(d.angle)*d.radius})`)
+    .style('--glow', d=>nodeColorOf(d))
+    .on('click', (ev,d)=>{
+      ev.stopPropagation();
+      selectedId = d.id;
+      updateOpacity();
+      openPanel(d, catById[d.__cat]);
+    });
+
+  chip.append('rect').attr('fill', d=>nodeFillOf(d)).attr('stroke', d=>nodeColorOf(d)).attr('rx', THEME.chipRadius);
+  const content = chip.append('g').attr('class','chip-content');
+  content.append('image')
+    .attr('href', d=>iconUrl(d.name))
+    .attr('width', ICON_SIZE).attr('height', ICON_SIZE)
+    .attr('y', -ICON_SIZE/2)
+    .on('error', function(){ d3.select(this).style('display','none'); });
+  content.append('text').attr('text-anchor','start').attr('dy','.35em').attr('x', ICON_SIZE+ICON_GAP).text(d=>d.name);
+
+  chip.each(function(d){
+    const textEl = this.querySelector('text');
+    const bbox = textEl.getBBox();
+    const totalW = ICON_SIZE + ICON_GAP + bbox.width;
+    d3.select(this).select('.chip-content').attr('transform', `translate(${-totalW/2},0)`);
+    d3.select(this).select('rect')
+      .attr('x', -totalW/2 - 7)
+      .attr('y', -ICON_SIZE/2 - 6)
+      .attr('width', totalW + 14)
+      .attr('height', ICON_SIZE + 12);
+  });
+
+  updateOpacity();
+
+  const bounds = g.node().getBBox();
+  const stage = document.body.getBoundingClientRect();
+  const scale = Math.min(stage.width/(bounds.width+160), stage.height/(bounds.height+160), 1);
+  const tx = stage.width/2 - (bounds.x + bounds.width/2)*scale;
+  const ty = stage.height/2 - (bounds.y + bounds.height/2)*scale;
+  svg.call(zoomBehavior.transform, d3.zoomIdentity.translate(tx,ty).scale(scale));
+}
+
+// 카테고리 켜고 끄기(흐림) + 노드 선택(카테고리 간 재료 연결 강조)을 함께 반영
+function updateOpacity(){
+  const related = selectedId ? crossLinks.filter(l=>l.from.id===selectedId || l.to.id===selectedId) : [];
+  const relatedIds = new Set(related.flatMap(l=>[l.from.id,l.to.id]));
+
+  g.selectAll('.node-chip')
+    .classed('selected', x=>x.id===selectedId)
+    .classed('dim', x=>{
+      if(!activeCats.has(x.__cat)) return true;
+      if(selectedId && x.id!==selectedId && !relatedIds.has(x.id)) return true;
+      return false;
+    });
+  g.selectAll('.link').classed('dim', d=>!activeCats.has(d.__cat));
+  if(window.__crossG){
+    window.__crossG.classed('show', l=>
+      selectedId!=null && (l.from.id===selectedId || l.to.id===selectedId)
+      && activeCats.has(l.from.category) && activeCats.has(l.to.category)
+    );
+  }
+}
+function clearSelection(){
+  selectedId = null;
+  updateOpacity();
+}
+
+let lastNode = null, lastCat = null;
+function pillIcon(name){
+  return nodeByName[name] ? `<img class="pill-icon" src="${iconUrl(name)}" alt="" onerror="this.remove()">` : '';
+}
+function materialPill(m){
+  const ref = nodeByName[m.name];
+  const cross = ref && ref.category !== (lastNode ? lastNode.category : null);
+  const dot = cross ? `<span class="cross-dot" style="background:${catAccent(ref.category)}"></span>` : '';
+  const title = cross ? ` title="${catById[ref.category].icon} ${catById[ref.category].name}에서 생산"` : '';
+  return `<span class="pill"${title}>${dot}${pillIcon(m.name)}${m.name} <span class="qty">×${m.qty}</span></span>`;
+}
+
+function openPanel(node, cat){
+  lastNode = node; lastCat = cat;
+  const panel = document.getElementById('panel');
+  const body = document.getElementById('panelBody');
+  const materialsHtml = (node.materials && node.materials.length)
+    ? `<div class="pill-list">${node.materials.map(materialPill).join('')}</div>`
+    : `<div class="empty-hint">채집 / 상점 구매 등으로 직접 획득</div>`;
+
+  const usedBy = NODES.filter(n => (n.materials||[]).some(m=>m.name===node.name));
+  const unlocksHtml = usedBy.length
+    ? `<div class="pill-list">${usedBy.map(n=>{
+        const cross = n.category !== node.category;
+        const dot = cross ? `<span class="cross-dot" style="background:${catAccent(n.category)}"></span>` : '';
+        const title = cross ? ` title="${catById[n.category].icon} ${catById[n.category].name}"` : '';
+        return `<span class="pill"${title}>${dot}${pillIcon(n.name)}${n.name}</span>`;
+      }).join('')}</div>`
+    : `<div class="empty-hint">최종 단계 (더 이상 가공되지 않음)</div>`;
+
+  const baseSec = parseTimeToSeconds(node.time);
+  const effSec = baseSec * (membershipOn ? 1 : 2);
+
+  body.innerHTML = `
+    <div class="cat-label" style="color:${catAccent(cat.id)}">${cat.icon} ${cat.name}</div>
+    <h2><img class="title-icon" src="${iconUrl(node.name)}" alt="" onerror="this.remove()">${node.name} <span class="tier-badge">T${getTier(node.id)}</span> <span class="tier-badge" style="color:${nodeColorOf(node)};border-color:${nodeColorOf(node)}">${RARITY_TIERS[tierOf(node)].name}</span></h2>
+    <div class="section-title">1회 가공 생산량</div>
+    <div class="pill-list"><span class="pill">${pillIcon(node.name)}${node.name} <span class="qty">×${node.yield}</span></span></div>
+    <div class="section-title">필요 재료</div>
+    ${materialsHtml}
+    <div class="section-title">가공 시간 (멤버십 ${membershipOn ? 'ON' : 'OFF'})</div>
+    <div class="pill-list"><span class="pill">${formatSeconds(effSec)}</span></div>
+    <div class="section-title">이 재료가 쓰이는 곳</div>
+    ${unlocksHtml}
+    <div class="disclaimer">⏱ 가공 시간은 멤버십 모드 기준으로 계산됩니다. OFF 시 소요 시간이 2배가 됩니다. · 점선은 선택한 노드와 카테고리를 넘나드는 재료 연결을 의미합니다.</div>
+  `;
+  panel.classList.add('open');
+}
+function closePanel(){
+  document.getElementById('panel').classList.remove('open');
+}
+document.getElementById('closeBtn').addEventListener('click', (ev)=>{ ev.stopPropagation(); closePanel(); clearSelection(); });
+document.getElementById('panel').addEventListener('click', ev=>ev.stopPropagation());
+document.getElementById('sidePanel').addEventListener('click', ev=>ev.stopPropagation());
+
+const msToggleEl = document.getElementById('membershipToggle');
+msToggleEl.classList.add('on');
+msToggleEl.addEventListener('click', (ev)=>{
+  ev.stopPropagation();
+  membershipOn = !membershipOn;
+  msToggleEl.classList.toggle('on', membershipOn);
+  document.getElementById('msState').textContent = membershipOn ? 'ON' : 'OFF';
+  if(document.getElementById('panel').classList.contains('open') && lastNode){
+    openPanel(lastNode, lastCat);
+  }
+});
+
+renderLegend();
+build();
+window.addEventListener('resize', build);
+</script>
+</body>
+</html>

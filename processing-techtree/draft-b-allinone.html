@@ -1,0 +1,609 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>시안 B - 색상 테마 비교</title>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+  :root{
+    --bg-a:#0d1420; --bg-b:#05070c;
+    --panel:#0e131c;
+    --line:#1e2733;
+    --ink:#e8edf4;
+    --muted:#8a97a8;
+    --chip-radius:6px;
+    --glow-blur:8px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:radial-gradient(ellipse at 50% 50%, var(--bg-a) 0%, var(--bg-b) 60%);
+    color:var(--ink);
+    font-family:"Pretendard","Noto Sans KR",system-ui,-apple-system,sans-serif;
+    height:100vh;
+    overflow:hidden;
+    transition:background .25s ease;
+  }
+  header{
+    position:absolute;
+    top:0; left:0; right:0;
+    padding:14px 20px;
+    z-index:5;
+    pointer-events:none;
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:16px;
+    flex-wrap:wrap;
+  }
+  header *{ pointer-events:auto; }
+  .title h1{ margin:0; font-size:18px; font-weight:800; }
+  .title p{ margin:2px 0 0; font-size:12px; color:var(--muted); }
+  .badge-draft{
+    display:inline-block; padding:1px 8px; border-radius:999px;
+    background:#3a2416; color:#f0b980; font-size:11px; font-weight:700; margin-left:6px;
+  }
+
+  .theme-switcher{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    max-width:520px;
+    justify-content:flex-end;
+  }
+  .theme-btn{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:6px 10px;
+    border-radius:9px;
+    border:1.5px solid var(--line);
+    background:rgba(20,25,33,.7);
+    cursor:pointer;
+    color:var(--muted);
+    font-size:11.5px;
+    font-weight:700;
+    transition:all .15s ease;
+  }
+  .theme-btn:hover{ color:var(--ink); }
+  .theme-btn.active{ color:var(--ink); border-color:#fff; box-shadow:0 0 0 1px #fff inset; }
+  .swatches{ display:flex; }
+  .swatches span{ width:9px; height:9px; margin-left:-3px; border-radius:50%; border:1px solid rgba(0,0,0,.4); }
+  .swatches span:first-child{ margin-left:0; }
+
+  .legend{
+    position:absolute;
+    top:78px;
+    left:20px;
+    z-index:5;
+    background:rgba(14,19,28,.85);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:12px;
+    backdrop-filter:blur(6px);
+  }
+  .legend-title{
+    font-size:11px; font-weight:800; color:var(--muted);
+    text-transform:uppercase; margin-bottom:8px;
+  }
+  .legend-item{
+    display:flex; align-items:center; gap:8px; padding:5px 6px; border-radius:6px;
+    cursor:pointer; font-size:12.5px; font-weight:600; user-select:none; opacity:1;
+    transition:opacity .15s ease;
+  }
+  .legend-item.off{ opacity:.3; }
+  .legend-item:hover{ background:rgba(255,255,255,.06); }
+  .legend-item .dot{ width:9px;height:9px;border-radius:50%; }
+  .legend-divider{ height:1px; background:var(--line); margin:10px 0; }
+  .membership-toggle{
+    display:flex; align-items:center; gap:8px; padding:5px 6px; border-radius:6px;
+    cursor:pointer; user-select:none;
+  }
+  .membership-toggle:hover{ background:rgba(255,255,255,.06); }
+  .membership-toggle .switch{
+    width:32px; height:18px; border-radius:999px; background:var(--line);
+    position:relative; transition:background .15s ease; flex:0 0 auto;
+  }
+  .membership-toggle.on .switch{ background:#2fbf71; }
+  .membership-toggle .knob{
+    position:absolute; top:2px; left:2px; width:14px; height:14px; border-radius:50%;
+    background:#fff; transition:left .15s ease; box-shadow:0 1px 2px rgba(0,0,0,.3);
+  }
+  .membership-toggle.on .knob{ left:16px; }
+  .membership-toggle .ms-label{ font-size:12.5px; font-weight:600; color:var(--ink); }
+  .membership-toggle .ms-label b{ color:var(--muted); }
+  .membership-toggle.on .ms-label b{ color:#2fbf71; }
+  .cross-dot{ width:6px; height:6px; border-radius:50%; display:inline-block; }
+
+  svg{ display:block; width:100%; height:100%; cursor:grab; }
+  svg:active{ cursor:grabbing; }
+
+  .sector-wedge{ transition:opacity .2s ease; }
+  .sector-label{ font-size:13px; font-weight:800; text-anchor:middle; pointer-events:none; }
+
+  .node-chip rect{
+    stroke-width:1.1px;
+    filter:drop-shadow(0 2px 4px rgba(0,0,0,.5));
+    cursor:pointer;
+    transition:filter .15s ease, stroke-width .15s ease, opacity .15s ease;
+  }
+  .node-chip:hover rect{
+    stroke-width:2px;
+    filter:drop-shadow(0 0 var(--glow-blur) var(--glow, #fff));
+  }
+  .node-chip text{
+    fill:#fff;
+    font-size:10.5px;
+    font-weight:600;
+    pointer-events:none;
+    text-shadow:0 1px 2px rgba(0,0,0,.6);
+  }
+  .node-chip.selected rect{ stroke:#fff; stroke-width:2.2px; }
+  .node-chip.dim{ opacity:.1; }
+  .link{ fill:none; stroke-width:1.1px; opacity:.5; transition:opacity .15s ease; }
+  .link.dim{ opacity:.04; }
+  .hub-circle{ stroke-width:1.5px; }
+  .hub-label{ font-size:11px; font-weight:800; text-anchor:middle; pointer-events:none; }
+
+  .panel{
+    position:fixed; top:0; right:0; width:360px; height:100vh;
+    background:var(--panel); border-left:1px solid var(--line);
+    transform:translateX(100%); transition:transform .22s ease;
+    padding:20px; overflow-y:auto; box-shadow:-16px 0 40px rgba(0,0,0,.4); z-index:10;
+  }
+  .panel.open{ transform:translateX(0); }
+  .panel .close{
+    position:absolute; top:14px; right:14px; width:28px;height:28px; border-radius:8px;
+    border:1px solid var(--line); background:transparent; color:var(--muted); font-size:16px; cursor:pointer;
+  }
+  .panel .close:hover{ color:var(--ink); border-color:var(--ink); }
+  .panel .cat-label{ font-size:12px; font-weight:700; margin-bottom:6px; }
+  .panel h2{ margin:0 0 4px; font-size:22px; display:flex; align-items:center; gap:8px; color:var(--ink); }
+  .tier-badge{
+    font-size:11px; font-weight:800; padding:2px 8px; border-radius:999px;
+    border:1px solid var(--line); color:var(--muted);
+  }
+  .panel .note{ font-size:12px; color:#f0b980; margin:6px 0 0; }
+  .section-title{
+    margin:20px 0 8px; font-size:12px; font-weight:800; color:var(--muted);
+    text-transform:uppercase; letter-spacing:.4px;
+  }
+  .pill-list{ display:flex; flex-wrap:wrap; gap:6px; }
+  .pill{
+    display:inline-flex; align-items:center; gap:6px; padding:6px 10px;
+    border-radius:8px; background:rgba(255,255,255,.05); border:1px solid var(--line); font-size:12.5px;
+    color:var(--ink);
+  }
+  .pill .qty{ color:var(--muted); font-size:11px; }
+  .pill-icon{ width:18px; height:18px; border-radius:4px; object-fit:cover; flex:0 0 auto; }
+  .title-icon{ width:34px; height:34px; border-radius:7px; object-fit:cover; vertical-align:middle; margin-right:4px; }
+  .empty-hint{ font-size:12.5px; color:var(--muted); font-style:italic; }
+  .disclaimer{
+    margin-top:24px; padding:10px 12px; border-radius:8px;
+    background:#1a1408; border:1px solid #4a3a1a; color:#f0c980; font-size:11.5px; line-height:1.5;
+  }
+  .hint{
+    position:absolute; left:20px; bottom:14px; font-size:11.5px; color:var(--muted);
+    background:rgba(14,19,28,.7); padding:6px 10px; border-radius:8px; border:1px solid var(--line); z-index:5;
+  }
+
+  /* ---- 라이트 모드 (흰 배경) 전용 오버라이드 ---- */
+  body.light-mode .legend{ background:rgba(255,255,255,.9); box-shadow:0 4px 18px rgba(20,20,40,.06); }
+  body.light-mode .theme-btn{ background:rgba(255,255,255,.8); box-shadow:0 1px 4px rgba(20,20,40,.05); }
+  body.light-mode .theme-btn.active{ box-shadow:0 0 0 1px var(--ink) inset; }
+  body.light-mode .hint{ background:rgba(255,255,255,.85); box-shadow:0 2px 10px rgba(20,20,40,.06); }
+  body.light-mode .badge-draft{ background:#fff1dc; color:#a8620a; }
+  body.light-mode .node-chip text{ fill:var(--ink); text-shadow:0 1px 1px rgba(255,255,255,.7); }
+  body.light-mode .node-chip rect{ filter:drop-shadow(0 2px 5px rgba(30,30,60,.12)); }
+  body.light-mode .node-chip.selected rect{ stroke:var(--ink); stroke-width:2.4px; }
+  body.light-mode .link{ opacity:.7; }
+  body.light-mode .link.dim{ opacity:.08; }
+  body.light-mode .panel{ box-shadow:-16px 0 40px rgba(20,20,40,.08); }
+  body.light-mode .pill{ background:#f3f4f8; }
+  body.light-mode .disclaimer{ background:#fff8e6; border-color:#ffdd9e; color:#8a5a00; }
+</style>
+</head>
+<body>
+<header>
+  <div class="title">
+    <h1>마비노기 모바일 · 가공 테크트리 <span class="badge-draft">시안 B</span></h1>
+    <p>실제 레시피 데이터 반영 · 멤버십 모드에 따라 가공 시간 표시가 달라집니다</p>
+  </div>
+  <div class="theme-switcher" id="themeSwitcher"></div>
+</header>
+
+<div class="legend" id="legend">
+  <div class="legend-title">카테고리 (클릭해 켜고 끄기)</div>
+  <div id="legendItems"></div>
+  <div class="legend-divider"></div>
+  <div class="legend-title">가공 시간 옵션</div>
+  <div class="membership-toggle" id="membershipToggle">
+    <span class="switch"><span class="knob"></span></span>
+    <span class="ms-label">멤버십 모드 <b id="msState">ON</b></span>
+  </div>
+</div>
+
+<svg id="svg"></svg>
+<div class="hint">노드를 클릭하면 상세 정보가 열립니다 · 드래그로 이동, 휠로 확대/축소</div>
+
+<div class="panel" id="panel">
+  <button class="close" id="closeBtn">✕</button>
+  <div id="panelBody"></div>
+</div>
+
+<script src="data.js"></script>
+<script>
+// ============ 색상 테마 정의 ============
+const THEMES = [
+  {
+    id:'neon-light', name:'네온 사이버 (화이트)', mode:'light',
+    bgA:'#ffffff', bgB:'#fafafa', panel:'#ffffff', line:'#e3e4ea', ink:'#15131c', muted:'#6b7280',
+    hubFill:'#ffffff', hubStroke:'#1a1a2e', wedgeOpacity:0.16, chipRadius:4, glowBlur:10,
+    cats:{
+      metal:{color:'#0098c9',fill:'#e3f7fb'}, wood:{color:'#e8790a',fill:'#fdefe0'},
+      leather:{color:'#e0246e',fill:'#fde7ee'}, cloth:{color:'#00a884',fill:'#e0f7f0'},
+      potion:{color:'#a800c9',fill:'#f6e0fb'}, food:{color:'#d19a00',fill:'#faf0d9'}
+    }
+  },
+  {
+    id:'midnight', name:'미드나이트 블루',
+    bgA:'#10182a', bgB:'#05070c', panel:'#0e131c', line:'#1e2733', ink:'#e8edf4', muted:'#8a97a8',
+    hubFill:'#0e131c', hubStroke:'#2a3a4d', wedgeOpacity:0.07, chipRadius:6, glowBlur:8,
+    cats:{
+      metal:{color:'#8fb4d9',fill:'#243447'}, wood:{color:'#d6a15b',fill:'#3a2c1a'},
+      leather:{color:'#c97a45',fill:'#3a2416'}, cloth:{color:'#8fd0e0',fill:'#1c3438'},
+      potion:{color:'#b98af0',fill:'#2c2140'}, food:{color:'#e3cf6a',fill:'#3a3319'}
+    }
+  },
+  {
+    id:'neon', name:'네온 사이버',
+    bgA:'#150029', bgB:'#020006', panel:'#0d0518', line:'#33195a', ink:'#f2eaff', muted:'#9a86c2',
+    hubFill:'#0d0518', hubStroke:'#ff2fd1', wedgeOpacity:0.14, chipRadius:4, glowBlur:16,
+    cats:{
+      metal:{color:'#33e1ff',fill:'#0d3a44'}, wood:{color:'#ffb020',fill:'#4a2f00'},
+      leather:{color:'#ff5f7a',fill:'#4a0d1a'}, cloth:{color:'#5cffb0',fill:'#0a3a24'},
+      potion:{color:'#ff2fd1',fill:'#3a0a30'}, food:{color:'#fff23c',fill:'#3a3400'}
+    }
+  },
+  {
+    id:'parchment', name:'판타지 양피지',
+    bgA:'#2a2015', bgB:'#14100a', panel:'#1d160e', line:'#3d3220', ink:'#f0e4c8', muted:'#a8956f',
+    hubFill:'#1d160e', hubStroke:'#8a6a3a', wedgeOpacity:0.12, chipRadius:3, glowBlur:6,
+    cats:{
+      metal:{color:'#b9c4cf',fill:'#333a40'}, wood:{color:'#c68a4e',fill:'#4a3319'},
+      leather:{color:'#a85c32',fill:'#3d2513'}, cloth:{color:'#7fa88a',fill:'#243d2c'},
+      potion:{color:'#a179c9',fill:'#332246'}, food:{color:'#d4af37',fill:'#4a3c10'}
+    }
+  },
+  {
+    id:'material', name:'머티리얼 다크',
+    bgA:'#181818', bgB:'#0a0a0a', panel:'#1e1e1e', line:'#2e2e2e', ink:'#eaeaea', muted:'#9a9a9a',
+    hubFill:'#1e1e1e', hubStroke:'#3a3a3a', wedgeOpacity:0.09, chipRadius:10, glowBlur:0,
+    cats:{
+      metal:{color:'#82b1ff',fill:'#1a2540'}, wood:{color:'#ffab40',fill:'#402c10'},
+      leather:{color:'#ff8a65',fill:'#401f10'}, cloth:{color:'#80cbc4',fill:'#0f3330'},
+      potion:{color:'#b388ff',fill:'#2a1f45'}, food:{color:'#ffd740',fill:'#403410'}
+    }
+  },
+  {
+    id:'mono', name:'모노톤 + 포인트',
+    bgA:'#1a1b1d', bgB:'#0b0c0d', panel:'#1b1c1e', line:'#2c2d2f', ink:'#e6e6e6', muted:'#8a8b8d',
+    hubFill:'#1b1c1e', hubStroke:'#3a3b3d', wedgeOpacity:0.04, chipRadius:6, glowBlur:4,
+    cats:{
+      metal:{color:'#5b8fd9',fill:'#232427'}, wood:{color:'#c68a4e',fill:'#232427'},
+      leather:{color:'#c25b3a',fill:'#232427'}, cloth:{color:'#4bb6c9',fill:'#232427'},
+      potion:{color:'#9a6fd9',fill:'#232427'}, food:{color:'#c9b23a',fill:'#232427'}
+    }
+  },
+  {
+    id:'rarity', name:'게임 등급색',
+    bgA:'#111418', bgB:'#050607', panel:'#14171b', line:'#262b31', ink:'#e9edf1', muted:'#8d97a1',
+    hubFill:'#14171b', hubStroke:'#2e343b', wedgeOpacity:0.08, chipRadius:6, glowBlur:8,
+    cats:{
+      metal:{color:'#b0b8c1',fill:'#2c3136'}, wood:{color:'#57c25c',fill:'#1c3a1e'},
+      leather:{color:'#4a90e2',fill:'#16324f'}, cloth:{color:'#a35ce0',fill:'#2f1c45'},
+      potion:{color:'#e0a13c',fill:'#4a3413'}, food:{color:'#e05c5c',fill:'#4a1c1c'}
+    }
+  },
+];
+
+let currentTheme = THEMES[0];
+function colorOf(catId){ return currentTheme.cats[catId].color; }
+function fillOf(catId){ return currentTheme.cats[catId].fill; }
+
+// ============ 테마 스위처 UI ============
+const switcherEl = document.getElementById('themeSwitcher');
+THEMES.forEach(t=>{
+  const btn = document.createElement('div');
+  btn.className = 'theme-btn' + (t.id===currentTheme.id ? ' active' : '');
+  btn.dataset.theme = t.id;
+  const dots = CATEGORIES.map(c=>`<span style="background:${t.cats[c.id].color}"></span>`).join('');
+  btn.innerHTML = `${t.name}<span class="swatches">${dots}</span>`;
+  btn.addEventListener('click', ()=> applyTheme(t.id));
+  switcherEl.appendChild(btn);
+});
+
+function applyTheme(id){
+  currentTheme = THEMES.find(t=>t.id===id);
+  document.body.classList.toggle('light-mode', currentTheme.mode==='light');
+  document.querySelectorAll('.theme-btn').forEach(b=>b.classList.toggle('active', b.dataset.theme===id));
+  const root = document.documentElement.style;
+  root.setProperty('--bg-a', currentTheme.bgA);
+  root.setProperty('--bg-b', currentTheme.bgB);
+  root.setProperty('--panel', currentTheme.panel);
+  root.setProperty('--line', currentTheme.line);
+  root.setProperty('--ink', currentTheme.ink);
+  root.setProperty('--muted', currentTheme.muted);
+  root.setProperty('--glow-blur', currentTheme.glowBlur+'px');
+  renderLegend();
+  build();
+  updateVisibility();
+}
+
+// ============ 범례 ============
+const activeCats = new Set(CATEGORIES.map(c=>c.id));
+function renderLegend(){
+  const legendItems = document.getElementById('legendItems');
+  legendItems.innerHTML = '';
+  CATEGORIES.forEach(c=>{
+    const el = document.createElement('div');
+    el.className = 'legend-item' + (activeCats.has(c.id) ? '' : ' off');
+    el.innerHTML = `<span class="dot" style="background:${colorOf(c.id)}"></span>${c.icon} ${c.name}`;
+    el.addEventListener('click', ()=>{
+      if(activeCats.has(c.id)) activeCats.delete(c.id); else activeCats.add(c.id);
+      el.classList.toggle('off');
+      updateVisibility();
+    });
+    legendItems.appendChild(el);
+  });
+}
+
+// ---- svg / zoom setup ----
+const svg = d3.select('#svg');
+const g = svg.append('g');
+const zoomBehavior = d3.zoom().scaleExtent([0.25, 3]).on('zoom', ev=>g.attr('transform', ev.transform));
+svg.call(zoomBehavior);
+
+const RING_GAP = 62;
+const HUB_R = 90;
+const SECTOR_PAD = 0.06;
+
+// ============ 티어(반지름) 자동 계산 : parents 체인 깊이 ============
+const nodeById = Object.fromEntries(NODES.map(n=>[n.id,n]));
+const tierCache = {};
+function getTier(id){
+  if(tierCache[id]!=null) return tierCache[id];
+  const node = nodeById[id];
+  if(!node || !node.parents || !node.parents.length) return tierCache[id] = 1;
+  return tierCache[id] = 1 + Math.max(...node.parents.map(getTier));
+}
+
+// ============ 이름 -> 노드 매핑 (카테고리 간 재료 참조 표시용) ============
+const nodeByName = {};
+NODES.forEach(n=>{ nodeByName[n.name] = n; });
+function iconUrl(name){ return `icons/${name}.png`; }
+
+// ============ 시간 문자열 <-> 초 변환 (멤버십 모드 배율 적용용) ============
+function parseTimeToSeconds(str){
+  if(!str) return 0;
+  let sec = 0;
+  const h = str.match(/(\d+)\s*시간/); if(h) sec += parseInt(h[1],10)*3600;
+  const m = str.match(/(\d+)\s*분/); if(m) sec += parseInt(m[1],10)*60;
+  const s = str.match(/(\d+)\s*초/); if(s) sec += parseInt(s[1],10);
+  return sec;
+}
+function formatSeconds(total){
+  total = Math.round(total);
+  const h = Math.floor(total/3600); total -= h*3600;
+  const m = Math.floor(total/60); const s = total - m*60;
+  const parts = [];
+  if(h) parts.push(h+'시간');
+  if(m) parts.push(m+'분');
+  if(s) parts.push(s+'초');
+  return parts.length ? parts.join(' ') : '0초';
+}
+let membershipOn = true;
+
+function layoutSector(nodes, a0, a1){
+  const byId = new Map(nodes.map(n=>[n.id, {...n, children:[]}]));
+  byId.forEach(n=>{
+    (n.parents||[]).forEach(pid=>{
+      const p = byId.get(pid);
+      if(p) p.children.push(n);
+    });
+  });
+  const roots = [...byId.values()].filter(n=>!n.parents || n.parents.length===0);
+
+  function weight(n){
+    if(n._w!=null) return n._w;
+    if(!n.children.length) return n._w = 1;
+    return n._w = n.children.reduce((s,c)=>s+weight(c),0);
+  }
+  roots.forEach(weight);
+
+  function assign(list, s0, s1){
+    const total = list.reduce((s,n)=>s+weight(n),0) || 1;
+    let cursor = s0;
+    list.forEach(n=>{
+      const span = (s1-s0) * (weight(n)/total);
+      n.angle = cursor + span/2;
+      n.radius = HUB_R + getTier(n.id) * RING_GAP;
+      assign(n.children, cursor, cursor+span);
+      cursor += span;
+    });
+  }
+  assign(roots, a0+SECTOR_PAD/2, a1-SECTOR_PAD/2);
+
+  return [...byId.values()];
+}
+
+let allLayoutNodes = [];
+
+function build(){
+  g.selectAll('*').remove();
+  allLayoutNodes = [];
+  const n = CATEGORIES.length;
+  const sectorSpan = (Math.PI*2)/n;
+
+  CATEGORIES.forEach((cat, i)=>{
+    const a0 = -Math.PI/2 + i*sectorSpan;
+    const a1 = a0 + sectorSpan;
+    const nodes = NODES.filter(x=>x.category===cat.id);
+    const laidOut = layoutSector(nodes, a0, a1);
+    laidOut.forEach(x=>x.__cat = cat.id);
+    allLayoutNodes.push(...laidOut);
+
+    const maxR = HUB_R + 7*RING_GAP;
+    const arc = d3.arc().innerRadius(HUB_R).outerRadius(maxR).startAngle(a0+Math.PI/2).endAngle(a1+Math.PI/2);
+    g.append('path').attr('class','sector-wedge').attr('d', arc)
+      .attr('fill', colorOf(cat.id)).attr('opacity', currentTheme.wedgeOpacity);
+
+    const midA = (a0+a1)/2;
+    const lx = Math.cos(midA)*(maxR+22), ly = Math.sin(midA)*(maxR+22);
+    g.append('text').attr('class','sector-label').attr('x',lx).attr('y',ly)
+      .attr('fill', colorOf(cat.id)).text(`${cat.icon} ${cat.name}`);
+  });
+
+  g.append('circle').attr('class','hub-circle').attr('r', HUB_R)
+    .attr('fill', currentTheme.hubFill).attr('stroke', currentTheme.hubStroke);
+  g.append('text').attr('class','hub-label').attr('dy','.35em').attr('fill', currentTheme.ink).text('마비노기 모바일');
+  g.append('text').attr('class','hub-label').attr('dy','1.8em').attr('fill', currentTheme.muted).text('가공 테크트리');
+
+  g.append('g').attr('id','linkLayer').selectAll('path')
+    .data(allLayoutNodes.filter(d=>d.parents && d.parents.length))
+    .join('path')
+    .attr('class','link')
+    .attr('data-cat', d=>d.__cat)
+    .attr('stroke', d=>colorOf(d.__cat))
+    .attr('d', d=>{
+      const pid = d.parents[0];
+      const p = allLayoutNodes.find(x=>x.id===pid);
+      const [x1,y1] = p ? [Math.cos(p.angle)*p.radius, Math.sin(p.angle)*p.radius] : [0,0];
+      const [x2,y2] = [Math.cos(d.angle)*d.radius, Math.sin(d.angle)*d.radius];
+      const mx=(x1+x2)/2, my=(y1+y2)/2;
+      return `M${x1},${y1} Q${mx},${my} ${x2},${y2}`;
+    });
+
+  const chip = g.append('g').attr('id','chipLayer').selectAll('g')
+    .data(allLayoutNodes)
+    .join('g')
+    .attr('class','node-chip')
+    .attr('data-cat', d=>d.__cat)
+    .attr('transform', d=>`translate(${Math.cos(d.angle)*d.radius},${Math.sin(d.angle)*d.radius})`)
+    .style('--glow', d=>colorOf(d.__cat))
+    .on('click', (ev,d)=>{
+      g.selectAll('.node-chip').classed('selected', x=>x.id===d.id);
+      openPanel(d, catById[d.__cat]);
+    });
+
+  const ICON_SIZE = 22, ICON_GAP = 5;
+  chip.append('rect').attr('fill', d=>fillOf(d.__cat)).attr('stroke', d=>colorOf(d.__cat)).attr('rx', currentTheme.chipRadius);
+  const content = chip.append('g').attr('class','chip-content');
+  content.append('image')
+    .attr('href', d=>iconUrl(d.name))
+    .attr('width', ICON_SIZE).attr('height', ICON_SIZE)
+    .attr('y', -ICON_SIZE/2)
+    .on('error', function(){ d3.select(this).style('display','none'); });
+  content.append('text').attr('text-anchor','start').attr('dy','.35em').attr('x', ICON_SIZE+ICON_GAP).text(d=>d.name);
+
+  chip.each(function(d){
+    const textEl = this.querySelector('text');
+    const bbox = textEl.getBBox();
+    const totalW = ICON_SIZE + ICON_GAP + bbox.width;
+    d3.select(this).select('.chip-content').attr('transform', `translate(${-totalW/2},0)`);
+    d3.select(this).select('rect')
+      .attr('x', -totalW/2 - 8)
+      .attr('y', -ICON_SIZE/2 - 6)
+      .attr('width', totalW + 16)
+      .attr('height', ICON_SIZE + 12);
+  });
+
+  const bounds = g.node().getBBox();
+  const stage = document.body.getBoundingClientRect();
+  const scale = Math.min(stage.width/(bounds.width+160), stage.height/(bounds.height+160), 1);
+  const tx = stage.width/2 - (bounds.x + bounds.width/2)*scale;
+  const ty = stage.height/2 - (bounds.y + bounds.height/2)*scale;
+  svg.call(zoomBehavior.transform, d3.zoomIdentity.translate(tx,ty).scale(scale));
+}
+
+function updateVisibility(){
+  g.selectAll('.node-chip').classed('dim', d=>!activeCats.has(d.__cat));
+  g.selectAll('.link').classed('dim', d=>!activeCats.has(d.__cat));
+  g.selectAll('.sector-wedge').attr('opacity', function(d,i){
+    return activeCats.has(CATEGORIES[i].id) ? currentTheme.wedgeOpacity : currentTheme.wedgeOpacity*0.2;
+  });
+}
+
+const catById = Object.fromEntries(CATEGORIES.map(c=>[c.id,c]));
+let lastNode = null, lastCat = null;
+
+function pillIcon(name){
+  return nodeByName[name] ? `<img class="pill-icon" src="${iconUrl(name)}" alt="" onerror="this.remove()">` : '';
+}
+function materialPill(m){
+  const ref = nodeByName[m.name];
+  const cross = ref && ref.category !== (lastNode ? lastNode.category : null);
+  const dot = cross ? `<span class="cross-dot" style="background:${colorOf(ref.category)}"></span>` : '';
+  const title = cross ? ` title="${catById[ref.category].icon} ${catById[ref.category].name}에서 생산"` : '';
+  return `<span class="pill"${title}>${dot}${pillIcon(m.name)}${m.name} <span class="qty">×${m.qty}</span></span>`;
+}
+
+function openPanel(node, cat){
+  lastNode = node; lastCat = cat;
+  const panel = document.getElementById('panel');
+  const body = document.getElementById('panelBody');
+  const materialsHtml = (node.materials && node.materials.length)
+    ? `<div class="pill-list">${node.materials.map(materialPill).join('')}</div>`
+    : `<div class="empty-hint">채집 / 상점 구매 등으로 직접 획득</div>`;
+
+  const usedBy = NODES.filter(n => (n.materials||[]).some(m=>m.name===node.name));
+  const unlocksHtml = usedBy.length
+    ? `<div class="pill-list">${usedBy.map(n=>{
+        const cross = n.category !== node.category;
+        const dot = cross ? `<span class="cross-dot" style="background:${colorOf(n.category)}"></span>` : '';
+        const title = cross ? ` title="${catById[n.category].icon} ${catById[n.category].name}"` : '';
+        return `<span class="pill"${title}>${dot}${pillIcon(n.name)}${n.name}</span>`;
+      }).join('')}</div>`
+    : `<div class="empty-hint">최종 단계 (더 이상 가공되지 않음)</div>`;
+
+  const baseSec = parseTimeToSeconds(node.time);
+  const effSec = baseSec * (membershipOn ? 1 : 2);
+
+  body.innerHTML = `
+    <div class="cat-label" style="color:${colorOf(cat.id)}">${cat.icon} ${cat.name}</div>
+    <h2><img class="title-icon" src="${iconUrl(node.name)}" alt="" onerror="this.remove()">${node.name} <span class="tier-badge">T${getTier(node.id)}</span></h2>
+    <div class="section-title">1회 가공 생산량</div>
+    <div class="pill-list"><span class="pill">${pillIcon(node.name)}${node.name} <span class="qty">×${node.yield}</span></span></div>
+    <div class="section-title">필요 재료</div>
+    ${materialsHtml}
+    <div class="section-title">가공 시간 (멤버십 ${membershipOn ? 'ON' : 'OFF'})</div>
+    <div class="pill-list"><span class="pill">${formatSeconds(effSec)}</span></div>
+    <div class="section-title">이 재료가 쓰이는 곳</div>
+    ${unlocksHtml}
+    <div class="disclaimer">⏱ 가공 시간은 멤버십 모드 기준으로 계산됩니다. OFF 시 소요 시간이 2배가 됩니다. · 재료 옆 색 점은 다른 카테고리에서 생산되는 재료를 의미합니다.</div>
+  `;
+  panel.classList.add('open');
+}
+function closePanel(){
+  document.getElementById('panel').classList.remove('open');
+  g.selectAll('.node-chip').classed('selected', false);
+}
+document.getElementById('closeBtn').addEventListener('click', closePanel);
+
+const msToggleEl = document.getElementById('membershipToggle');
+msToggleEl.classList.add('on');
+msToggleEl.addEventListener('click', ()=>{
+  membershipOn = !membershipOn;
+  msToggleEl.classList.toggle('on', membershipOn);
+  document.getElementById('msState').textContent = membershipOn ? 'ON' : 'OFF';
+  if(document.getElementById('panel').classList.contains('open') && lastNode){
+    openPanel(lastNode, lastCat);
+  }
+});
+
+applyTheme(currentTheme.id);
+window.addEventListener('resize', build);
+</script>
+</body>
+</html>
