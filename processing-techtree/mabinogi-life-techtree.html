@@ -62,8 +62,7 @@
   }
   .brand{
     display:flex;
-    align-items:flex-start;
-    justify-content:space-between;
+    align-items:center;
     gap:10px;
     margin-bottom:18px;
   }
@@ -137,6 +136,11 @@
     flex-wrap:wrap;
     gap:8px;
   }
+  .segmented{
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    width:100%;
+  }
   .category-stage{
     display:grid;
     gap:14px;
@@ -148,10 +152,12 @@
   #primaryCategoryList{
     display:grid;
     grid-template-columns:repeat(2,minmax(0,1fr));
+    width:100%;
   }
   #secondaryCategoryList{
     display:grid;
     grid-template-columns:repeat(3,minmax(0,1fr));
+    width:100%;
   }
   .chip{
     min-height:32px;
@@ -163,6 +169,16 @@
     font-size:12px;
     font-weight:700;
     text-align:center;
+    min-width:0;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .category-list .chip{
+    width:100%;
+  }
+  .segmented .chip{
+    width:100%;
   }
   .chip[aria-pressed="true"]{
     background:rgba(88,196,182,.18);
@@ -170,10 +186,10 @@
     color:var(--ink);
   }
   .membership-badge{
-    min-width:56px;
-    height:30px;
+    width:100%;
+    height:40px;
     padding:0 12px;
-    border-radius:999px;
+    border-radius:8px;
     border:1px solid rgba(88,196,182,.72);
     background:transparent;
     color:var(--soft);
@@ -196,12 +212,18 @@
   }
   .qty-row{
     display:grid;
-    grid-template-columns:auto minmax(0,1fr);
+    grid-template-columns:1fr 1fr;
     gap:8px;
     align-items:center;
   }
   .qty-row .label{
     white-space:nowrap;
+  }
+  .qty-control,.membership-control{
+    display:grid;
+    grid-template-columns:auto minmax(0,1fr);
+    align-items:center;
+    gap:8px;
   }
   .target-tools{
     display:grid;
@@ -573,9 +595,15 @@
     font-size:11px;
     text-transform:uppercase;
     letter-spacing:.02em;
+    text-align:center;
   }
-  td.num,th.num{
+  td.num{
     text-align:right;
+    font-variant-numeric:tabular-nums;
+    white-space:nowrap;
+  }
+  th.num{
+    text-align:center;
     font-variant-numeric:tabular-nums;
     white-space:nowrap;
   }
@@ -730,7 +758,7 @@
   }
   @media (max-width:460px){
     .stats{grid-template-columns:1fr}
-    .qty-row{grid-template-columns:auto minmax(0,1fr)}
+    .qty-row{grid-template-columns:1fr 1fr}
     .title-line{align-items:flex-start}
   }
 </style>
@@ -746,18 +774,23 @@
           <p class="subtitle">재료, 시간, 제작 대체 계산</p>
         </div>
       </div>
-      <button class="membership-badge on" id="membershipToggle" type="button" aria-pressed="true">ON</button>
     </div>
 
     <div class="control-block">
       <label class="label" for="searchInput"><span>아이템 검색</span><span id="resultCount"></span></label>
       <div class="search-wrap">
         <span aria-hidden="true">⌕</span>
-        <input class="search" id="searchInput" type="search" autocomplete="off" placeholder="예: 백금강괴, 밧줄, 버섯 진액">
+        <input class="search" id="searchInput" type="search" autocomplete="off">
       </div>
       <div class="qty-row">
-        <label class="label" for="targetQty"><span>수량</span></label>
-        <input class="qty-input" id="targetQty" type="number" min="1" step="1" value="1" aria-label="목표 수량">
+        <div class="qty-control">
+          <label class="label" for="targetQty"><span>수량</span></label>
+          <input class="qty-input" id="targetQty" type="number" min="1" step="1" value="1" aria-label="목표 수량">
+        </div>
+        <div class="membership-control">
+          <span class="label">멤버십</span>
+          <button class="membership-badge on" id="membershipToggle" type="button" aria-pressed="true">ON</button>
+        </div>
       </div>
     </div>
 
@@ -1224,7 +1257,10 @@
       <span class="badge">${node.yield}개 생산</span>
       <span class="badge">1회 ${displayTime(node)}</span>
     `;
-    el("statTime").textContent = "(" + formatSeconds(result.totalTime) + ")";
+    el("statTime").textContent = formatSeconds(result.totalTime);
+  }
+  function isDirectMaterial(key, required){
+    return state.direct.has(key) || Math.max(0, Number(state.owned[key]) || 0) >= required;
   }
   function renderRawRows(rows){
     const body = el("rawTable");
@@ -1236,7 +1272,7 @@
       const ownedValue = state.owned[key] ?? "";
       const ownedNumber = Math.max(0, Number(ownedValue) || 0);
       const shortage = Math.max(0, row.qty - ownedNumber);
-      const isDirect = row.kind === "direct" || state.direct.has(key) || ownedNumber >= row.qty;
+      const isDirect = row.kind === "direct" || isDirectMaterial(key, row.qty);
       const produced = directAllowed(row.name);
       tr.innerHTML = `
         <td>
@@ -1354,9 +1390,6 @@
       host.innerHTML = `<div class="empty">이 목표에는 선택 가능한 대체 생산법이나 중간재 직접 확보 후보가 없습니다.</div>`;
     }
   }
-  function directByOwned(key, required){
-    return Math.max(0, Number(state.owned[key]) || 0) >= required;
-  }
   function drawTree(tree){
     const svg = el("treeSvg");
     svg.innerHTML = "";
@@ -1428,7 +1461,7 @@
       rect.setAttribute("width", String(nodeWidth));
       rect.setAttribute("height", String(nodeHeight));
       rect.setAttribute("rx", "8");
-      const isStruck = node.node && (node.direct || state.direct.has(node.key) || directByOwned(node.key, node.required));
+      const isStruck = node.node && (node.direct || isDirectMaterial(node.key, node.required));
       rect.setAttribute("class", "node-card" + (node.id === state.selectedId ? " target" : "") + (node.direct && node.node ? " direct" : "") + (highlightedUids.has(node.uid) ? " highlight" : "") + (isStruck ? " struck" : ""));
       group.appendChild(rect);
       const image = document.createElementNS("http://www.w3.org/2000/svg", "image");
