@@ -225,6 +225,9 @@
     align-items:center;
     gap:8px;
   }
+  .membership-control{
+    grid-template-columns:1fr;
+  }
   .target-tools{
     display:grid;
     grid-template-columns:minmax(280px,1fr) 118px;
@@ -788,8 +791,7 @@
           <input class="qty-input" id="targetQty" type="number" min="1" step="1" value="1" aria-label="목표 수량">
         </div>
         <div class="membership-control">
-          <span class="label">멤버십</span>
-          <button class="membership-badge on" id="membershipToggle" type="button" aria-pressed="true">ON</button>
+          <button class="membership-badge on" id="membershipToggle" type="button" aria-pressed="true">멤버십 ON</button>
         </div>
       </div>
     </div>
@@ -1531,7 +1533,7 @@
     el("searchInput").value = state.query;
     el("targetQty").value = state.targetQty;
     const membership = el("membershipToggle");
-    membership.textContent = state.membership ? "ON" : "OFF";
+    membership.textContent = state.membership ? "멤버십 ON" : "멤버십 OFF";
     membership.classList.toggle("on", state.membership);
     membership.setAttribute("aria-pressed", String(state.membership));
     ["Name","Time","Tier"].forEach(name => {
