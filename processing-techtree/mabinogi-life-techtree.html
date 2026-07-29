@@ -1298,7 +1298,7 @@
           delete state.owned[key];
         }else{
           state.owned[key] = row.qty;
-          if(produced) state.direct.add(key);
+          state.direct.add(key);
         }
         render();
       });
