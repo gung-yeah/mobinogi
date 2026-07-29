@@ -182,9 +182,10 @@
   }
   .target-tools{
     display:grid;
-    grid-template-columns:minmax(240px,340px) 118px;
+    grid-template-columns:minmax(280px,1fr) 118px;
     gap:10px;
     align-items:start;
+    width:min(560px,100%);
   }
   .target-field{
     display:grid;
@@ -369,6 +370,11 @@
     gap:12px;
     margin-bottom:16px;
   }
+  .stats.time-only{
+    display:flex;
+    justify-content:flex-end;
+    margin-bottom:14px;
+  }
   .stat{
     min-height:92px;
     padding:14px;
@@ -388,6 +394,15 @@
     line-height:1.2;
     font-weight:900;
     overflow-wrap:anywhere;
+  }
+  .time-stat{
+    min-height:0;
+    min-width:150px;
+    padding:10px 12px;
+  }
+  .time-stat .stat-value{
+    margin-top:4px;
+    font-size:15px;
   }
   .stat-note{
     margin-top:5px;
@@ -435,9 +450,9 @@
   }
   .tree-svg{
     display:block;
-    min-width:640px;
+    min-width:760px;
     width:100%;
-    height:390px;
+    height:460px;
   }
   .node-card{
     fill:#172233;
@@ -455,17 +470,17 @@
   }
   .node-text{
     fill:var(--ink);
-    font-size:12px;
-    font-weight:800;
+    font-size:14px;
+    font-weight:900;
   }
   .node-sub{
     fill:var(--muted);
-    font-size:11px;
+    font-size:12px;
   }
   .edge{
     fill:none;
     stroke:#506782;
-    stroke-width:1.4;
+    stroke-width:1.8;
   }
   .table-wrap{
     overflow:auto;
@@ -625,7 +640,7 @@
     .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
     .recipe-list{grid-template-columns:1fr}
     .tree-svg{min-width:560px}
-    .target-tools{grid-template-columns:1fr}
+    .target-tools{grid-template-columns:minmax(0,1fr) 100px}
     h2{font-size:23px}
   }
   @media (max-width:460px){
@@ -715,26 +730,10 @@
       </div>
     </section>
 
-    <section class="stats" aria-label="계산 요약">
-      <div class="stat">
-        <div class="stat-label">필요 제작 횟수</div>
-        <div class="stat-value" id="statCrafts">0회</div>
-        <div class="stat-note" id="statCraftsNote">목표 아이템 기준</div>
-      </div>
-      <div class="stat">
-        <div class="stat-label">확인된 소요 시간</div>
+    <section class="stats time-only" aria-label="계산 요약">
+      <div class="stat time-stat">
+        <div class="stat-label">제작 시간</div>
         <div class="stat-value" id="statTime">0초</div>
-        <div class="stat-note" id="statTimeNote">시간 입력 레시피 기준</div>
-      </div>
-      <div class="stat">
-        <div class="stat-label">원재료 종류</div>
-        <div class="stat-value" id="statRaw">0개</div>
-        <div class="stat-note">직접 확보 처리 포함</div>
-      </div>
-      <div class="stat">
-        <div class="stat-label">중간 제작 단계</div>
-        <div class="stat-value" id="statSteps">0단계</div>
-        <div class="stat-note" id="statStepsNote">중간 제작 레시피</div>
       </div>
     </section>
 
@@ -825,7 +824,7 @@
   const categoryById = new Map(CATEGORIES.map(category => [category.id, category]));
   const PRIMARY_CATEGORIES = [
     { id:"processing", name:"가공", categories:["metal","wood","leather","cloth","potion","food"] },
-    { id:"production", name:"생산", categories:["craft_item","cook_simple","cook_power","craft_tool"] }
+    { id:"production", name:"제작", categories:["craft_item","cook_simple","cook_power","craft_tool"] }
   ];
   const SECONDARY_CATEGORIES = {
     processing:[
@@ -1082,9 +1081,7 @@
   function targetSearchNodes(){
     const query = state.targetSearch.trim().toLowerCase();
     if(!query) return [];
-    const categoryIds = activeCategoryIds();
     return NODES
-      .filter(node => categoryIds.has(node.category))
       .filter(node => node.name.toLowerCase().startsWith(query))
       .sort((a,b) => a.name.localeCompare(b.name, "ko"));
   }
@@ -1141,16 +1138,7 @@
       <span class="badge">${node.yield}개 생산</span>
       <span class="badge">1회 ${node.time ? timeLabel(node) : "시간 미입력"}</span>
     `;
-    const targetCount = Math.ceil(state.targetQty / node.yield);
-    el("statCrafts").textContent = formatNumber(targetCount) + "회";
-    el("statCraftsNote").textContent = "목표 " + formatNumber(state.targetQty) + "개, 실제 " + formatNumber(targetCount * node.yield) + "개 생산";
     el("statTime").textContent = formatSeconds(result.totalTime);
-    el("statTimeNote").textContent = result.unknownTimeCount
-      ? "시간 미입력 " + formatNumber(result.unknownTimeCount) + "개 제외"
-      : "시간 입력 레시피 기준";
-    el("statRaw").textContent = formatNumber(result.rawRows.length) + "개";
-    el("statSteps").textContent = formatNumber(result.craftRows.length) + "단계";
-    el("statStepsNote").textContent = "총 " + formatNumber(result.craftRows.reduce((sum,row) => sum + row.count, 0)) + "회 제작";
   }
   function renderRawRows(rows){
     const body = el("rawTable");
@@ -1272,14 +1260,18 @@
     };
     const rootId = walk(tree, 0);
     const flat = [...seen.values()];
-    const width = Math.max(640, levels.length * 190 + 80);
-    const height = Math.max(390, Math.max(...levels.map(list => list.length)) * 84 + 70);
+    const nodeWidth = 188;
+    const nodeHeight = 68;
+    const levelGap = 240;
+    const rowGap = 104;
+    const width = Math.max(760, levels.length * levelGap + 100);
+    const height = Math.max(460, Math.max(...levels.map(list => list.length)) * rowGap + 90);
     svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
     svg.setAttribute("height", String(height));
     levels.forEach((list, depth) => {
       const gap = height / (list.length + 1);
       list.forEach((node, index) => {
-        node.x = 38 + depth * 190;
+        node.x = 44 + depth * levelGap;
         node.y = gap * (index + 1);
       });
     });
@@ -1287,7 +1279,7 @@
       node.childrenRefs.forEach(childId => {
         const child = seen.get(childId);
         const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-        const x1 = node.x + 146;
+        const x1 = node.x + nodeWidth;
         const x2 = child.x;
         const mx = (x1 + x2) / 2;
         path.setAttribute("class", "edge");
@@ -1301,21 +1293,21 @@
       group.style.cursor = node.node ? "pointer" : "default";
       const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
       rect.setAttribute("x", node.x);
-      rect.setAttribute("y", node.y - 26);
-      rect.setAttribute("width", "146");
-      rect.setAttribute("height", "52");
+      rect.setAttribute("y", node.y - nodeHeight / 2);
+      rect.setAttribute("width", String(nodeWidth));
+      rect.setAttribute("height", String(nodeHeight));
       rect.setAttribute("rx", "8");
       rect.setAttribute("class", "node-card" + (node.id === state.selectedId ? " target" : "") + (node.direct && node.node ? " direct" : ""));
       group.appendChild(rect);
       const title = document.createElementNS("http://www.w3.org/2000/svg", "text");
-      title.setAttribute("x", node.x + 10);
-      title.setAttribute("y", node.y - 5);
+      title.setAttribute("x", node.x + 14);
+      title.setAttribute("y", node.y - 10);
       title.setAttribute("class", "node-text");
-      title.textContent = trimText(node.key, 13);
+      title.textContent = trimText(node.key, 18);
       group.appendChild(title);
       const sub = document.createElementNS("http://www.w3.org/2000/svg", "text");
-      sub.setAttribute("x", node.x + 10);
-      sub.setAttribute("y", node.y + 15);
+      sub.setAttribute("x", node.x + 14);
+      sub.setAttribute("y", node.y + 16);
       sub.setAttribute("class", "node-sub");
       sub.textContent = node.node ? `${formatNumber(node.required)}개 필요 · ${formatNumber(node.count)}회` : `${formatNumber(node.required)}개`;
       group.appendChild(sub);
@@ -1334,8 +1326,7 @@
   function copySummary(node, result){
     const raw = result.rawRows.map(row => `- ${row.name}: ${formatNumber(row.qty)}개 (${row.kind === "direct" ? "직접 확보" : "원재료"})`).join("\n");
     const steps = result.craftRows.map(row => `- ${row.node.name}: ${formatNumber(row.count)}회, ${formatNumber(row.produced)}개 생산`).join("\n");
-    const timeNote = result.unknownTimeCount ? `시간 미입력 ${formatNumber(result.unknownTimeCount)}개 제외` : "모든 제작 시간 포함";
-    const text = `[${node.name} ${formatNumber(state.targetQty)}개]\n확인된 소요 시간: ${formatSeconds(result.totalTime)} (${timeNote})\n\n필요 원재료\n${raw || "- 없음"}\n\n제작 순서\n${steps || "- 없음"}`;
+    const text = `[${node.name} ${formatNumber(state.targetQty)}개]\n제작 시간: ${formatSeconds(result.totalTime)}\n\n필요 원재료\n${raw || "- 없음"}\n\n제작 순서\n${steps || "- 없음"}`;
     navigator.clipboard.writeText(text).then(() => toast("계산 결과를 클립보드에 복사했습니다.")).catch(() => toast("브라우저 권한 때문에 자동 복사하지 못했습니다."));
   }
   let lastResult = null;
