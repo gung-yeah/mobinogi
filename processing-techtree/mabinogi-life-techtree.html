@@ -1272,7 +1272,7 @@
       const ownedValue = state.owned[key] ?? "";
       const ownedNumber = Math.max(0, Number(ownedValue) || 0);
       const shortage = Math.max(0, row.qty - ownedNumber);
-      const isDirect = row.kind === "direct" || isDirectMaterial(key, row.qty);
+      const isDirect = row.kind === "direct" || isDirectMaterial(key, row.qty) || ownedNumber >= row.qty;
       const produced = directAllowed(row.name);
       tr.innerHTML = `
         <td>
@@ -1283,17 +1283,24 @@
         </td>
         <td class="num">${formatNumber(row.qty)}</td>
         <td class="num"><input class="owned-input" type="number" min="0" step="1" value="${ownedValue}" aria-label="${row.name} 소유 수량"></td>
-        <td class="num">${formatNumber(shortage)}</td>
+        <td class="num shortage-cell">${formatNumber(shortage)}</td>
         <td><button class="tag action ${isDirect ? "direct" : ""}" type="button">${isDirect ? "직접 확보" : "원재료 확보"}</button></td>
       `;
       tr.querySelector(".owned-input").addEventListener("input", event => {
         const value = event.target.value;
         if(value === "") delete state.owned[key];
         else state.owned[key] = Math.max(0, Math.floor(Number(value) || 0));
-        render();
+        const currentOwned = Math.max(0, Number(state.owned[key]) || 0);
+        const currentDirect = row.kind === "direct" || state.direct.has(key) || currentOwned >= row.qty;
+        tr.querySelector(".shortage-cell").textContent = formatNumber(Math.max(0, row.qty - currentOwned));
+        const button = tr.querySelector(".tag.action");
+        button.classList.toggle("direct", currentDirect);
+        button.textContent = currentDirect ? "직접 확보" : "원재료 확보";
       });
       tr.querySelector(".tag.action").addEventListener("click", () => {
-        if(isDirect){
+        const currentOwned = Math.max(0, Number(state.owned[key]) || 0);
+        const currentDirect = row.kind === "direct" || state.direct.has(key) || currentOwned >= row.qty;
+        if(currentDirect){
           state.direct.delete(key);
           delete state.owned[key];
         }else{
