@@ -130,6 +130,10 @@
     flex-wrap:wrap;
     gap:8px;
   }
+  .category-stage{
+    display:grid;
+    gap:8px;
+  }
   .chip{
     min-height:32px;
     padding:7px 10px;
@@ -176,6 +180,69 @@
     grid-template-columns:1fr 86px;
     gap:8px;
   }
+  .target-tools{
+    display:grid;
+    grid-template-columns:minmax(240px,340px) 118px;
+    gap:10px;
+    align-items:start;
+  }
+  .target-field{
+    display:grid;
+    gap:6px;
+    color:var(--soft);
+    font-size:12px;
+    font-weight:800;
+  }
+  .target-search-wrap{
+    position:relative;
+  }
+  .target-suggestions{
+    position:absolute;
+    z-index:20;
+    top:calc(100% + 6px);
+    left:0;
+    right:0;
+    max-height:320px;
+    overflow:auto;
+    border:1px solid var(--line-strong);
+    border-radius:8px;
+    background:rgba(18,25,39,.98);
+    box-shadow:var(--shadow);
+  }
+  .target-suggestion{
+    display:grid;
+    grid-template-columns:28px minmax(0,1fr) auto;
+    align-items:center;
+    gap:8px;
+    width:100%;
+    min-height:44px;
+    padding:7px 8px;
+    border-bottom:1px solid var(--line);
+    background:transparent;
+    text-align:left;
+  }
+  .target-suggestion:last-child{ border-bottom:0; }
+  .target-suggestion:hover,.target-suggestion.active{ background:rgba(88,196,182,.13); }
+  .target-suggestion img{
+    width:28px;
+    height:28px;
+    border-radius:6px;
+    object-fit:cover;
+    background:var(--panel-2);
+  }
+  .suggestion-name{
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    font-size:12px;
+    font-weight:900;
+  }
+  .suggestion-meta{
+    margin-top:2px;
+    color:var(--muted);
+    font-size:11px;
+  }
+  .is-hidden{ display:none !important; }
   .recipe-list{
     display:grid;
     gap:8px;
@@ -347,6 +414,12 @@
     gap:12px;
     padding:14px 16px;
     border-bottom:1px solid var(--line);
+  }
+  .panel-actions{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:flex-end;
+    gap:8px;
   }
   .panel-title{
     margin:0;
@@ -552,6 +625,7 @@
     .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
     .recipe-list{grid-template-columns:1fr}
     .tree-svg{min-width:560px}
+    .target-tools{grid-template-columns:1fr}
     h2{font-size:23px}
   }
   @media (max-width:460px){
@@ -580,16 +654,21 @@
       </div>
     </div>
 
-    <div class="control-block">
-      <div class="label"><span>카테고리</span></div>
-      <div class="category-list" id="categoryList"></div>
+    <div class="control-block category-stage">
+      <div>
+        <div class="label"><span>1차 카테고리</span></div>
+        <div class="category-list" id="primaryCategoryList"></div>
+      </div>
+      <div>
+        <div class="label"><span>2차 카테고리</span></div>
+        <div class="category-list" id="secondaryCategoryList"></div>
+      </div>
     </div>
 
     <div class="control-block">
       <div class="switch-row">
         <div>
-          <div class="label"><span>멤버십 시간</span><span id="membershipState">ON</span></div>
-          <div class="subtitle">OFF는 시간이 입력된 레시피를 2배로 계산</div>
+          <div class="label"><span>멤버십</span><span id="membershipState">ON</span></div>
         </div>
         <input id="membershipToggle" type="checkbox" checked aria-label="멤버십 시간 적용">
       </div>
@@ -619,10 +698,19 @@
         </div>
       </div>
       <div class="actions">
-        <label class="qty-row" for="targetQty">
-          <select class="select" id="targetSelect" aria-label="목표 아이템"></select>
-          <input class="qty-input" id="targetQty" type="number" min="1" step="1" value="1" aria-label="목표 수량">
-        </label>
+        <div class="target-tools">
+          <div class="target-field">
+            <label for="targetSearch">검색:</label>
+            <div class="target-search-wrap">
+              <input class="search" id="targetSearch" type="search" autocomplete="off" placeholder="아이템 이름 입력">
+              <div class="target-suggestions is-hidden" id="targetSuggestions"></div>
+            </div>
+          </div>
+          <label class="target-field" for="targetQty">
+            <span>수량:</span>
+            <input class="qty-input" id="targetQty" type="number" min="1" step="1" value="1" aria-label="목표 수량">
+          </label>
+        </div>
         <button class="btn primary" id="copyBtn" type="button">계산 복사</button>
       </div>
     </section>
@@ -654,7 +742,10 @@
       <div class="panel">
         <div class="panel-head">
           <h3 class="panel-title">제작 단계</h3>
-          <button class="btn" id="resetDirectBtn" type="button">직접 확보 초기화</button>
+          <div class="panel-actions">
+            <button class="btn is-hidden" id="treeBackBtn" type="button">상위로</button>
+            <button class="btn" id="resetDirectBtn" type="button">직접 확보 초기화</button>
+          </div>
         </div>
         <div class="tree-wrap">
           <svg class="tree-svg" id="treeSvg" role="img" aria-label="선택한 목표 아이템의 제작 단계"></svg>
@@ -719,16 +810,38 @@
   };
   const state = {
     query:"",
-    category:"all",
+    primaryCategory:"processing",
+    secondaryCategory:"metal",
     sort:"name",
     membership:true,
     selectedId:"m9",
+    targetSearch:"백금강괴",
     targetQty:5,
+    navStack:[],
     direct:new Set(),
     choices:{}
   };
   const nodeById = new Map(NODES.map(node => [node.id, node]));
   const categoryById = new Map(CATEGORIES.map(category => [category.id, category]));
+  const PRIMARY_CATEGORIES = [
+    { id:"processing", name:"가공", categories:["metal","wood","leather","cloth","potion","food"] },
+    { id:"production", name:"생산", categories:["craft_item","cook_simple","cook_power","craft_tool"] }
+  ];
+  const SECONDARY_CATEGORIES = {
+    processing:[
+      { id:"metal", name:"금속 가공", categories:["metal"] },
+      { id:"wood", name:"목재 가공", categories:["wood"] },
+      { id:"leather", name:"가죽 가공", categories:["leather"] },
+      { id:"cloth", name:"옷감 가공", categories:["cloth"] },
+      { id:"potion", name:"약품 가공", categories:["potion"] },
+      { id:"food", name:"식재료 가공", categories:["food"] }
+    ],
+    production:[
+      { id:"craft_item", name:"아이템 제작", categories:["craft_item"] },
+      { id:"cook_food", name:"음식 제작", categories:["cook_simple","cook_power"] },
+      { id:"craft_tool", name:"도구 제작", categories:["craft_tool"] }
+    ]
+  };
   const producedKey = name => {
     const value = String(name).trim();
     const simpleAlias = value.match(/^(철괴)\(.+\)$/);
@@ -791,6 +904,9 @@
     return [...list].sort((a,b) => secondsOf(a.time) - secondsOf(b.time) || a.materials.length - b.materials.length)[0];
   };
   const categoryLabel = node => {
+    if(["cook_simple","cook_power"].includes(node.category)) return "음식 제작";
+    if(node.category === "craft_item") return "아이템 제작";
+    if(node.category === "craft_tool") return "도구 제작";
     const category = categoryById.get(node.category);
     return category ? category.icon + " " + category.name : node.category;
   };
@@ -863,25 +979,54 @@
     return current;
   }
   const el = id => document.getElementById(id);
+  function activeSecondary(){
+    const list = SECONDARY_CATEGORIES[state.primaryCategory] || SECONDARY_CATEGORIES.processing;
+    return list.find(item => item.id === state.secondaryCategory) || list[0];
+  }
+  function activeCategoryIds(){
+    return new Set(activeSecondary().categories);
+  }
   function renderCategories(){
-    const host = el("categoryList");
-    host.innerHTML = "";
-    [{id:"all", name:"전체", icon:"✦"}, ...CATEGORIES].forEach(category => {
+    const primaryHost = el("primaryCategoryList");
+    const secondaryHost = el("secondaryCategoryList");
+    primaryHost.innerHTML = "";
+    secondaryHost.innerHTML = "";
+    PRIMARY_CATEGORIES.forEach(category => {
       const button = document.createElement("button");
       button.type = "button";
       button.className = "chip";
-      button.setAttribute("aria-pressed", String(state.category === category.id));
-      button.textContent = (category.icon ? category.icon + " " : "") + category.name;
+      button.setAttribute("aria-pressed", String(state.primaryCategory === category.id));
+      button.textContent = category.name;
       button.addEventListener("click", () => {
-        state.category = category.id;
+        state.primaryCategory = category.id;
+        state.secondaryCategory = SECONDARY_CATEGORIES[category.id][0].id;
+        state.query = "";
+        el("searchInput").value = "";
+        state.navStack = [];
         render();
       });
-      host.appendChild(button);
+      primaryHost.appendChild(button);
+    });
+    SECONDARY_CATEGORIES[state.primaryCategory].forEach(category => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "chip";
+      button.setAttribute("aria-pressed", String(state.secondaryCategory === category.id));
+      button.textContent = category.name;
+      button.addEventListener("click", () => {
+        state.secondaryCategory = category.id;
+        state.query = "";
+        el("searchInput").value = "";
+        state.navStack = [];
+        render();
+      });
+      secondaryHost.appendChild(button);
     });
   }
   function filteredNodes(){
     const query = state.query.trim().toLowerCase();
-    let list = NODES.filter(node => state.category === "all" || node.category === state.category);
+    const categoryIds = activeCategoryIds();
+    let list = NODES.filter(node => categoryIds.has(node.category));
     if(query){
       list = list.filter(node => {
         const haystack = [node.name, categoryLabel(node), ...(node.materials || []).map(item => item.name)].join(" ").toLowerCase();
@@ -911,10 +1056,7 @@
         <span class="badge">${rarity[node.rarity || "silver"].name}</span>
       `;
       button.addEventListener("click", () => {
-        state.selectedId = node.id;
-        state.targetQty = Math.max(1, Number(el("targetQty").value) || node.yield || 1);
-        state.direct.delete(producedKey(node.name));
-        render();
+        selectNode(node.id, { resetNavigation:true });
       });
       host.appendChild(button);
     });
@@ -922,17 +1064,68 @@
       host.innerHTML = `<div class="empty">검색 결과가 없습니다.</div>`;
     }
   }
-  function renderTargetSelect(){
-    const select = el("targetSelect");
-    const current = select.value;
-    select.innerHTML = "";
-    NODES.slice().sort((a,b) => a.name.localeCompare(b.name, "ko")).forEach(node => {
-      const option = document.createElement("option");
-      option.value = node.id;
-      option.textContent = node.name;
-      select.appendChild(option);
+  function selectNode(id, options = {}){
+    const node = nodeById.get(id);
+    if(!node) return;
+    if(options.fromTree && node.id !== state.selectedId){
+      state.navStack.push(state.selectedId);
+    }
+    if(options.resetNavigation){
+      state.navStack = [];
+    }
+    state.selectedId = node.id;
+    state.targetSearch = node.name;
+    state.targetQty = Math.max(1, Number(el("targetQty").value) || node.yield || 1);
+    state.direct.delete(producedKey(node.name));
+    render();
+  }
+  function targetSearchNodes(){
+    const query = state.targetSearch.trim().toLowerCase();
+    if(!query) return [];
+    const categoryIds = activeCategoryIds();
+    return NODES
+      .filter(node => categoryIds.has(node.category))
+      .filter(node => node.name.toLowerCase().startsWith(query))
+      .sort((a,b) => a.name.localeCompare(b.name, "ko"));
+  }
+  function renderTargetSuggestions(){
+    const host = el("targetSuggestions");
+    const input = el("targetSearch");
+    input.value = state.targetSearch;
+    host.innerHTML = "";
+    const query = state.targetSearch.trim();
+    const list = targetSearchNodes();
+    host.classList.toggle("is-hidden", !query || !list.length || query === (nodeById.get(state.selectedId)?.name || ""));
+    list.forEach(node => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "target-suggestion" + (node.id === state.selectedId ? " active" : "");
+      button.innerHTML = `
+        <img src="${iconPath(node.name)}" alt="" onerror="this.style.visibility='hidden'">
+        <span>
+          <span class="suggestion-name">${node.name}</span>
+          <span class="suggestion-meta">${categoryLabel(node)} · ${node.yield}개 생산</span>
+        </span>
+        <span class="badge">${node.time || "시간 미입력"}</span>
+      `;
+      button.addEventListener("click", () => {
+        selectNode(node.id, { resetNavigation:true });
+      });
+      host.appendChild(button);
     });
-    select.value = nodeById.has(state.selectedId) ? state.selectedId : current;
+  }
+  function ensureSelectedMatchesCategory(){
+    const current = nodeById.get(state.selectedId);
+    const categoryIds = activeCategoryIds();
+    if(current && categoryIds.has(current.category)) return;
+    const next = NODES
+      .filter(node => categoryIds.has(node.category))
+      .sort((a,b) => a.name.localeCompare(b.name, "ko"))[0];
+    if(next){
+      state.selectedId = next.id;
+      state.targetSearch = next.name;
+      state.navStack = [];
+    }
   }
   function renderHeader(node, result){
     el("selectedTitle").textContent = node.name;
@@ -953,8 +1146,8 @@
     el("statCraftsNote").textContent = "목표 " + formatNumber(state.targetQty) + "개, 실제 " + formatNumber(targetCount * node.yield) + "개 생산";
     el("statTime").textContent = formatSeconds(result.totalTime);
     el("statTimeNote").textContent = result.unknownTimeCount
-      ? (state.membership ? "멤버십 ON, " : "멤버십 OFF, ") + "시간 미입력 " + formatNumber(result.unknownTimeCount) + "개 제외"
-      : (state.membership ? "멤버십 ON 기준" : "멤버십 OFF 기준");
+      ? "시간 미입력 " + formatNumber(result.unknownTimeCount) + "개 제외"
+      : "시간 입력 레시피 기준";
     el("statRaw").textContent = formatNumber(result.rawRows.length) + "개";
     el("statSteps").textContent = formatNumber(result.craftRows.length) + "단계";
     el("statStepsNote").textContent = "총 " + formatNumber(result.craftRows.reduce((sum,row) => sum + row.count, 0)) + "회 제작";
@@ -1128,9 +1321,7 @@
       group.appendChild(sub);
       if(node.node){
         group.addEventListener("click", () => {
-          state.selectedId = node.node.id;
-          state.direct.delete(producedKey(node.node.name));
-          render();
+          selectNode(node.node.id, { fromTree:true });
         });
       }
       svg.appendChild(group);
@@ -1150,14 +1341,15 @@
   let lastResult = null;
   function render(){
     renderCategories();
+    ensureSelectedMatchesCategory();
     const list = filteredNodes();
     renderRecipeList(list);
-    renderTargetSelect();
     const node = nodeById.get(state.selectedId) || NODES[0];
-    el("targetSelect").value = node.id;
     el("targetQty").value = state.targetQty;
+    renderTargetSuggestions();
     el("membershipToggle").checked = state.membership;
     el("membershipState").textContent = state.membership ? "ON" : "OFF";
+    el("treeBackBtn").classList.toggle("is-hidden", !state.navStack.length);
     ["Name","Time","Tier"].forEach(name => {
       const key = name.toLowerCase();
       el("sort" + name + "Btn").setAttribute("aria-pressed", String(state.sort === key));
@@ -1181,6 +1373,21 @@
     state.query = event.target.value;
     render();
   });
+  el("targetSearch").addEventListener("input", event => {
+    state.targetSearch = event.target.value;
+    renderTargetSuggestions();
+  });
+  el("targetSearch").addEventListener("focus", () => {
+    renderTargetSuggestions();
+  });
+  el("targetSearch").addEventListener("keydown", event => {
+    if(event.key !== "Enter") return;
+    const first = targetSearchNodes()[0];
+    if(first){
+      event.preventDefault();
+      selectNode(first.id, { resetNavigation:true });
+    }
+  });
   el("membershipToggle").addEventListener("change", event => {
     state.membership = event.target.checked;
     render();
@@ -1189,14 +1396,14 @@
     state.targetQty = Math.max(1, Math.floor(Number(event.target.value) || 1));
     render();
   });
-  el("targetSelect").addEventListener("change", event => {
-    state.selectedId = event.target.value;
-    state.direct.delete(producedKey(nodeById.get(state.selectedId).name));
-    render();
-  });
   el("sortNameBtn").addEventListener("click", () => { state.sort = "name"; render(); });
   el("sortTimeBtn").addEventListener("click", () => { state.sort = "time"; render(); });
   el("sortTierBtn").addEventListener("click", () => { state.sort = "tier"; render(); });
+  el("treeBackBtn").addEventListener("click", () => {
+    const previous = state.navStack.pop();
+    if(previous) selectNode(previous);
+    else render();
+  });
   el("resetDirectBtn").addEventListener("click", () => {
     state.direct.clear();
     render();
