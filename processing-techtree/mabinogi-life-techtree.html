@@ -888,12 +888,19 @@
     "견고한 곡괭이":"전문 캠프파이어 키트",
     "견고한 곤충 채집망":"전문 캠프파이어 키트",
     "견고한 낚싯대":"전문 캠프파이어 키트",
-    "최상급 붕대":"최상급 붕대10",
     "염색약":"환영 가루",
     "호박 수프":"호박 스프",
     "풍미 가득 스테이크":"풍미 가득 크림 스테이크"
   };
-  const iconPath = name => "icons/" + (ICON_ALIASES[name] || name) + ".png";
+  const iconName = item => {
+    const node = typeof item === "object" && item ? item : null;
+    const name = node ? node.name : item;
+    if(name === "최상급 붕대"){
+      return node && node.yield === 5 ? "최상급 붕대5" : "최상급 붕대10";
+    }
+    return ICON_ALIASES[name] || name;
+  };
+  const iconPath = item => "icons/" + iconName(item) + ".png";
   const tierCache = new Map();
   const tierOf = id => {
     if(tierCache.has(id)) return tierCache.get(id);
@@ -1060,7 +1067,7 @@
       button.type = "button";
       button.className = "recipe-btn" + (node.id === state.selectedId ? " active" : "");
       button.innerHTML = `
-        <img class="item-icon" src="${iconPath(node.name)}" alt="" onerror="this.style.visibility='hidden'">
+        <img class="item-icon" src="${iconPath(node)}" alt="" onerror="this.style.visibility='hidden'">
         <div>
           <div class="recipe-name">${node.name}</div>
           <div class="recipe-meta">${categoryLabel(node)} · ${node.yield}개 생산 · ${node.time || "시간 미입력"}</div>
@@ -1111,7 +1118,7 @@
       button.type = "button";
       button.className = "target-suggestion" + (node.id === state.selectedId ? " active" : "");
       button.innerHTML = `
-        <img src="${iconPath(node.name)}" alt="" onerror="this.style.visibility='hidden'">
+        <img src="${iconPath(node)}" alt="" onerror="this.style.visibility='hidden'">
         <span>
           <span class="suggestion-name">${node.name}</span>
           <span class="suggestion-meta">${categoryLabel(node)} · ${node.yield}개 생산</span>
@@ -1140,7 +1147,7 @@
   function renderHeader(node, result){
     el("selectedTitle").textContent = node.name;
     const icon = el("selectedIcon");
-    icon.src = iconPath(node.name);
+    icon.src = iconPath(node);
     icon.alt = node.name;
     icon.onerror = () => { icon.style.visibility = "hidden"; };
     icon.style.visibility = "visible";
@@ -1163,7 +1170,7 @@
       tr.innerHTML = `
         <td>
           <div class="material-cell">
-            ${produced ? `<img src="${iconPath(row.source ? row.source.name : row.name)}" alt="" onerror="this.remove()">` : ""}
+            ${produced ? `<img src="${iconPath(row.source || row.name)}" alt="" onerror="this.remove()">` : ""}
             <span class="material-name">${row.name}</span>
           </div>
         </td>
@@ -1184,7 +1191,7 @@
       const item = document.createElement("div");
       item.className = "step";
       item.innerHTML = `
-        <img class="item-icon" src="${iconPath(row.node.name)}" alt="" onerror="this.style.visibility='hidden'">
+        <img class="item-icon" src="${iconPath(row.node)}" alt="" onerror="this.style.visibility='hidden'">
         <div>
           <div class="step-title">${row.node.name}</div>
           <div class="step-sub">${categoryLabel(row.node)} · ${formatNumber(row.count)}회 · ${formatNumber(row.produced)}개 생산</div>
