@@ -1,0 +1,1212 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>마비노기 모바일 생활 테크트리 계산기</title>
+<style>
+  :root{
+    color-scheme: dark;
+    --bg:#0a0d14;
+    --bg-soft:#101826;
+    --panel:#121927;
+    --panel-2:#172233;
+    --line:#263449;
+    --line-strong:#3b506e;
+    --ink:#eef4ff;
+    --muted:#95a4ba;
+    --soft:#c8d3e3;
+    --accent:#58c4b6;
+    --accent-2:#e5be5f;
+    --danger:#f27c7c;
+    --green:#62c879;
+    --blue:#73a7f2;
+    --purple:#b88af0;
+    --pink:#eb7ab5;
+    --orange:#efad58;
+    --shadow:0 18px 48px rgba(0,0,0,.28);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    min-height:100vh;
+    background:
+      radial-gradient(circle at 22% 14%, rgba(88,196,182,.13), transparent 28rem),
+      radial-gradient(circle at 84% 10%, rgba(229,190,95,.12), transparent 28rem),
+      linear-gradient(135deg, #08101b 0%, #0a0d14 44%, #13131d 100%);
+    color:var(--ink);
+    font-family:"Pretendard","Noto Sans KR",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  }
+  button,input,select{
+    font:inherit;
+  }
+  button{
+    border:0;
+    color:inherit;
+    cursor:pointer;
+  }
+  .app{
+    display:grid;
+    grid-template-columns:320px minmax(0,1fr);
+    min-height:100vh;
+  }
+  .sidebar{
+    position:sticky;
+    top:0;
+    height:100vh;
+    overflow:auto;
+    padding:18px;
+    border-right:1px solid var(--line);
+    background:rgba(12,17,27,.86);
+    backdrop-filter:blur(10px);
+  }
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:18px;
+  }
+  .brand-mark{
+    display:grid;
+    place-items:center;
+    width:40px;
+    height:40px;
+    border-radius:8px;
+    background:linear-gradient(135deg, rgba(88,196,182,.26), rgba(229,190,95,.18));
+    border:1px solid var(--line-strong);
+    font-size:22px;
+  }
+  h1{
+    margin:0;
+    font-size:20px;
+    line-height:1.25;
+    letter-spacing:0;
+  }
+  .subtitle{
+    margin:2px 0 0;
+    color:var(--muted);
+    font-size:12px;
+  }
+  .control-block{
+    display:grid;
+    gap:10px;
+    margin:14px 0;
+  }
+  .label{
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+    color:var(--soft);
+    font-size:12px;
+    font-weight:700;
+  }
+  .search-wrap{
+    position:relative;
+  }
+  .search-wrap span{
+    position:absolute;
+    left:12px;
+    top:50%;
+    transform:translateY(-50%);
+    color:var(--muted);
+    pointer-events:none;
+  }
+  .search{
+    width:100%;
+    height:40px;
+    padding:0 12px 0 34px;
+    color:var(--ink);
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:8px;
+    outline:none;
+  }
+  .search:focus,.qty-input:focus,.select:focus{
+    border-color:var(--accent);
+    box-shadow:0 0 0 3px rgba(88,196,182,.16);
+  }
+  .segmented,.category-list{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+  .chip{
+    min-height:32px;
+    padding:7px 10px;
+    border-radius:8px;
+    background:var(--panel);
+    border:1px solid var(--line);
+    color:var(--soft);
+    font-size:12px;
+    font-weight:700;
+  }
+  .chip[aria-pressed="true"]{
+    background:rgba(88,196,182,.18);
+    border-color:rgba(88,196,182,.7);
+    color:var(--ink);
+  }
+  .switch-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    min-height:40px;
+    padding:9px 10px;
+    border-radius:8px;
+    background:var(--panel);
+    border:1px solid var(--line);
+  }
+  .switch-row input{
+    width:42px;
+    height:22px;
+    accent-color:var(--accent);
+  }
+  .select,.qty-input{
+    width:100%;
+    height:40px;
+    padding:0 10px;
+    color:var(--ink);
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:8px;
+    outline:none;
+  }
+  .qty-row{
+    display:grid;
+    grid-template-columns:1fr 86px;
+    gap:8px;
+  }
+  .recipe-list{
+    display:grid;
+    gap:8px;
+    margin-top:10px;
+  }
+  .recipe-btn{
+    display:grid;
+    grid-template-columns:32px minmax(0,1fr) auto;
+    align-items:center;
+    gap:10px;
+    width:100%;
+    min-height:52px;
+    padding:8px;
+    border-radius:8px;
+    border:1px solid var(--line);
+    background:rgba(18,25,39,.86);
+    text-align:left;
+  }
+  .recipe-btn:hover,.recipe-btn.active{
+    border-color:var(--accent);
+    background:rgba(88,196,182,.13);
+  }
+  .item-icon{
+    width:32px;
+    height:32px;
+    border-radius:7px;
+    object-fit:cover;
+    background:var(--panel-2);
+    border:1px solid rgba(255,255,255,.08);
+  }
+  .recipe-name{
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    font-weight:800;
+    font-size:13px;
+  }
+  .recipe-meta{
+    margin-top:2px;
+    color:var(--muted);
+    font-size:11px;
+  }
+  .badge{
+    display:inline-flex;
+    align-items:center;
+    min-height:24px;
+    padding:3px 8px;
+    border-radius:999px;
+    border:1px solid var(--line);
+    color:var(--soft);
+    font-size:11px;
+    font-weight:800;
+    white-space:nowrap;
+  }
+  .main{
+    min-width:0;
+    padding:24px;
+  }
+  .topbar{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) auto;
+    gap:16px;
+    align-items:start;
+    margin-bottom:18px;
+  }
+  .title-line{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    min-width:0;
+  }
+  .title-line img{
+    width:48px;
+    height:48px;
+    border-radius:8px;
+    object-fit:cover;
+    border:1px solid var(--line-strong);
+    background:var(--panel-2);
+  }
+  h2{
+    margin:0;
+    font-size:28px;
+    line-height:1.2;
+    letter-spacing:0;
+  }
+  .meta-line{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-top:8px;
+  }
+  .actions{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:flex-end;
+    gap:8px;
+  }
+  .btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:7px;
+    min-height:38px;
+    padding:8px 12px;
+    border-radius:8px;
+    border:1px solid var(--line);
+    background:var(--panel);
+    color:var(--soft);
+    font-weight:800;
+    font-size:12px;
+  }
+  .btn.primary{
+    border-color:rgba(88,196,182,.78);
+    background:rgba(88,196,182,.18);
+    color:var(--ink);
+  }
+  .btn.danger{
+    border-color:rgba(242,124,124,.52);
+    color:#ffd6d6;
+  }
+  .stats{
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:12px;
+    margin-bottom:16px;
+  }
+  .stat{
+    min-height:92px;
+    padding:14px;
+    border-radius:8px;
+    border:1px solid var(--line);
+    background:linear-gradient(180deg, rgba(23,34,51,.86), rgba(18,25,39,.86));
+    box-shadow:var(--shadow);
+  }
+  .stat-label{
+    color:var(--muted);
+    font-size:12px;
+    font-weight:700;
+  }
+  .stat-value{
+    margin-top:8px;
+    font-size:23px;
+    line-height:1.2;
+    font-weight:900;
+    overflow-wrap:anywhere;
+  }
+  .stat-note{
+    margin-top:5px;
+    color:var(--muted);
+    font-size:11px;
+  }
+  .layout{
+    display:grid;
+    grid-template-columns:minmax(0,1fr);
+    gap:16px;
+    align-items:start;
+  }
+  .panel{
+    min-width:0;
+    border-radius:8px;
+    border:1px solid var(--line);
+    background:rgba(18,25,39,.84);
+    box-shadow:var(--shadow);
+  }
+  .panel-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    padding:14px 16px;
+    border-bottom:1px solid var(--line);
+  }
+  .panel-title{
+    margin:0;
+    font-size:15px;
+    font-weight:900;
+  }
+  .panel-body{
+    padding:14px 16px 16px;
+  }
+  .tree-wrap{
+    min-height:390px;
+    overflow:auto;
+  }
+  .tree-svg{
+    display:block;
+    min-width:640px;
+    width:100%;
+    height:390px;
+  }
+  .node-card{
+    fill:#172233;
+    stroke:#344864;
+    stroke-width:1;
+  }
+  .node-card.target{
+    fill:rgba(88,196,182,.26);
+    stroke:#58c4b6;
+  }
+  .node-card.direct{
+    fill:rgba(229,190,95,.18);
+    stroke:#e5be5f;
+    stroke-dasharray:5 4;
+  }
+  .node-text{
+    fill:var(--ink);
+    font-size:12px;
+    font-weight:800;
+  }
+  .node-sub{
+    fill:var(--muted);
+    font-size:11px;
+  }
+  .edge{
+    fill:none;
+    stroke:#506782;
+    stroke-width:1.4;
+  }
+  .table-wrap{
+    overflow:auto;
+  }
+  table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:420px;
+  }
+  th,td{
+    padding:10px 8px;
+    border-bottom:1px solid var(--line);
+    text-align:left;
+    vertical-align:middle;
+    font-size:13px;
+  }
+  th{
+    color:var(--muted);
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.02em;
+  }
+  td.num,th.num{
+    text-align:right;
+    font-variant-numeric:tabular-nums;
+    white-space:nowrap;
+  }
+  .material-cell{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    min-width:0;
+  }
+  .material-cell img{
+    width:26px;
+    height:26px;
+    border-radius:6px;
+    object-fit:cover;
+    background:var(--panel-2);
+  }
+  .material-name{
+    min-width:0;
+    overflow-wrap:anywhere;
+    font-weight:800;
+  }
+  .tag{
+    display:inline-flex;
+    align-items:center;
+    min-height:22px;
+    padding:2px 7px;
+    border-radius:999px;
+    background:rgba(255,255,255,.06);
+    border:1px solid var(--line);
+    color:var(--soft);
+    font-size:11px;
+    font-weight:800;
+    white-space:nowrap;
+  }
+  .tag.direct{
+    color:#ffe2a0;
+    border-color:rgba(229,190,95,.45);
+    background:rgba(229,190,95,.1);
+  }
+  .tag.crafted{
+    color:#b6fff1;
+    border-color:rgba(88,196,182,.42);
+    background:rgba(88,196,182,.09);
+  }
+  .two-col{
+    display:grid;
+    grid-template-columns:minmax(260px,.9fr) minmax(360px,1.1fr) minmax(260px,.9fr);
+    gap:16px;
+  }
+  .step-list,.alt-list{
+    display:grid;
+    gap:10px;
+  }
+  .step{
+    display:grid;
+    grid-template-columns:32px minmax(0,1fr) auto;
+    align-items:center;
+    gap:10px;
+    padding:10px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    background:rgba(255,255,255,.035);
+  }
+  .step-title{
+    font-size:13px;
+    font-weight:900;
+    overflow-wrap:anywhere;
+  }
+  .step-sub{
+    margin-top:3px;
+    color:var(--muted);
+    font-size:11px;
+  }
+  .alt-item{
+    display:grid;
+    gap:8px;
+    padding:10px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    background:rgba(255,255,255,.035);
+  }
+  .alt-head{
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+    align-items:center;
+  }
+  .empty{
+    color:var(--muted);
+    font-size:13px;
+    line-height:1.55;
+  }
+  .toast{
+    position:fixed;
+    right:18px;
+    bottom:18px;
+    max-width:360px;
+    padding:11px 13px;
+    border-radius:8px;
+    border:1px solid var(--line-strong);
+    background:rgba(18,25,39,.96);
+    color:var(--ink);
+    box-shadow:var(--shadow);
+    opacity:0;
+    transform:translateY(8px);
+    pointer-events:none;
+    transition:opacity .18s ease, transform .18s ease;
+    font-size:13px;
+  }
+  .toast.show{
+    opacity:1;
+    transform:translateY(0);
+  }
+  @media (max-width:1080px){
+    .app{grid-template-columns:1fr}
+    .sidebar{
+      position:relative;
+      height:auto;
+      border-right:0;
+      border-bottom:1px solid var(--line);
+    }
+    .recipe-list{
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      max-height:360px;
+      overflow:auto;
+    }
+    .layout,.two-col{grid-template-columns:1fr}
+  }
+  @media (max-width:760px){
+    .main{padding:16px}
+    .topbar{grid-template-columns:1fr}
+    .actions{justify-content:flex-start}
+    .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .recipe-list{grid-template-columns:1fr}
+    .tree-svg{min-width:560px}
+    h2{font-size:23px}
+  }
+  @media (max-width:460px){
+    .stats{grid-template-columns:1fr}
+    .qty-row{grid-template-columns:1fr}
+    .title-line{align-items:flex-start}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">✦</div>
+      <div>
+        <h1>생활 테크트리</h1>
+        <p class="subtitle">재료, 시간, 제작 대체 계산</p>
+      </div>
+    </div>
+
+    <div class="control-block">
+      <label class="label" for="searchInput"><span>아이템 검색</span><span id="resultCount"></span></label>
+      <div class="search-wrap">
+        <span aria-hidden="true">⌕</span>
+        <input class="search" id="searchInput" type="search" autocomplete="off" placeholder="예: 백금강괴, 밧줄, 버섯 진액">
+      </div>
+    </div>
+
+    <div class="control-block">
+      <div class="label"><span>카테고리</span></div>
+      <div class="category-list" id="categoryList"></div>
+    </div>
+
+    <div class="control-block">
+      <div class="switch-row">
+        <div>
+          <div class="label"><span>멤버십 시간</span><span id="membershipState">ON</span></div>
+          <div class="subtitle">OFF는 시간이 입력된 레시피를 2배로 계산</div>
+        </div>
+        <input id="membershipToggle" type="checkbox" checked aria-label="멤버십 시간 적용">
+      </div>
+    </div>
+
+    <div class="control-block">
+      <div class="label"><span>표시 기준</span></div>
+      <div class="segmented">
+        <button class="chip" id="sortNameBtn" type="button" aria-pressed="true">이름순</button>
+        <button class="chip" id="sortTimeBtn" type="button" aria-pressed="false">시간순</button>
+        <button class="chip" id="sortTierBtn" type="button" aria-pressed="false">단계순</button>
+      </div>
+    </div>
+
+    <div class="recipe-list" id="recipeList"></div>
+  </aside>
+
+  <main class="main">
+    <section class="topbar" aria-labelledby="selectedTitle">
+      <div>
+        <div class="title-line">
+          <img id="selectedIcon" alt="">
+          <div>
+            <h2 id="selectedTitle"></h2>
+            <div class="meta-line" id="selectedMeta"></div>
+          </div>
+        </div>
+      </div>
+      <div class="actions">
+        <label class="qty-row" for="targetQty">
+          <select class="select" id="targetSelect" aria-label="목표 아이템"></select>
+          <input class="qty-input" id="targetQty" type="number" min="1" step="1" value="1" aria-label="목표 수량">
+        </label>
+        <button class="btn primary" id="copyBtn" type="button">계산 복사</button>
+      </div>
+    </section>
+
+    <section class="stats" aria-label="계산 요약">
+      <div class="stat">
+        <div class="stat-label">필요 제작 횟수</div>
+        <div class="stat-value" id="statCrafts">0회</div>
+        <div class="stat-note" id="statCraftsNote">목표 아이템 기준</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">확인된 소요 시간</div>
+        <div class="stat-value" id="statTime">0초</div>
+        <div class="stat-note" id="statTimeNote">시간 입력 레시피 기준</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">원재료 종류</div>
+        <div class="stat-value" id="statRaw">0개</div>
+        <div class="stat-note">직접 확보 처리 포함</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">중간 제작 단계</div>
+        <div class="stat-value" id="statSteps">0단계</div>
+        <div class="stat-note" id="statStepsNote">중간 제작 레시피</div>
+      </div>
+    </section>
+
+    <section class="layout">
+      <div class="panel">
+        <div class="panel-head">
+          <h3 class="panel-title">제작 단계</h3>
+          <button class="btn" id="resetDirectBtn" type="button">직접 확보 초기화</button>
+        </div>
+        <div class="tree-wrap">
+          <svg class="tree-svg" id="treeSvg" role="img" aria-label="선택한 목표 아이템의 제작 단계"></svg>
+        </div>
+      </div>
+    </section>
+
+    <section class="two-col" style="margin-top:16px">
+      <div class="panel">
+        <div class="panel-head">
+          <h3 class="panel-title">제작 순서</h3>
+          <span class="badge" id="stepBadge">0개</span>
+        </div>
+        <div class="panel-body">
+          <div class="step-list" id="stepList"></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h3 class="panel-title">필요 원재료</h3>
+          <span class="badge" id="rawTotalBadge">0종</span>
+        </div>
+        <div class="panel-body table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>재료</th>
+                <th class="num">필요 수량</th>
+                <th>처리</th>
+              </tr>
+            </thead>
+            <tbody id="rawTable"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h3 class="panel-title">생산 대체 방법</h3>
+          <span class="badge" id="altBadge">0개</span>
+        </div>
+        <div class="panel-body">
+          <div class="alt-list" id="altList"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="data.js"></script>
+<script>
+(() => {
+  const rarity = {
+    silver:{name:"일반", color:"var(--soft)"},
+    green:{name:"고급", color:"var(--green)"},
+    blue:{name:"레어", color:"var(--blue)"},
+    purple:{name:"엘리트", color:"var(--purple)"},
+    pink:{name:"에픽", color:"var(--pink)"},
+    orange:{name:"전설", color:"var(--orange)"}
+  };
+  const state = {
+    query:"",
+    category:"all",
+    sort:"name",
+    membership:true,
+    selectedId:"m9",
+    targetQty:5,
+    direct:new Set(),
+    choices:{}
+  };
+  const nodeById = new Map(NODES.map(node => [node.id, node]));
+  const categoryById = new Map(CATEGORIES.map(category => [category.id, category]));
+  const producedKey = name => {
+    const value = String(name).trim();
+    const simpleAlias = value.match(/^(철괴)\(.+\)$/);
+    if(simpleAlias) return simpleAlias[1];
+    const crystalAlias = value.match(/^((?:광휘|불꽃|얼음|전기|봉인)의 결정)\(.+\)$/);
+    if(crystalAlias) return crystalAlias[1];
+    return value;
+  };
+  const producers = new Map();
+  NODES.forEach(node => {
+    const key = producedKey(node.name);
+    if(!producers.has(key)) producers.set(key, []);
+    producers.get(key).push(node);
+  });
+  const secondsOf = value => {
+    if(!value) return 0;
+    const h = value.match(/(\d+)\s*시간/);
+    const m = value.match(/(\d+)\s*분/);
+    const s = value.match(/(\d+)\s*초/);
+    return (h ? Number(h[1]) * 3600 : 0) + (m ? Number(m[1]) * 60 : 0) + (s ? Number(s[1]) : 0);
+  };
+  const timeLabel = (node, count = 1) => {
+    if(!node.time) return "시간 미입력";
+    const seconds = secondsOf(node.time) * count * (state.membership ? 1 : 2);
+    return count === 1 ? formatSeconds(seconds) : formatSeconds(seconds);
+  };
+  const formatSeconds = value => {
+    let total = Math.max(0, Math.round(value));
+    const h = Math.floor(total / 3600);
+    total -= h * 3600;
+    const m = Math.floor(total / 60);
+    const s = total - m * 60;
+    const parts = [];
+    if(h) parts.push(h + "시간");
+    if(m) parts.push(m + "분");
+    if(s || !parts.length) parts.push(s + "초");
+    return parts.join(" ");
+  };
+  const formatNumber = value => new Intl.NumberFormat("ko-KR").format(value);
+  const iconPath = name => "icons/" + name + ".png";
+  const tierCache = new Map();
+  const tierOf = id => {
+    if(tierCache.has(id)) return tierCache.get(id);
+    const node = nodeById.get(id);
+    if(!node || !node.materials) return 1;
+    let max = 0;
+    node.materials.forEach(material => {
+      const producer = pickProducer(material.name);
+      if(producer && producer.id !== id) max = Math.max(max, tierOf(producer.id));
+    });
+    tierCache.set(id, max + 1);
+    return max + 1;
+  };
+  const pickProducer = materialName => {
+    const key = producedKey(materialName);
+    const list = producers.get(key);
+    if(!list || !list.length) return null;
+    const chosenId = state.choices[key];
+    if(chosenId) return list.find(node => node.id === chosenId) || list[0];
+    return [...list].sort((a,b) => secondsOf(a.time) - secondsOf(b.time) || a.materials.length - b.materials.length)[0];
+  };
+  const categoryLabel = node => {
+    const category = categoryById.get(node.category);
+    return category ? category.icon + " " + category.name : node.category;
+  };
+  const directAllowed = name => producers.has(producedKey(name));
+  const addMap = (map, key, amount, meta) => {
+    if(!map.has(key)) map.set(key, {...meta, qty:0});
+    map.get(key).qty += amount;
+  };
+  const addCraft = (map, node, key, count, produced) => {
+    if(!map.has(node.id)) map.set(node.id, {node, key, count:0, produced:0});
+    const row = map.get(node.id);
+    row.count += count;
+    row.produced += produced;
+  };
+  function calculate(node, amount){
+    const raw = new Map();
+    const crafts = new Map();
+    const visits = new Set();
+    const tree = buildNeed(node, amount, true, visits, raw, crafts);
+    const craftRows = [...crafts.values()].sort((a,b) => tierOf(a.node.id) - tierOf(b.node.id) || a.node.name.localeCompare(b.node.name, "ko"));
+    const rawRows = [...raw.values()].sort((a,b) => b.qty - a.qty || a.name.localeCompare(b.name, "ko"));
+    const totalTime = craftRows.reduce((sum,row) => sum + row.count * secondsOf(row.node.time) * (state.membership ? 1 : 2), 0);
+    const unknownTimeCount = craftRows.filter(row => !row.node.time).length;
+    return {tree, rawRows, craftRows, totalTime, unknownTimeCount};
+  }
+  function buildNeed(node, amount, isTarget, visits, raw, crafts){
+    const key = producedKey(node.name);
+    const count = Math.ceil(amount / node.yield);
+    const produced = count * node.yield;
+    const direct = !isTarget && state.direct.has(key);
+    const current = {
+      id:node.id,
+      name:node.name,
+      key,
+      required:amount,
+      produced,
+      count,
+      node,
+      direct,
+      children:[]
+    };
+    if(direct){
+      addMap(raw, key, amount, {name:key, kind:"direct", source:node});
+      return current;
+    }
+    addCraft(crafts, node, key, count, produced);
+    if(visits.has(node.id)) return current;
+    const nextVisits = new Set(visits);
+    nextVisits.add(node.id);
+    (node.materials || []).forEach(material => {
+      const needed = material.qty * count;
+      const producer = pickProducer(material.name);
+      if(producer && producer.id !== node.id){
+        current.children.push(buildNeed(producer, needed, false, nextVisits, raw, crafts));
+      }else{
+        addMap(raw, material.name, needed, {name:material.name, kind:"raw"});
+        current.children.push({
+          id:"raw-" + material.name,
+          name:material.name,
+          key:material.name,
+          required:needed,
+          produced:needed,
+          count:0,
+          node:null,
+          direct:true,
+          children:[]
+        });
+      }
+    });
+    return current;
+  }
+  const el = id => document.getElementById(id);
+  function renderCategories(){
+    const host = el("categoryList");
+    host.innerHTML = "";
+    [{id:"all", name:"전체", icon:"✦"}, ...CATEGORIES].forEach(category => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "chip";
+      button.setAttribute("aria-pressed", String(state.category === category.id));
+      button.textContent = (category.icon ? category.icon + " " : "") + category.name;
+      button.addEventListener("click", () => {
+        state.category = category.id;
+        render();
+      });
+      host.appendChild(button);
+    });
+  }
+  function filteredNodes(){
+    const query = state.query.trim().toLowerCase();
+    let list = NODES.filter(node => state.category === "all" || node.category === state.category);
+    if(query){
+      list = list.filter(node => {
+        const haystack = [node.name, categoryLabel(node), ...(node.materials || []).map(item => item.name)].join(" ").toLowerCase();
+        return haystack.includes(query);
+      });
+    }
+    return list.sort((a,b) => {
+      if(state.sort === "time") return (a.time ? 0 : 1) - (b.time ? 0 : 1) || secondsOf(a.time) - secondsOf(b.time) || a.name.localeCompare(b.name, "ko");
+      if(state.sort === "tier") return tierOf(a.id) - tierOf(b.id) || a.name.localeCompare(b.name, "ko");
+      return a.name.localeCompare(b.name, "ko");
+    });
+  }
+  function renderRecipeList(list){
+    const host = el("recipeList");
+    host.innerHTML = "";
+    el("resultCount").textContent = list.length + "개";
+    list.forEach(node => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "recipe-btn" + (node.id === state.selectedId ? " active" : "");
+      button.innerHTML = `
+        <img class="item-icon" src="${iconPath(node.name)}" alt="" onerror="this.style.visibility='hidden'">
+        <div>
+          <div class="recipe-name">${node.name}</div>
+          <div class="recipe-meta">${categoryLabel(node)} · ${node.yield}개 생산 · ${node.time || "시간 미입력"}</div>
+        </div>
+        <span class="badge">${rarity[node.rarity || "silver"].name}</span>
+      `;
+      button.addEventListener("click", () => {
+        state.selectedId = node.id;
+        state.targetQty = Math.max(1, Number(el("targetQty").value) || node.yield || 1);
+        state.direct.delete(producedKey(node.name));
+        render();
+      });
+      host.appendChild(button);
+    });
+    if(!list.length){
+      host.innerHTML = `<div class="empty">검색 결과가 없습니다.</div>`;
+    }
+  }
+  function renderTargetSelect(){
+    const select = el("targetSelect");
+    const current = select.value;
+    select.innerHTML = "";
+    NODES.slice().sort((a,b) => a.name.localeCompare(b.name, "ko")).forEach(node => {
+      const option = document.createElement("option");
+      option.value = node.id;
+      option.textContent = node.name;
+      select.appendChild(option);
+    });
+    select.value = nodeById.has(state.selectedId) ? state.selectedId : current;
+  }
+  function renderHeader(node, result){
+    el("selectedTitle").textContent = node.name;
+    const icon = el("selectedIcon");
+    icon.src = iconPath(node.name);
+    icon.alt = node.name;
+    icon.onerror = () => { icon.style.visibility = "hidden"; };
+    icon.style.visibility = "visible";
+    const tier = rarity[node.rarity || "silver"];
+    el("selectedMeta").innerHTML = `
+      <span class="badge">${categoryLabel(node)}</span>
+      <span class="badge" style="color:${tier.color}">${tier.name}</span>
+      <span class="badge">${node.yield}개 생산</span>
+      <span class="badge">1회 ${node.time ? timeLabel(node) : "시간 미입력"}</span>
+    `;
+    const targetCount = Math.ceil(state.targetQty / node.yield);
+    el("statCrafts").textContent = formatNumber(targetCount) + "회";
+    el("statCraftsNote").textContent = "목표 " + formatNumber(state.targetQty) + "개, 실제 " + formatNumber(targetCount * node.yield) + "개 생산";
+    el("statTime").textContent = formatSeconds(result.totalTime);
+    el("statTimeNote").textContent = result.unknownTimeCount
+      ? (state.membership ? "멤버십 ON, " : "멤버십 OFF, ") + "시간 미입력 " + formatNumber(result.unknownTimeCount) + "개 제외"
+      : (state.membership ? "멤버십 ON 기준" : "멤버십 OFF 기준");
+    el("statRaw").textContent = formatNumber(result.rawRows.length) + "개";
+    el("statSteps").textContent = formatNumber(result.craftRows.length) + "단계";
+    el("statStepsNote").textContent = "총 " + formatNumber(result.craftRows.reduce((sum,row) => sum + row.count, 0)) + "회 제작";
+  }
+  function renderRawRows(rows){
+    const body = el("rawTable");
+    body.innerHTML = "";
+    el("rawTotalBadge").textContent = rows.length + "종";
+    rows.forEach(row => {
+      const tr = document.createElement("tr");
+      const produced = directAllowed(row.name);
+      tr.innerHTML = `
+        <td>
+          <div class="material-cell">
+            ${produced ? `<img src="${iconPath(row.source ? row.source.name : row.name)}" alt="" onerror="this.remove()">` : ""}
+            <span class="material-name">${row.name}</span>
+          </div>
+        </td>
+        <td class="num">${formatNumber(row.qty)}</td>
+        <td>${row.kind === "direct" ? `<span class="tag direct">직접 확보</span>` : `<span class="tag">원재료</span>`}</td>
+      `;
+      body.appendChild(tr);
+    });
+    if(!rows.length){
+      body.innerHTML = `<tr><td colspan="3" class="empty">필요 원재료가 없습니다.</td></tr>`;
+    }
+  }
+  function renderSteps(rows){
+    const host = el("stepList");
+    host.innerHTML = "";
+    el("stepBadge").textContent = rows.length + "개";
+    rows.forEach(row => {
+      const item = document.createElement("div");
+      item.className = "step";
+      item.innerHTML = `
+        <img class="item-icon" src="${iconPath(row.node.name)}" alt="" onerror="this.style.visibility='hidden'">
+        <div>
+          <div class="step-title">${row.node.name}</div>
+          <div class="step-sub">${categoryLabel(row.node)} · ${formatNumber(row.count)}회 · ${formatNumber(row.produced)}개 생산</div>
+        </div>
+        <span class="badge">${row.node.time ? timeLabel(row.node, row.count) : "시간 미입력"}</span>
+      `;
+      host.appendChild(item);
+    });
+    if(!rows.length) host.innerHTML = `<div class="empty">제작 단계가 없습니다.</div>`;
+  }
+  function collectAlternativeKeys(result){
+    const keys = new Set();
+    const visit = tree => {
+      if(!tree) return;
+      if(producers.has(tree.key) && producers.get(tree.key).length > 1) keys.add(tree.key);
+      tree.children.forEach(visit);
+    };
+    visit(result.tree);
+    return [...keys].sort((a,b) => a.localeCompare(b, "ko"));
+  }
+  function renderAlternatives(result){
+    const host = el("altList");
+    host.innerHTML = "";
+    const keys = collectAlternativeKeys(result);
+    el("altBadge").textContent = keys.length + "개";
+    keys.forEach(key => {
+      const box = document.createElement("div");
+      box.className = "alt-item";
+      const list = producers.get(key);
+      const selected = pickProducer(key);
+      box.innerHTML = `
+        <div class="alt-head">
+          <strong>${key}</strong>
+          <span class="tag crafted">${list.length}가지</span>
+        </div>
+        <select class="select" aria-label="${key} 생산 방법">
+          ${list.map(node => `<option value="${node.id}" ${node.id === selected.id ? "selected" : ""}>${node.name} · ${node.yield}개 · ${node.time || "시간 미입력"}</option>`).join("")}
+        </select>
+      `;
+      box.querySelector("select").addEventListener("change", event => {
+        state.choices[key] = event.target.value;
+        render();
+      });
+      host.appendChild(box);
+    });
+    const directCandidates = result.craftRows
+      .map(row => producedKey(row.node.name))
+      .filter((key,index,list) => key !== producedKey(nodeById.get(state.selectedId).name) && list.indexOf(key) === index)
+      .sort((a,b) => a.localeCompare(b, "ko"));
+    directCandidates.slice(0, 12).forEach(key => {
+      const node = pickProducer(key);
+      const box = document.createElement("div");
+      box.className = "alt-item";
+      const isDirect = state.direct.has(key);
+      box.innerHTML = `
+        <div class="alt-head">
+          <strong>${key}</strong>
+          <span class="tag ${isDirect ? "direct" : "crafted"}">${isDirect ? "직접 확보" : "제작 포함"}</span>
+        </div>
+        <button class="btn ${isDirect ? "primary" : ""}" type="button">${isDirect ? "제작 계산에 다시 포함" : "보유/거래소/채집으로 직접 확보"}</button>
+        <div class="step-sub">기본 생산: ${node.name} · ${node.time || "시간 미입력"}</div>
+      `;
+      box.querySelector("button").addEventListener("click", () => {
+        if(state.direct.has(key)) state.direct.delete(key);
+        else state.direct.add(key);
+        render();
+      });
+      host.appendChild(box);
+    });
+    if(!host.children.length){
+      host.innerHTML = `<div class="empty">이 목표에는 선택 가능한 대체 생산법이나 중간재 직접 확보 후보가 없습니다.</div>`;
+    }
+  }
+  function drawTree(tree){
+    const svg = el("treeSvg");
+    svg.innerHTML = "";
+    const levels = [];
+    const seen = new Map();
+    const walk = (node, depth) => {
+      if(!levels[depth]) levels[depth] = [];
+      const copy = {...node, depth, uid:node.id + "-" + depth + "-" + levels[depth].length};
+      levels[depth].push(copy);
+      seen.set(copy.uid, copy);
+      copy.childrenRefs = node.children.map(child => walk(child, depth + 1));
+      return copy.uid;
+    };
+    const rootId = walk(tree, 0);
+    const flat = [...seen.values()];
+    const width = Math.max(640, levels.length * 190 + 80);
+    const height = Math.max(390, Math.max(...levels.map(list => list.length)) * 84 + 70);
+    svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+    svg.setAttribute("height", String(height));
+    levels.forEach((list, depth) => {
+      const gap = height / (list.length + 1);
+      list.forEach((node, index) => {
+        node.x = 38 + depth * 190;
+        node.y = gap * (index + 1);
+      });
+    });
+    flat.forEach(node => {
+      node.childrenRefs.forEach(childId => {
+        const child = seen.get(childId);
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        const x1 = node.x + 146;
+        const x2 = child.x;
+        const mx = (x1 + x2) / 2;
+        path.setAttribute("class", "edge");
+        path.setAttribute("d", `M${x1},${node.y} C${mx},${node.y} ${mx},${child.y} ${x2},${child.y}`);
+        svg.appendChild(path);
+      });
+    });
+    flat.forEach(node => {
+      const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      group.setAttribute("role", "button");
+      group.style.cursor = node.node ? "pointer" : "default";
+      const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      rect.setAttribute("x", node.x);
+      rect.setAttribute("y", node.y - 26);
+      rect.setAttribute("width", "146");
+      rect.setAttribute("height", "52");
+      rect.setAttribute("rx", "8");
+      rect.setAttribute("class", "node-card" + (node.id === state.selectedId ? " target" : "") + (node.direct && node.node ? " direct" : ""));
+      group.appendChild(rect);
+      const title = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      title.setAttribute("x", node.x + 10);
+      title.setAttribute("y", node.y - 5);
+      title.setAttribute("class", "node-text");
+      title.textContent = trimText(node.key, 13);
+      group.appendChild(title);
+      const sub = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      sub.setAttribute("x", node.x + 10);
+      sub.setAttribute("y", node.y + 15);
+      sub.setAttribute("class", "node-sub");
+      sub.textContent = node.node ? `${formatNumber(node.required)}개 필요 · ${formatNumber(node.count)}회` : `${formatNumber(node.required)}개`;
+      group.appendChild(sub);
+      if(node.node){
+        group.addEventListener("click", () => {
+          state.selectedId = node.node.id;
+          state.direct.delete(producedKey(node.node.name));
+          render();
+        });
+      }
+      svg.appendChild(group);
+    });
+    svg.dataset.root = rootId;
+  }
+  function trimText(value, max){
+    return value.length > max ? value.slice(0, max - 1) + "…" : value;
+  }
+  function copySummary(node, result){
+    const raw = result.rawRows.map(row => `- ${row.name}: ${formatNumber(row.qty)}개 (${row.kind === "direct" ? "직접 확보" : "원재료"})`).join("\n");
+    const steps = result.craftRows.map(row => `- ${row.node.name}: ${formatNumber(row.count)}회, ${formatNumber(row.produced)}개 생산`).join("\n");
+    const timeNote = result.unknownTimeCount ? `시간 미입력 ${formatNumber(result.unknownTimeCount)}개 제외` : "모든 제작 시간 포함";
+    const text = `[${node.name} ${formatNumber(state.targetQty)}개]\n확인된 소요 시간: ${formatSeconds(result.totalTime)} (${timeNote})\n\n필요 원재료\n${raw || "- 없음"}\n\n제작 순서\n${steps || "- 없음"}`;
+    navigator.clipboard.writeText(text).then(() => toast("계산 결과를 클립보드에 복사했습니다.")).catch(() => toast("브라우저 권한 때문에 자동 복사하지 못했습니다."));
+  }
+  let lastResult = null;
+  function render(){
+    renderCategories();
+    const list = filteredNodes();
+    renderRecipeList(list);
+    renderTargetSelect();
+    const node = nodeById.get(state.selectedId) || NODES[0];
+    el("targetSelect").value = node.id;
+    el("targetQty").value = state.targetQty;
+    el("membershipToggle").checked = state.membership;
+    el("membershipState").textContent = state.membership ? "ON" : "OFF";
+    ["Name","Time","Tier"].forEach(name => {
+      const key = name.toLowerCase();
+      el("sort" + name + "Btn").setAttribute("aria-pressed", String(state.sort === key));
+    });
+    const result = calculate(node, state.targetQty);
+    lastResult = result;
+    renderHeader(node, result);
+    renderRawRows(result.rawRows);
+    renderSteps(result.craftRows);
+    renderAlternatives(result);
+    drawTree(result.tree);
+  }
+  function toast(message){
+    const box = el("toast");
+    box.textContent = message;
+    box.classList.add("show");
+    window.clearTimeout(toast.timer);
+    toast.timer = window.setTimeout(() => box.classList.remove("show"), 1800);
+  }
+  el("searchInput").addEventListener("input", event => {
+    state.query = event.target.value;
+    render();
+  });
+  el("membershipToggle").addEventListener("change", event => {
+    state.membership = event.target.checked;
+    render();
+  });
+  el("targetQty").addEventListener("input", event => {
+    state.targetQty = Math.max(1, Math.floor(Number(event.target.value) || 1));
+    render();
+  });
+  el("targetSelect").addEventListener("change", event => {
+    state.selectedId = event.target.value;
+    state.direct.delete(producedKey(nodeById.get(state.selectedId).name));
+    render();
+  });
+  el("sortNameBtn").addEventListener("click", () => { state.sort = "name"; render(); });
+  el("sortTimeBtn").addEventListener("click", () => { state.sort = "time"; render(); });
+  el("sortTierBtn").addEventListener("click", () => { state.sort = "tier"; render(); });
+  el("resetDirectBtn").addEventListener("click", () => {
+    state.direct.clear();
+    render();
+  });
+  el("copyBtn").addEventListener("click", () => {
+    const node = nodeById.get(state.selectedId);
+    if(node && lastResult) copySummary(node, lastResult);
+  });
+  render();
+})();
+</script>
+</body>
+</html>
