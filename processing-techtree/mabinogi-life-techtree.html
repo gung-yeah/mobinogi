@@ -1260,7 +1260,7 @@
     el("statTime").textContent = formatSeconds(result.totalTime);
   }
   function isDirectMaterial(key, required){
-    return state.direct.has(key) || Math.max(0, Number(state.owned[key]) || 0) >= required;
+    return state.direct.has(key);
   }
   function renderRawRows(rows){
     const body = el("rawTable");
