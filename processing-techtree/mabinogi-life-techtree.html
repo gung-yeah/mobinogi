@@ -935,6 +935,7 @@
     direct:new Set(),
     owned:{},
     highlightKey:null,
+    materialFocus:null,
     choices:{}
   };
   const nodeById = new Map(NODES.map(node => [node.id, node]));
@@ -1137,6 +1138,10 @@
     state.primaryCategory = match.primaryId;
     state.secondaryCategory = match.secondaryId;
   }
+  function clearTreeFocus(){
+    state.highlightKey = null;
+    state.materialFocus = null;
+  }
   function nodeSearchMatches(query){
     const value = query.trim().toLowerCase();
     if(!value) return [];
@@ -1167,7 +1172,7 @@
         state.secondaryCategory = SECONDARY_CATEGORIES[category.id][0].id;
         state.query = "";
         el("searchInput").value = "";
-        state.highlightKey = null;
+        clearTreeFocus();
         state.navStack = [];
         render();
       });
@@ -1183,7 +1188,7 @@
         state.secondaryCategory = category.id;
         state.query = "";
         el("searchInput").value = "";
-        state.highlightKey = null;
+        clearTreeFocus();
         state.navStack = [];
         render();
       });
@@ -1237,7 +1242,7 @@
     if(options.syncCategory !== false) syncCategoryToNode(node);
     state.targetQty = Math.max(1, Number(el("targetQty").value) || node.yield || 1);
     state.direct.delete(producedKey(node.name));
-    state.highlightKey = null;
+    clearTreeFocus();
     render();
   }
   function ensureSelectedMatchesCategory(){
@@ -1322,6 +1327,43 @@
     if(!rows.length){
       body.innerHTML = `<tr><td colspan="5" class="empty">총 재료가 없습니다.</td></tr>`;
     }
+  }
+  function findTreeItemByUid(tree, targetUid){
+    if(!tree || !targetUid) return null;
+    const levels = [];
+    let match = null;
+    const walk = (item, depth) => {
+      if(!levels[depth]) levels[depth] = [];
+      const uid = item.id + "-" + depth + "-" + levels[depth].length;
+      levels[depth].push(item);
+      if(uid === targetUid) match = item;
+      item.children.forEach(child => walk(child, depth + 1));
+    };
+    walk(tree, 0);
+    return match;
+  }
+  function materialRowsForFocus(result){
+    const currentFocus = findTreeItemByUid(result.tree, state.highlightKey);
+    if(state.highlightKey && !currentFocus){
+      clearTreeFocus();
+      return result.rawRows;
+    }
+    const focus = currentFocus || state.materialFocus;
+    if(!focus) return result.rawRows;
+    if(focus.node || focus.nodeId){
+      const node = focus.node || nodeById.get(focus.nodeId);
+      if(node) return calculate(node, Math.max(1, focus.required || node.yield || 1)).rawRows;
+    }
+    if(focus.key){
+      const key = producedKey(focus.key);
+      return [{
+        name:focus.key,
+        key,
+        qty:Math.max(0, focus.required || 0),
+        kind:"raw"
+      }];
+    }
+    return result.rawRows;
   }
   function renderSteps(rows){
     const host = el("stepList");
@@ -1513,7 +1555,19 @@
         group.appendChild(strike);
       }
       group.addEventListener("click", () => {
-        state.highlightKey = state.highlightKey === node.uid ? null : node.uid;
+        const isRoot = node.uid === rootId;
+        const isSelected = state.highlightKey === node.uid;
+        if(isRoot || isSelected){
+          clearTreeFocus();
+        }else{
+          state.highlightKey = node.uid;
+          state.materialFocus = {
+            uid:node.uid,
+            nodeId:node.node ? node.node.id : null,
+            key:node.key,
+            required:node.required
+          };
+        }
         render();
       });
       svg.appendChild(group);
@@ -1549,7 +1603,7 @@
     const result = calculate(node, state.targetQty);
     lastResult = result;
     renderHeader(node, result);
-    renderRawRows(result.rawRows);
+    renderRawRows(materialRowsForFocus(result));
     renderSteps(result.craftRows);
     renderAlternatives(result);
     drawTree(result.tree);
@@ -1567,7 +1621,7 @@
     if(match){
       syncCategoryToNode(match);
       state.selectedId = match.id;
-      state.highlightKey = null;
+      clearTreeFocus();
       state.direct.delete(producedKey(match.name));
     }
     render();
