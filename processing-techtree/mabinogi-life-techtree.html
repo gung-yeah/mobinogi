@@ -888,6 +888,41 @@
     .title-line{align-items:flex-start}
   }
 </style>
+<style>
+  body{
+    -webkit-user-select:none;
+    -moz-user-select:none;
+    -ms-user-select:none;
+    user-select:none;
+  }
+  input, textarea{
+    -webkit-user-select:text;
+    -moz-user-select:text;
+    -ms-user-select:text;
+    user-select:text;
+  }
+</style>
+<script>
+  document.addEventListener('contextmenu', function(e){
+    e.preventDefault();
+  });
+  document.addEventListener('selectstart', function(e){
+    e.preventDefault();
+  });
+  document.addEventListener('copy', function(e){
+    e.preventDefault();
+  });
+  document.addEventListener('keydown', function(e){
+    if(
+      e.key === 'F12' ||
+      (e.ctrlKey && e.key === 'u') ||
+      (e.ctrlKey && e.shiftKey && e.key === 'I') ||
+      (e.ctrlKey && e.key === 's')
+    ){
+      e.preventDefault();
+    }
+  });
+</script>
 </head>
 <body>
 <div class="app">
