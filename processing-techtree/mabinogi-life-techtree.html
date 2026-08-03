@@ -742,8 +742,16 @@
   }
   .two-col{
     display:grid;
-    grid-template-columns:minmax(220px,.75fr) minmax(360px,1fr) minmax(520px,1.65fr);
+    grid-template-columns:minmax(220px,.75fr) minmax(560px,1.65fr);
     gap:16px;
+  }
+  .tag.raw{
+    color:#d9e4f2;
+    border-color:rgba(148,163,184,.32);
+    background:rgba(148,163,184,.1);
+  }
+  td.type-cell{
+    text-align:center;
   }
   .mabi-info{
     display:flex;
@@ -925,9 +933,9 @@
     <div class="control-block">
       <div class="label"><span>표시 기준</span></div>
       <div class="segmented">
-        <button class="chip" id="sortNameBtn" type="button" aria-pressed="true">이름순</button>
+        <button class="chip" id="sortTierBtn" type="button" aria-pressed="true">단계순</button>
+        <button class="chip" id="sortNameBtn" type="button" aria-pressed="false">이름순</button>
         <button class="chip" id="sortTimeBtn" type="button" aria-pressed="false">시간순</button>
-        <button class="chip" id="sortTierBtn" type="button" aria-pressed="false">단계순</button>
       </div>
     </div>
 
@@ -985,31 +993,8 @@
       <div class="panel">
         <div class="panel-head">
           <div class="panel-title-row">
-            <h3 class="panel-title">총 재료</h3>
-            <span class="badge" id="rawTotalBadge">0종</span>
-          </div>
-        </div>
-        <div class="panel-body table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>재료</th>
-                <th class="num">필요 수량</th>
-                <th class="num">소유</th>
-                <th class="num">부족</th>
-                <th>상태</th>
-              </tr>
-            </thead>
-            <tbody id="rawTable"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="panel">
-        <div class="panel-head">
-          <div class="panel-title-row">
-            <h3 class="panel-title">가공 대체</h3>
-            <span class="badge" id="altBadge">0개</span>
+            <h3 class="panel-title">재료</h3>
+            <span class="badge" id="materialTotalBadge">원재료 0종 가공품 0종</span>
             <button class="btn" id="resetDirectBtn" type="button">상태 초기화</button>
           </div>
         </div>
@@ -1017,7 +1002,8 @@
           <table>
             <thead>
               <tr>
-                <th>가공품</th>
+                <th>재료</th>
+                <th>구분</th>
                 <th class="num">필요 수량</th>
                 <th class="num">소유</th>
                 <th class="num">부족</th>
@@ -1025,7 +1011,7 @@
                 <th>구하는 방법</th>
               </tr>
             </thead>
-            <tbody id="altTable"></tbody>
+            <tbody id="materialTable"></tbody>
           </table>
         </div>
       </div>
@@ -1050,7 +1036,7 @@
     query:"",
     primaryCategory:"processing",
     secondaryCategory:"metal",
-    sort:"name",
+    sort:"tier",
     membership:true,
     selectedId:"m9",
     targetQty:5,
@@ -1564,10 +1550,9 @@
     });
 
     if(!chips.length && info?.obtain?.length){
-      info.obtain
-        .filter(line => line && !/상자/.test(line))
-        .slice(0, 2)
-        .forEach(line => addChip(chip(line, info.iconUrl)));
+      const lines = info.obtain.filter(line => line && !/상자/.test(line));
+      const line = lines[1] || lines[0];
+      if(line) addChip(chip(line.replace(" · ", ": "), info.iconUrl));
     }
     if(!chips.length && producer){
       addChip(chip("가공 시설", materialIconPath(producer)));
@@ -1586,6 +1571,8 @@
       const ownedNumber = Math.max(0, Number(ownedValue) || 0);
       const shortage = Math.max(0, row.qty - ownedNumber);
       const isDirect = row.kind === "direct" || isDirectMaterial(key, row.qty);
+      const typeLabel = row.type === "alt" ? "가공품" : "원재료";
+      const typeClass = row.type === "alt" ? "crafted" : "raw";
       tr.innerHTML = `
         <td>
           <div class="material-cell">
@@ -1593,6 +1580,7 @@
             <span class="material-name material-jump" data-search-name="${escapeHtml(row.name)}">${escapeHtml(row.name)}</span>
           </div>
         </td>
+        <td class="type-cell"><span class="tag ${typeClass}">${typeLabel}</span></td>
         <td class="num">${formatNumber(row.qty)}</td>
         <td class="num"><input class="owned-input" type="number" min="0" step="1" value="${ownedValue}" aria-label="${escapeHtml(row.name)} 소유 수량"></td>
         <td class="num shortage-cell">${formatNumber(shortage)}</td>
@@ -1629,13 +1617,8 @@
       body.appendChild(tr);
     });
     if(!rows.length){
-      body.innerHTML = `<tr><td colspan="${showMethod ? 6 : 5}" class="empty">${emptyText}</td></tr>`;
+      body.innerHTML = `<tr><td colspan="${showMethod ? 7 : 6}" class="empty">${emptyText}</td></tr>`;
     }
-  }
-  function renderRawRows(rows){
-    const body = el("rawTable");
-    el("rawTotalBadge").textContent = rows.length + "종";
-    renderMaterialTableRows(body, rows, "총 재료가 없습니다.", "재료", false);
   }
   function findTreeItemByUid(tree, targetUid){
     if(!tree || !targetUid) return null;
@@ -1655,24 +1638,30 @@
     const currentFocus = findTreeItemByUid(result.tree, state.highlightKey);
     if(state.highlightKey && !currentFocus){
       clearTreeFocus();
-      return result.rawRows;
+      return {rawRows:result.rawRows, craftRows:result.craftRows};
     }
     const focus = currentFocus || state.materialFocus;
-    if(!focus) return result.rawRows;
+    if(!focus) return {rawRows:result.rawRows, craftRows:result.craftRows};
     if(focus.node || focus.nodeId){
       const node = focus.node || nodeById.get(focus.nodeId);
-      if(node) return calculate(node, Math.max(1, focus.required || node.yield || 1)).rawRows;
+      if(node){
+        const sub = calculate(node, Math.max(1, focus.required || node.yield || 1));
+        return {rawRows:sub.rawRows, craftRows:sub.craftRows};
+      }
     }
     if(focus.key){
       const key = producedKey(focus.key);
-      return [{
-        name:focus.key,
-        key,
-        qty:Math.max(0, focus.required || 0),
-        kind:"raw"
-      }];
+      return {
+        rawRows:[{
+          name:focus.key,
+          key,
+          qty:Math.max(0, focus.required || 0),
+          kind:"raw"
+        }],
+        craftRows:[]
+      };
     }
-    return result.rawRows;
+    return {rawRows:result.rawRows, craftRows:result.craftRows};
   }
   function renderSteps(rows){
     const host = el("stepList");
@@ -1710,20 +1699,39 @@
   function isProcessingProductNode(node){
     return node && PROCESSING_CATEGORIES.has(node.category);
   }
-  function renderAlternatives(result){
-    const body = el("altTable");
-    const rows = result.craftRows
+  function altRowsFor(craftRows){
+    return craftRows
       .filter(row => isProcessingProductNode(row.node))
       .map(row => ({
         name:producedKey(row.node.name),
         qty:row.produced,
         kind:state.direct.has(producedKey(row.node.name)) ? "direct" : "crafted",
-        source:row.node
+        source:row.node,
+        type:"alt"
       }))
       .filter((row,index,list) => list.findIndex(item => producedKey(item.name) === producedKey(row.name)) === index)
       .sort((a,b) => a.name.localeCompare(b.name, "ko"));
-    el("altBadge").textContent = rows.length + "개";
-    renderMaterialTableRows(body, rows, "이 목표에는 가공 대체로 표시할 가공품이 없습니다.", "가공품", true);
+  }
+  function renderMaterials(result){
+    const body = el("materialTable");
+    const focus = materialRowsForFocus(result);
+    const rawRows = focus.rawRows.map(row => ({...row, type:"raw"}));
+    const altRows = altRowsFor(focus.craftRows);
+    const merged = new Map();
+    rawRows.concat(altRows).forEach(row => {
+      const key = producedKey(row.name);
+      if(merged.has(key)) merged.get(key).qty += row.qty;
+      else merged.set(key, {...row});
+    });
+    const rows = [...merged.values()].sort((a,b) => {
+      if(a.type !== b.type) return a.type === "alt" ? -1 : 1;
+      if(a.type === "alt") return tierOf(a.source.id) - tierOf(b.source.id) || a.name.localeCompare(b.name, "ko");
+      return a.name.localeCompare(b.name, "ko");
+    });
+    const rawCount = rows.filter(row => row.type === "raw").length;
+    const altCount = rows.length - rawCount;
+    el("materialTotalBadge").textContent = `원재료 ${rawCount}종 가공품 ${altCount}종`;
+    renderMaterialTableRows(body, rows, "표시할 재료가 없습니다.", "재료", true);
   }
   function drawTree(tree){
     const svg = el("treeSvg");
@@ -1886,9 +1894,8 @@
     const result = calculate(node, state.targetQty);
     lastResult = result;
     renderHeader(node, result);
-    renderRawRows(materialRowsForFocus(result));
     renderSteps(result.craftRows);
-    renderAlternatives(result);
+    renderMaterials(result);
     drawTree(result.tree);
     const previousButton = el("previousItemBtn");
     if(previousButton){
