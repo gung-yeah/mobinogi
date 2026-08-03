@@ -1074,7 +1074,7 @@
     sort:"tier",
     membership:true,
     selectedId:"m9",
-    targetQty:5,
+    targetQty:1,
     navStack:[],
     direct:new Set(),
     owned:{},
@@ -1511,25 +1511,10 @@
     icon.alt = node.name;
     icon.onerror = () => { icon.style.visibility = "hidden"; };
     icon.style.visibility = "visible";
-    el("selectedMeta").innerHTML = node.externalOnly ? `
-      <span class="badge">${categoryLabel(node)}</span>
-      <span class="badge">추출 정보</span>
-    ` : `
-      <span class="badge">${categoryLabel(node)}</span>
-      <span class="badge">${node.yield}개 생산</span>
+    el("selectedMeta").innerHTML = node.externalOnly ? `` : `
       <span class="badge">1회 ${displayTime(node)}</span>
     `;
-    const info = extractedInfo(node);
-    const sourceInfo = el("selectedExtractInfo");
-    const pieces = [];
-    if(info?.rarity) pieces.push(`등급 ${info.rarity}`);
-    if(info?.categoryLabel) pieces.push(`분류 ${info.categoryLabel}`);
-    if(info?.flavorText) pieces.push(info.flavorText.split("\n")[0]);
-    const obtain = shortSourceText(info);
-    if(obtain) pieces.push(`획득 ${obtain}`);
-    const chips = pieces.slice(0, 3).map(text => `<span class="source-chip" title="${text.replace(/"/g, "&quot;")}">${text}</span>`);
-    const npcFaces = (info?.npcImages || []).slice(0, 4).map(url => `<img class="npc-face" src="${url}" alt="" title="상점 NPC">`);
-    sourceInfo.innerHTML = [...npcFaces, ...chips].join("");
+    el("selectedExtractInfo").innerHTML = "";
     el("statTime").textContent = formatSeconds(result.totalTime);
   }
   function isDirectMaterial(key, required){
