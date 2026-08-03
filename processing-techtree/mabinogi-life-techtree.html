@@ -2094,6 +2094,24 @@
   render();
 })();
 </script>
+<script>
+  (function(){
+    if(window.parent === window) return;
+    let pending = false;
+    function reportHeight(){
+      if(pending) return;
+      pending = true;
+      requestAnimationFrame(() => {
+        pending = false;
+        window.parent.postMessage({type:"mabinogi-techtree-height", height:document.documentElement.scrollHeight}, "*");
+      });
+    }
+    window.addEventListener("load", reportHeight);
+    window.addEventListener("resize", reportHeight);
+    new MutationObserver(reportHeight).observe(document.body, {childList:true, subtree:true, attributes:true});
+    reportHeight();
+  })();
+</script>
 </body>
 </html>
 
