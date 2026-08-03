@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -526,12 +526,26 @@
     padding:14px 16px 16px;
   }
   .tree-wrap{
+    position:relative;
     height:clamp(520px,62vh,680px);
     min-height:520px;
     overflow:hidden;
     overscroll-behavior:contain;
     cursor:grab;
     user-select:none;
+  }
+  .tree-prev-btn{
+    position:absolute;
+    left:14px;
+    bottom:14px;
+    z-index:2;
+    min-width:104px;
+    background:rgba(15,23,42,.88);
+    backdrop-filter:blur(8px);
+  }
+  .tree-prev-btn:disabled{
+    opacity:.42;
+    cursor:not-allowed;
   }
   .tree-wrap.dragging{
     cursor:grabbing;
@@ -615,7 +629,7 @@
     text-align:center;
   }
   td.num{
-    text-align:right;
+    text-align:center;
     font-variant-numeric:tabular-nums;
     white-space:nowrap;
   }
@@ -632,7 +646,7 @@
     border:1px solid var(--line);
     background:var(--panel);
     color:var(--ink);
-    text-align:right;
+    text-align:center;
     outline:none;
   }
   .material-cell{
@@ -650,8 +664,21 @@
   }
   .material-name{
     min-width:0;
-    overflow-wrap:anywhere;
+    max-width:160px;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
     font-weight:800;
+  }
+  .material-jump,
+  .step-jump{
+    cursor:pointer;
+  }
+  .material-jump:hover .material-name,
+  .step-jump:hover .step-title{
+    color:#dffcf8;
+    text-decoration:underline;
+    text-underline-offset:3px;
   }
   .tag{
     display:inline-flex;
@@ -673,6 +700,40 @@
   }
   .tag.action{
     cursor:pointer;
+    justify-content:center;
+  }
+  td.action-cell{
+    text-align:center;
+  }
+  td.method-cell{
+    min-width:220px;
+  }
+  .method-stack{
+    display:flex;
+    flex-wrap:wrap;
+    gap:5px;
+    align-items:center;
+  }
+  .method-chip{
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    min-height:22px;
+    padding:2px 7px;
+    border-radius:999px;
+    border:1px solid rgba(148,163,184,.24);
+    background:rgba(15,23,42,.34);
+    color:#d9e4f2;
+    font-size:11px;
+    font-weight:800;
+    white-space:nowrap;
+  }
+  .method-chip img{
+    width:18px;
+    height:18px;
+    border-radius:5px;
+    object-fit:cover;
+    flex:0 0 auto;
   }
   .tag.crafted{
     color:#b6fff1;
@@ -681,9 +742,49 @@
   }
   .two-col{
     display:grid;
-    grid-template-columns:minmax(260px,.9fr) minmax(360px,1.1fr) minmax(260px,.9fr);
+    grid-template-columns:minmax(220px,.75fr) minmax(360px,1fr) minmax(520px,1.65fr);
     gap:16px;
   }
+  .mabi-info{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+    margin-top:8px;
+    color:var(--muted);
+    font-size:12px;
+    line-height:1.45;
+  }
+  .mabi-info:empty{display:none}
+  .npc-face{
+    width:24px;
+    height:24px;
+    border-radius:50%;
+    object-fit:cover;
+    border:1px solid rgba(250,204,21,.55);
+    background:rgba(15,23,42,.55);
+  }
+  .source-chip{
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    max-width:100%;
+    border:1px solid rgba(148,163,184,.24);
+    border-radius:999px;
+    padding:4px 8px;
+    background:rgba(15,23,42,.34);
+    color:#d9e4f2;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .source-line{
+    margin-top:8px;
+    color:var(--muted);
+    font-size:12px;
+    line-height:1.45;
+  }
+  .source-line strong{color:var(--text)}
+  .source-line:empty{display:none}
   .step-list,.alt-list{
     display:grid;
     gap:10px;
@@ -842,6 +943,7 @@
             <div class="title-heading">
               <h2 id="selectedTitle"></h2>
               <div class="meta-line" id="selectedMeta"></div>
+              <div class="mabi-info" id="selectedExtractInfo"></div>
             </div>
           </div>
         </div>
@@ -858,12 +960,11 @@
             <h3 class="panel-title">제작 단계</h3>
             <span class="badge" id="statTime">0초</span>
           </div>
-          <div class="panel-actions">
-            <button class="btn" id="resetDirectBtn" type="button">직접 확보 초기화</button>
-          </div>
+
         </div>
         <div class="tree-wrap">
           <svg class="tree-svg" id="treeSvg" role="img" aria-label="선택한 목표 아이템의 제작 단계"></svg>
+          <button class="btn tree-prev-btn" id="previousItemBtn" type="button" disabled>이전 아이템</button>
         </div>
       </div>
     </section>
@@ -896,7 +997,7 @@
                 <th class="num">필요 수량</th>
                 <th class="num">소유</th>
                 <th class="num">부족</th>
-                <th>처리</th>
+                <th>상태</th>
               </tr>
             </thead>
             <tbody id="rawTable"></tbody>
@@ -907,12 +1008,25 @@
       <div class="panel">
         <div class="panel-head">
           <div class="panel-title-row">
-            <h3 class="panel-title">생산 대체 방법</h3>
+            <h3 class="panel-title">가공 대체</h3>
             <span class="badge" id="altBadge">0개</span>
+            <button class="btn" id="resetDirectBtn" type="button">상태 초기화</button>
           </div>
         </div>
-        <div class="panel-body">
-          <div class="alt-list" id="altList"></div>
+        <div class="panel-body table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>가공품</th>
+                <th class="num">필요 수량</th>
+                <th class="num">소유</th>
+                <th class="num">부족</th>
+                <th>상태</th>
+                <th>구하는 방법</th>
+              </tr>
+            </thead>
+            <tbody id="altTable"></tbody>
+          </table>
         </div>
       </div>
     </section>
@@ -921,6 +1035,7 @@
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script src="data.js"></script>
+<script src="mabimobi-extracted-data.js"></script>
 <script>
 (() => {
   const rarity = {
@@ -947,9 +1062,35 @@
     treeZoom:1,
     treePanX:0,
     treePanY:0,
+    previousItemId:null,
     choices:{}
   };
   const nodeById = new Map(NODES.map(node => [node.id, node]));
+  const extractedCatalog = window.MABIMOBI_ITEM_LIST || Object.values(window.MABIMOBI_ITEMS || {});
+  const extractedCategoryLabel = info => info?.categoryLabel || ({
+    Ingredient:"재료",
+    Food:"음식",
+    PetEquipment:"펫 장비",
+    QuickSlot:"퀵슬롯"
+  })[info?.category] || "추출 정보";
+  const extractedCategory = info => info?.category === "Food" ? "cook_simple" : "craft_item";
+  const extractedNodeId = info => "ext:" + (info?.id || info?.sheetId || info?.name);
+  const extractedNodes = extractedCatalog
+    .filter(info => info && info.name && !nodeById.has(extractedNodeId(info)))
+    .map(info => ({
+      id:extractedNodeId(info),
+      name:info.name,
+      category:extractedCategory(info),
+      externalOnly:true,
+      externalCategoryLabel:extractedCategoryLabel(info),
+      extractedInfo:info,
+      type:"추출 정보",
+      yield:1,
+      time:"",
+      materials:[]
+    }));
+  const allSearchNodes = [...NODES, ...extractedNodes.filter(infoNode => !NODES.some(node => String(node.name).trim() === String(infoNode.name).trim()))];
+  const getNodeById = id => nodeById.get(id) || extractedNodes.find(node => node.id === id) || null;
   const categoryById = new Map(CATEGORIES.map(category => [category.id, category]));
   const PRIMARY_CATEGORIES = [
     { id:"processing", name:"가공", categories:["metal","wood","leather","cloth","potion","food"] },
@@ -965,9 +1106,12 @@
       { id:"food", name:"식재료 가공", categories:["food"] }
     ],
     production:[
-      { id:"craft_item", name:"아이템 제작", categories:["craft_item"] },
-      { id:"cook_food", name:"음식 제작", categories:["cook_simple","cook_power"] },
-      { id:"craft_tool", name:"도구 제작", categories:["craft_tool"] }
+      { id:"weapon_craft", name:"무기 제작", categories:["craft_item"], group:"weapon" },
+      { id:"armor_craft", name:"방어구 제작", categories:["craft_item"], group:"armor" },
+      { id:"accessory_craft", name:"장신구 제작", categories:["craft_item"], group:"accessory" },
+      { id:"craft_tool", name:"도구 제작", categories:["craft_tool"], group:"tool" },
+      { id:"craft_item", name:"아이템 제작", categories:["craft_item"], group:"item" },
+      { id:"cook_food", name:"음식 제작", categories:["cook_simple","cook_power"], group:"food" }
     ]
   };
   const producedKey = name => {
@@ -1031,6 +1175,21 @@
     return ICON_ALIASES[name] || name;
   };
   const iconPath = item => "icons/" + iconName(item) + ".png";
+  const extractedInfo = item => {
+    const node = typeof item === "object" && item ? item : null;
+    if(node?.extractedInfo) return node.extractedInfo;
+    const name = node ? node.name : item;
+    if(!name || !window.MABIMOBI_ITEMS) return null;
+    return window.MABIMOBI_ITEMS[producedKey(name)] || window.MABIMOBI_ITEMS[String(name).trim()] || null;
+  };
+  const extractedIconPath = item => extractedInfo(item)?.iconUrl || null;
+  const materialIconPath = item => extractedIconPath(item) || iconPath(item);
+  const shortSourceText = info => {
+    const lines = (info?.obtain || []).filter(Boolean);
+    if(!lines.length) return "";
+    const compact = lines.filter(line => !/^획득$/.test(line)).slice(0, 8).join(" · ");
+    return compact.length > 120 ? compact.slice(0, 119) + "…" : compact;
+  };
   const displayTime = (node, count = 1) => node.time ? timeLabel(node, count) : "즉시";
   const tierCache = new Map();
   const tierOf = id => {
@@ -1054,6 +1213,7 @@
     return [...list].sort((a,b) => secondsOf(a.time) - secondsOf(b.time) || a.materials.length - b.materials.length)[0];
   };
   const categoryLabel = node => {
+    if(node.externalOnly) return node.externalCategoryLabel || "추출 정보";
     if(["cook_simple","cook_power"].includes(node.category)) return "음식 제작";
     if(node.category === "craft_item") return "아이템 제작";
     if(node.category === "craft_tool") return "도구 제작";
@@ -1133,12 +1293,30 @@
     const list = SECONDARY_CATEGORIES[state.primaryCategory] || SECONDARY_CATEGORIES.processing;
     return list.find(item => item.id === state.secondaryCategory) || list[0];
   }
+  function productionGroupOf(node){
+    if(["cook_simple","cook_power"].includes(node.category)) return "food";
+    if(node.category === "craft_tool" || node.type === "생활 도구") return "tool";
+    if(node.category !== "craft_item") return null;
+    const section = node.section || "";
+    const type = node.type || "";
+    if(["반지","목걸이"].includes(type) || /(?:링|네크리스|목걸이|반지)$/.test(node.name)) return "accessory";
+    if(/(?:중갑|경갑|천옷|방어구|갑옷)/.test(section) || /(?:투구|상의|장갑|하의|신발|갑옷|로브|방패)/.test(node.name)) return "armor";
+    if(/(?:대장 기술|목공|매직 크래프트)/.test(section) || /(?:검술사|대검전사|전사|궁수|장궁병|석궁사수|마법사|악사|음유시인|댄서)/.test(type)) return "weapon";
+    return "item";
+  }
+  function secondaryMatchesNode(secondary, node){
+    if(!secondary.categories.includes(node.category)) return false;
+    return !secondary.group || productionGroupOf(node) === secondary.group;
+  }
   function activeCategoryIds(){
     return new Set(activeSecondary().categories);
   }
+  function activeSecondaryMatches(node){
+    return secondaryMatchesNode(activeSecondary(), node);
+  }
   function secondaryForNode(node){
     for(const [primaryId, categories] of Object.entries(SECONDARY_CATEGORIES)){
-      const secondary = categories.find(item => item.categories.includes(node.category));
+      const secondary = categories.find(item => secondaryMatchesNode(item, node));
       if(secondary) return {primaryId, secondaryId:secondary.id};
     }
     return null;
@@ -1156,10 +1334,18 @@
   function nodeSearchMatches(query){
     const value = query.trim().toLowerCase();
     if(!value) return [];
-    const starts = NODES.filter(node => node.name.toLowerCase().startsWith(value));
-    const includes = NODES.filter(node => {
+    const starts = allSearchNodes.filter(node => node.name.toLowerCase().startsWith(value));
+    const includes = allSearchNodes.filter(node => {
       if(starts.includes(node)) return false;
-      const haystack = [node.name, categoryLabel(node), ...(node.materials || []).map(item => item.name)].join(" ").toLowerCase();
+      const info = extractedInfo(node);
+      const haystack = [
+        node.name,
+        categoryLabel(node),
+        ...(node.materials || []).map(item => item.name),
+        info?.rarity,
+        info?.categoryLabel,
+        ...(info?.obtain || [])
+      ].join(" ").toLowerCase();
       return haystack.includes(value);
     });
     return [
@@ -1212,7 +1398,7 @@
       return nodeSearchMatches(query);
     }
     const categoryIds = activeCategoryIds();
-    let list = NODES.filter(node => categoryIds.has(node.category));
+    let list = NODES.filter(node => activeSecondaryMatches(node));
     return list.sort((a,b) => {
       if(state.sort === "time") return secondsOf(a.time) - secondsOf(b.time) || a.name.localeCompare(b.name, "ko");
       if(state.sort === "tier") return tierOf(a.id) - tierOf(b.id) || a.name.localeCompare(b.name, "ko");
@@ -1228,10 +1414,10 @@
       button.type = "button";
       button.className = "recipe-btn" + (node.id === state.selectedId ? " active" : "");
       button.innerHTML = `
-        <img class="item-icon" src="${iconPath(node)}" alt="" onerror="this.style.visibility='hidden'">
+        <img class="item-icon" src="${materialIconPath(node)}" alt="" onerror="this.style.visibility='hidden'">
         <div>
           <div class="recipe-name">${node.name}</div>
-          <div class="recipe-meta">${categoryLabel(node)} · ${node.yield}개 생산 · ${displayTime(node)}</div>
+          <div class="recipe-meta">${node.externalOnly ? categoryLabel(node) + " · 추출 정보" : categoryLabel(node) + " · " + node.yield + "개 생산 · " + displayTime(node)}</div>
         </div>
       `;
       button.addEventListener("click", () => {
@@ -1243,9 +1429,37 @@
       host.innerHTML = `<div class="empty">검색 결과가 없습니다.</div>`;
     }
   }
+  function rememberPreviousSelection(nextId){
+    if(nextId && state.selectedId && nextId !== state.selectedId){
+      state.previousItemId = state.selectedId;
+    }
+  }
+  function findSearchNodeByName(value){
+    const key = producedKey(value);
+    return allSearchNodes.find(node => producedKey(node.name) === key)
+      || allSearchNodes.find(node => node.name === value)
+      || nodeSearchMatches(String(value))[0]
+      || null;
+  }
+  function searchAndSelectItem(target, options = {}){
+    const node = typeof target === "object" && target ? target : findSearchNodeByName(target);
+    if(!node) return false;
+    rememberPreviousSelection(node.id);
+    state.query = node.name;
+    el("searchInput").value = node.name;
+    if(options.resetNavigation !== false) state.navStack = [];
+    state.selectedId = node.id;
+    syncCategoryToNode(node);
+    state.targetQty = Math.max(1, Number(el("targetQty").value) || node.yield || 1);
+    state.direct.delete(producedKey(node.name));
+    clearTreeFocus();
+    render();
+    return true;
+  }
   function selectNode(id, options = {}){
-    const node = nodeById.get(id);
+    const node = getNodeById(id);
     if(!node) return;
+    rememberPreviousSelection(node.id);
     if(options.resetNavigation){
       state.navStack = [];
     }
@@ -1258,11 +1472,11 @@
   }
   function ensureSelectedMatchesCategory(){
     if(state.query.trim()) return;
-    const current = nodeById.get(state.selectedId);
+    const current = getNodeById(state.selectedId);
     const categoryIds = activeCategoryIds();
-    if(current && categoryIds.has(current.category)) return;
+    if(current && activeSecondaryMatches(current)) return;
     const next = NODES
-      .filter(node => categoryIds.has(node.category))
+      .filter(node => activeSecondaryMatches(node))
       .sort((a,b) => a.name.localeCompare(b.name, "ko"))[0];
     if(next){
       state.selectedId = next.id;
@@ -1272,44 +1486,122 @@
   function renderHeader(node, result){
     el("selectedTitle").textContent = node.name;
     const icon = el("selectedIcon");
-    icon.src = iconPath(node);
+    icon.src = materialIconPath(node);
     icon.alt = node.name;
     icon.onerror = () => { icon.style.visibility = "hidden"; };
     icon.style.visibility = "visible";
-    el("selectedMeta").innerHTML = `
+    el("selectedMeta").innerHTML = node.externalOnly ? `
+      <span class="badge">${categoryLabel(node)}</span>
+      <span class="badge">추출 정보</span>
+    ` : `
       <span class="badge">${categoryLabel(node)}</span>
       <span class="badge">${node.yield}개 생산</span>
       <span class="badge">1회 ${displayTime(node)}</span>
     `;
+    const info = extractedInfo(node);
+    const sourceInfo = el("selectedExtractInfo");
+    const pieces = [];
+    if(info?.rarity) pieces.push(`등급 ${info.rarity}`);
+    if(info?.categoryLabel) pieces.push(`분류 ${info.categoryLabel}`);
+    if(info?.flavorText) pieces.push(info.flavorText.split("\n")[0]);
+    const obtain = shortSourceText(info);
+    if(obtain) pieces.push(`획득 ${obtain}`);
+    const chips = pieces.slice(0, 3).map(text => `<span class="source-chip" title="${text.replace(/"/g, "&quot;")}">${text}</span>`);
+    const npcFaces = (info?.npcImages || []).slice(0, 4).map(url => `<img class="npc-face" src="${url}" alt="" title="상점 NPC">`);
+    sourceInfo.innerHTML = [...npcFaces, ...chips].join("");
     el("statTime").textContent = formatSeconds(result.totalTime);
   }
   function isDirectMaterial(key, required){
-    return state.direct.has(key);
+    const owned = Math.max(0, Number(state.owned[key]) || 0);
+    return state.direct.has(key) || owned >= Math.max(1, Number(required) || 1);
   }
-  function renderRawRows(rows){
-    const body = el("rawTable");
+  const escapeHtml = value => String(value ?? "").replace(/[&<>"']/g, char => ({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    "\"":"&quot;",
+    "'":"&#039;"
+  })[char]);
+  function methodChips(name, source){
+    const info = extractedInfo(source || name);
+    const producer = source && typeof source === "object" ? source : (producers.get(producedKey(name)) || [])[0];
+    const chips = [];
+    const seen = new Set();
+    const addChip = html => {
+      const key = html.replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
+      if(!key || seen.has(key)) return;
+      seen.add(key);
+      chips.push(html);
+    };
+    const img = url => url ? `<img src="${escapeHtml(url)}" alt="" onerror="this.remove()">` : "";
+    const chip = (label, icon = "") => `<span class="method-chip" title="${escapeHtml(label)}">${img(icon)}<span>${escapeHtml(label)}</span></span>`;
+
+    (info?.obtainSources || []).forEach(item => {
+      const label = item.label || item.shopName || "";
+      const summary = item.summary || "";
+      if(/상자/.test(label) || /상자/.test(summary)) return;
+
+      if(item.method === "produce" || item.sourceType === "facility_production" || /생산/.test(summary)){
+        if(label) addChip(chip(label, materialIconPath(producer || name)));
+        return;
+      }
+
+      if(item.method === "purchase" || item.isShop || item.shopName){
+        const shop = item.shopName || item.label || item.npcName || "상점";
+        const amount = item.price != null ? formatNumber(item.price) : "";
+        const currency = item.currencyName || "";
+        const limit = item.limit ? ` (${item.limit})` : "";
+        const title = `${shop}: ${amount}${currency ? " " + currency : ""}${limit}`;
+        const body = `
+          <span class="method-chip" title="${escapeHtml(title)}">
+            ${img(item.npcFaceUrl)}
+            <span>${escapeHtml(shop)}:</span>
+            ${img(item.currencyIconUrl)}
+            <span>${escapeHtml([amount, currency].filter(Boolean).join(" "))}${escapeHtml(limit)}</span>
+          </span>`;
+        addChip(body);
+      }
+    });
+
+    if(!chips.length && info?.obtain?.length){
+      info.obtain
+        .filter(line => line && !/상자/.test(line))
+        .slice(0, 2)
+        .forEach(line => addChip(chip(line, info.iconUrl)));
+    }
+    if(!chips.length && producer){
+      addChip(chip("가공 시설", materialIconPath(producer)));
+    }
+    if(!chips.length){
+      addChip(chip("직접 확보", materialIconPath(source || name)));
+    }
+    return `<div class="method-stack">${chips.slice(0, 4).join("")}</div>`;
+  }
+  function renderMaterialTableRows(body, rows, emptyText, itemLabel = "재료", showMethod = false){
     body.innerHTML = "";
-    el("rawTotalBadge").textContent = rows.length + "종";
     rows.forEach(row => {
       const tr = document.createElement("tr");
       const key = producedKey(row.name);
       const ownedValue = state.owned[key] ?? "";
       const ownedNumber = Math.max(0, Number(ownedValue) || 0);
       const shortage = Math.max(0, row.qty - ownedNumber);
-      const isDirect = row.kind === "direct" || isDirectMaterial(key, row.qty) || ownedNumber >= row.qty;
-      const produced = directAllowed(row.name);
+      const isDirect = row.kind === "direct" || isDirectMaterial(key, row.qty);
       tr.innerHTML = `
         <td>
           <div class="material-cell">
-            ${produced ? `<img src="${iconPath(row.source || row.name)}" alt="" onerror="this.remove()">` : ""}
-            <span class="material-name">${row.name}</span>
+            <img class="material-jump" src="${materialIconPath(row.source || row.name)}" alt="" onerror="this.remove()" data-search-name="${escapeHtml(row.name)}">
+            <span class="material-name material-jump" data-search-name="${escapeHtml(row.name)}">${escapeHtml(row.name)}</span>
           </div>
         </td>
         <td class="num">${formatNumber(row.qty)}</td>
-        <td class="num"><input class="owned-input" type="number" min="0" step="1" value="${ownedValue}" aria-label="${row.name} 소유 수량"></td>
+        <td class="num"><input class="owned-input" type="number" min="0" step="1" value="${ownedValue}" aria-label="${escapeHtml(row.name)} 소유 수량"></td>
         <td class="num shortage-cell">${formatNumber(shortage)}</td>
-        <td><button class="tag action ${isDirect ? "direct" : ""}" type="button">${isDirect ? "직접 확보" : "원재료 확보"}</button></td>
+        <td class="action-cell"><button class="tag action ${isDirect ? "direct" : ""}" type="button">${isDirect ? "확보 완료" : "원재료 확보"}</button></td>
+        ${showMethod ? `<td class="method-cell">${methodChips(row.name, row.source)}</td>` : ""}
       `;
+      tr.querySelectorAll(".material-jump").forEach(target => {
+        target.addEventListener("click", () => searchAndSelectItem(target.dataset.searchName || row.name));
+      });
       tr.querySelector(".owned-input").addEventListener("input", event => {
         const value = event.target.value;
         if(value === "") delete state.owned[key];
@@ -1319,7 +1611,8 @@
         tr.querySelector(".shortage-cell").textContent = formatNumber(Math.max(0, row.qty - currentOwned));
         const button = tr.querySelector(".tag.action");
         button.classList.toggle("direct", currentDirect);
-        button.textContent = currentDirect ? "직접 확보" : "원재료 확보";
+        button.textContent = currentDirect ? "확보 완료" : "원재료 확보";
+        drawTree(lastResult?.tree);
       });
       tr.querySelector(".tag.action").addEventListener("click", () => {
         const currentOwned = Math.max(0, Number(state.owned[key]) || 0);
@@ -1336,8 +1629,13 @@
       body.appendChild(tr);
     });
     if(!rows.length){
-      body.innerHTML = `<tr><td colspan="5" class="empty">총 재료가 없습니다.</td></tr>`;
+      body.innerHTML = `<tr><td colspan="${showMethod ? 6 : 5}" class="empty">${emptyText}</td></tr>`;
     }
+  }
+  function renderRawRows(rows){
+    const body = el("rawTable");
+    el("rawTotalBadge").textContent = rows.length + "종";
+    renderMaterialTableRows(body, rows, "총 재료가 없습니다.", "재료", false);
   }
   function findTreeItemByUid(tree, targetUid){
     if(!tree || !targetUid) return null;
@@ -1384,13 +1682,16 @@
       const item = document.createElement("div");
       item.className = "step";
       item.innerHTML = `
-        <img class="item-icon" src="${iconPath(row.node)}" alt="" onerror="this.style.visibility='hidden'">
-        <div>
+        <img class="item-icon step-jump" src="${materialIconPath(row.node)}" alt="" onerror="this.style.visibility='hidden'" data-node-id="${row.node.id}">
+        <div class="step-jump" data-node-id="${row.node.id}">
           <div class="step-title">${row.node.name}</div>
           <div class="step-sub">${categoryLabel(row.node)} · ${formatNumber(row.count)}회 · ${formatNumber(row.produced)}개 생산</div>
         </div>
         <span class="badge">${displayTime(row.node, row.count)}</span>
       `;
+      item.querySelectorAll(".step-jump").forEach(target => {
+        target.addEventListener("click", () => searchAndSelectItem(getNodeById(target.dataset.nodeId)));
+      });
       host.appendChild(item);
     });
     if(!rows.length) host.innerHTML = `<div class="empty">제작 단계가 없습니다.</div>`;
@@ -1405,58 +1706,24 @@
     visit(result.tree);
     return [...keys].sort((a,b) => a.localeCompare(b, "ko"));
   }
+  const PROCESSING_CATEGORIES = new Set(["metal","wood","leather","cloth","potion","food"]);
+  function isProcessingProductNode(node){
+    return node && PROCESSING_CATEGORIES.has(node.category);
+  }
   function renderAlternatives(result){
-    const host = el("altList");
-    host.innerHTML = "";
-    const keys = collectAlternativeKeys(result);
-    el("altBadge").textContent = keys.length + "개";
-    keys.forEach(key => {
-      const box = document.createElement("div");
-      box.className = "alt-item";
-      const list = producers.get(key);
-      const selected = pickProducer(key);
-      box.innerHTML = `
-        <div class="alt-head">
-          <strong>${key}</strong>
-          <span class="tag crafted">${list.length}가지</span>
-        </div>
-        <select class="select" aria-label="${key} 생산 방법">
-          ${list.map(node => `<option value="${node.id}" ${node.id === selected.id ? "selected" : ""}>${node.name} · ${node.yield}개 · ${displayTime(node)}</option>`).join("")}
-        </select>
-      `;
-      box.querySelector("select").addEventListener("change", event => {
-        state.choices[key] = event.target.value;
-        render();
-      });
-      host.appendChild(box);
-    });
-    const directCandidates = result.craftRows
-      .map(row => producedKey(row.node.name))
-      .filter((key,index,list) => key !== producedKey(nodeById.get(state.selectedId).name) && list.indexOf(key) === index)
-      .sort((a,b) => a.localeCompare(b, "ko"));
-    directCandidates.slice(0, 12).forEach(key => {
-      const node = pickProducer(key);
-      const box = document.createElement("div");
-      box.className = "alt-item";
-      const isDirect = state.direct.has(key);
-      box.innerHTML = `
-        <div class="alt-head">
-          <strong>${key}</strong>
-          <span class="tag ${isDirect ? "direct" : "crafted"}">${isDirect ? "직접 확보" : "제작 포함"}</span>
-        </div>
-        <button class="btn ${isDirect ? "primary" : ""}" type="button">${isDirect ? "제작 계산에 다시 포함" : "보유/거래소/채집으로 직접 확보"}</button>
-        <div class="step-sub">기본 생산: ${node.name} · ${displayTime(node)}</div>
-      `;
-      box.querySelector("button").addEventListener("click", () => {
-        if(state.direct.has(key)) state.direct.delete(key);
-        else state.direct.add(key);
-        render();
-      });
-      host.appendChild(box);
-    });
-    if(!host.children.length){
-      host.innerHTML = `<div class="empty">이 목표에는 선택 가능한 대체 생산법이나 중간재 직접 확보 후보가 없습니다.</div>`;
-    }
+    const body = el("altTable");
+    const rows = result.craftRows
+      .filter(row => isProcessingProductNode(row.node))
+      .map(row => ({
+        name:producedKey(row.node.name),
+        qty:row.produced,
+        kind:state.direct.has(producedKey(row.node.name)) ? "direct" : "crafted",
+        source:row.node
+      }))
+      .filter((row,index,list) => list.findIndex(item => producedKey(item.name) === producedKey(row.name)) === index)
+      .sort((a,b) => a.name.localeCompare(b.name, "ko"));
+    el("altBadge").textContent = rows.length + "개";
+    renderMaterialTableRows(body, rows, "이 목표에는 가공 대체로 표시할 가공품이 없습니다.", "가공품", true);
   }
   function drawTree(tree){
     const svg = el("treeSvg");
@@ -1538,17 +1805,17 @@
       rect.setAttribute("class", "node-card" + (node.id === state.selectedId ? " target" : "") + (node.direct && node.node ? " direct" : "") + (highlightedUids.has(node.uid) ? " highlight" : "") + (isStruck ? " struck" : ""));
       group.appendChild(rect);
       const image = document.createElementNS("http://www.w3.org/2000/svg", "image");
-      const iconSize = nodeHeight - 14;
-      image.setAttribute("x", node.x + 8);
+      const iconSize = nodeHeight - 8;
+      image.setAttribute("x", node.x + 6);
       image.setAttribute("y", node.y - iconSize / 2);
       image.setAttribute("width", String(iconSize));
       image.setAttribute("height", String(iconSize));
-      image.setAttribute("preserveAspectRatio", "xMidYMid slice");
+      image.setAttribute("preserveAspectRatio", "xMidYMid meet");
       image.setAttribute("class", "node-icon");
-      image.setAttribute("href", iconPath(node.node || node.key));
+      image.setAttribute("href", materialIconPath(node.node || node.key));
       image.addEventListener("error", () => image.remove());
       group.appendChild(image);
-      const textX = node.x + iconSize + 18;
+      const textX = node.x + iconSize + 16;
       const title = document.createElementNS("http://www.w3.org/2000/svg", "text");
       title.setAttribute("x", textX);
       title.setAttribute("y", node.y - 10);
@@ -1605,7 +1872,7 @@
     ensureSelectedMatchesCategory();
     const list = filteredNodes();
     renderRecipeList(list);
-    const node = nodeById.get(state.selectedId) || NODES[0];
+    const node = getNodeById(state.selectedId) || NODES[0];
     el("searchInput").value = state.query;
     el("targetQty").value = state.targetQty;
     const membership = el("membershipToggle");
@@ -1623,6 +1890,13 @@
     renderSteps(result.craftRows);
     renderAlternatives(result);
     drawTree(result.tree);
+    const previousButton = el("previousItemBtn");
+    if(previousButton){
+      const previousNode = getNodeById(state.previousItemId);
+      previousButton.disabled = !previousNode;
+      previousButton.textContent = previousNode ? "이전 아이템" : "이전 아이템";
+      previousButton.title = previousNode ? previousNode.name : "";
+    }
   }
   function toast(message){
     const box = el("toast");
@@ -1635,6 +1909,7 @@
     state.query = event.target.value;
     const match = nodeSearchMatches(state.query)[0];
     if(match){
+      rememberPreviousSelection(match.id);
       syncCategoryToNode(match);
       state.selectedId = match.id;
       clearTreeFocus();
@@ -1655,6 +1930,16 @@
   el("sortTierBtn").addEventListener("click", () => { state.sort = "tier"; render(); });
   el("resetDirectBtn").addEventListener("click", () => {
     state.direct.clear();
+    state.owned = {};
+    render();
+  });
+  el("previousItemBtn").addEventListener("click", () => {
+    const previousNode = getNodeById(state.previousItemId);
+    if(!previousNode) return;
+    const currentId = state.selectedId;
+    state.previousItemId = null;
+    searchAndSelectItem(previousNode);
+    state.previousItemId = currentId;
     render();
   });
   el("copyBtn").addEventListener("click", () => {
@@ -1769,3 +2054,10 @@
 </script>
 </body>
 </html>
+
+
+
+
+
+
+
