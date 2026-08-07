@@ -207,6 +207,15 @@
     border-color:rgba(88,196,182,.7);
     color:var(--ink);
   }
+  .favorites-toggle{
+    width:100%;
+    margin-top:8px;
+  }
+  .favorites-toggle[aria-pressed="true"]{
+    background:rgba(229,190,95,.18);
+    border-color:rgba(229,190,95,.7);
+    color:var(--accent-2);
+  }
   .membership-badge{
     display:inline-flex;
     align-items:center;
@@ -341,6 +350,23 @@
     background:rgba(18,25,39,.86);
     text-align:left;
   }
+  .favorite-star{
+    display:grid;
+    place-items:center;
+    width:26px;
+    height:26px;
+    font-size:16px;
+    color:var(--muted);
+    cursor:pointer;
+    border-radius:6px;
+  }
+  .favorite-star:hover{
+    color:var(--accent-2);
+    background:rgba(229,190,95,.12);
+  }
+  .favorite-star.active{
+    color:var(--accent-2);
+  }
   .recipe-btn:hover,.recipe-btn.active{
     border-color:var(--accent);
     background:rgba(88,196,182,.13);
@@ -417,6 +443,16 @@
     flex-wrap:wrap;
     gap:8px 10px;
     min-width:0;
+  }
+  .title-row{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+  }
+  .header-star{
+    width:30px;
+    height:30px;
+    font-size:20px;
   }
   .title-heading h2{
     min-width:0;
@@ -1005,6 +1041,7 @@
       <div>
         <div class="label"><span>1차 카테고리</span></div>
         <div class="category-list" id="primaryCategoryList"></div>
+        <button class="chip favorites-toggle" id="favoritesToggleBtn" type="button" aria-pressed="false">⭐ 즐겨찾기</button>
       </div>
       <div>
         <div class="label"><span>2차 카테고리</span></div>
@@ -1031,7 +1068,7 @@
           <img id="selectedIcon" alt="">
           <div>
             <div class="title-heading">
-              <h2 id="selectedTitle"></h2>
+              <span class="title-row"><h2 id="selectedTitle"></h2><span class="favorite-star header-star" id="headerFavoriteStar" role="button" tabindex="0" aria-label="즐겨찾기"></span></span>
               <div class="meta-line" id="selectedMeta"></div>
               <div class="mabi-info" id="selectedExtractInfo"></div>
             </div>
@@ -1140,6 +1177,8 @@
     navStack:[],
     direct:new Set(),
     owned:{},
+    favorites:new Set(),
+    showFavoritesOnly:false,
     highlightKey:null,
     materialFocus:null,
     treeZoom:1,
@@ -1153,6 +1192,7 @@
     if(!parsed) return;
     if(typeof parsed.owned === "object") state.owned = parsed.owned;
     if(Array.isArray(parsed.direct)) state.direct = new Set(parsed.direct);
+    if(Array.isArray(parsed.favorites)) state.favorites = new Set(parsed.favorites);
   }
   (function loadPersistedState(){
     try {
@@ -1174,7 +1214,7 @@
     });
   }
   function savePersistedState(){
-    const payload = {owned:state.owned, direct:[...state.direct]};
+    const payload = {owned:state.owned, direct:[...state.direct], favorites:[...state.favorites]};
     try {
       localStorage.setItem(STORE_KEY, JSON.stringify(payload));
     } catch(error) {}
@@ -1684,11 +1724,17 @@
       });
       secondaryHost.appendChild(button);
     });
+    el("favoritesToggleBtn").setAttribute("aria-pressed", String(state.showFavoritesOnly));
   }
   function filteredNodes(){
     const query = state.query.trim().toLowerCase();
     if(query){
       return nodeSearchMatches(query);
+    }
+    if(state.showFavoritesOnly){
+      return [...NODES, ...extractedDisplayNodes]
+        .filter(node => state.favorites.has(producedKey(node.name)))
+        .sort((a,b) => a.name.localeCompare(b.name, "ko"));
     }
     let list = [...NODES, ...extractedDisplayNodes].filter(node => activeSecondaryMatches(node));
     return list.sort((a,b) => {
@@ -1702,6 +1748,8 @@
     host.innerHTML = "";
     el("resultCount").textContent = list.length + "개";
     list.forEach(node => {
+      const key = producedKey(node.name);
+      const isFavorite = state.favorites.has(key);
       const button = document.createElement("button");
       button.type = "button";
       button.className = "recipe-btn" + (node.id === state.selectedId ? " active" : "");
@@ -1711,14 +1759,22 @@
           <div class="recipe-name">${node.name}</div>
           <div class="recipe-meta">${node.externalOnly ? categoryLabel(node) + " · 추출 정보" : categoryLabel(node) + " · " + node.yield + "개 생산 · " + displayTime(node)}</div>
         </div>
+        <span class="favorite-star${isFavorite ? " active" : ""}" role="button" aria-label="즐겨찾기" tabindex="0">${isFavorite ? "★" : "☆"}</span>
       `;
+      button.querySelector(".favorite-star").addEventListener("click", event => {
+        event.stopPropagation();
+        toggleFavorite(key);
+        render();
+      });
       button.addEventListener("click", () => {
         selectNode(node.id, { resetNavigation:true });
       });
       host.appendChild(button);
     });
     if(!list.length){
-      host.innerHTML = `<div class="empty">검색 결과가 없습니다.</div>`;
+      host.innerHTML = state.showFavoritesOnly
+        ? `<div class="empty">즐겨찾기한 아이템이 없습니다.</div>`
+        : `<div class="empty">검색 결과가 없습니다.</div>`;
     }
   }
   function selectNode(id, options = {}){
@@ -1757,6 +1813,15 @@
     el("selectedMeta").innerHTML = `<span class="badge">${secondaryCategoryLabel(node)}</span>`;
     el("selectedExtractInfo").innerHTML = "";
     el("statTime").textContent = formatSeconds(result.totalTime);
+    const key = producedKey(node.name);
+    const star = el("headerFavoriteStar");
+    const isFavorite = state.favorites.has(key);
+    star.textContent = isFavorite ? "★" : "☆";
+    star.classList.toggle("active", isFavorite);
+    star.onclick = () => {
+      toggleFavorite(key);
+      render();
+    };
   }
   function isDirectMaterial(key, required){
     return state.direct.has(key);
@@ -2255,6 +2320,20 @@
   el("membershipToggle").addEventListener("click", () => {
     state.membership = !state.membership;
     render();
+  });
+  function toggleFavorite(key){
+    if(state.favorites.has(key)) state.favorites.delete(key);
+    else state.favorites.add(key);
+  }
+  el("favoritesToggleBtn").addEventListener("click", () => {
+    state.showFavoritesOnly = !state.showFavoritesOnly;
+    state.query = "";
+    el("searchInput").value = "";
+    clearTreeFocus();
+    render();
+  });
+  document.addEventListener("contextmenu", event => {
+    event.preventDefault();
   });
   el("targetQty").addEventListener("input", event => {
     state.targetQty = Math.max(1, Math.floor(Number(event.target.value) || 1));
