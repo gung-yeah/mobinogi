@@ -535,12 +535,28 @@
     padding:14px 16px 16px;
   }
   .tree-wrap{
+    position:relative;
     height:clamp(520px,62vh,680px);
     min-height:520px;
     overflow:hidden;
     overscroll-behavior:contain;
     cursor:grab;
     user-select:none;
+  }
+  .tree-reset-btn{
+    position:absolute;
+    left:14px;
+    bottom:14px;
+    z-index:3;
+    margin-left:0;
+    min-height:36px;
+    padding:8px 16px;
+    font-size:13px;
+    font-weight:800;
+    border-radius:9px;
+    background:rgba(242,124,124,.16);
+    backdrop-filter:blur(8px);
+    box-shadow:0 8px 20px rgba(0,0,0,.32);
   }
   .tree-wrap.dragging{
     cursor:grabbing;
@@ -743,6 +759,13 @@
   .exchange-mark{
     color:#facc15;
     font-weight:900;
+  }
+  #altTable tr.alt-row-method{
+    background:rgba(229,190,95,.14);
+    box-shadow:inset 3px 0 0 var(--accent-2);
+  }
+  #altTable tr.alt-row-method:hover{
+    background:rgba(229,190,95,.2);
   }
   .alt-choice{
     width:100%;
@@ -981,6 +1004,7 @@
         </div>
         <div class="tree-wrap">
           <svg class="tree-svg" id="treeSvg" role="img" aria-label="선택한 목표 아이템의 제작 단계"></svg>
+          <button class="btn danger status-reset tree-reset-btn" id="resetDirectBtn" type="button">상태 초기화</button>
         </div>
       </div>
     </section>
@@ -1024,9 +1048,8 @@
       <div class="panel">
         <div class="panel-head">
           <div class="panel-title-row">
-            <h3 class="panel-title">가공 대체</h3>
+            <h3 class="panel-title">교환 및 가공 대체</h3>
             <span class="badge" id="altBadge">0개</span>
-            <button class="btn status-reset" id="resetDirectBtn" type="button">상태 초기화</button>
           </div>
         </div>
         <div class="panel-body table-wrap">
@@ -1072,6 +1095,7 @@
     targetQty:1,
     navStack:[],
     direct:new Set(),
+    markedSecured:new Set(),
     owned:{},
     highlightKey:null,
     materialFocus:null,
@@ -1272,7 +1296,7 @@
     if(source.method === "produce" && source.label) return source.label;
     return normalizedObtainText(source.label || source.detail || source.summary, key);
   };
-  const methodDisplayHtml = key => {
+  const methodPieces = key => {
     const info = extractedInfo(key);
     const seen = new Set();
     const pieces = [];
@@ -1305,6 +1329,11 @@
       if(duplicatedSource) return;
       if(text) addPiece("text:" + text, `<span class="method-chip" title="${escapeHtml(text)}">${escapeHtml(text)}</span>`);
     });
+    return pieces;
+  };
+  const hasObtainMethod = key => methodPieces(key).length > 0;
+  const methodDisplayHtml = key => {
+    const pieces = methodPieces(key);
     return pieces.length ? `<div class="method-list">${pieces.join("")}</div>` : `<span class="muted">확인 필요</span>`;
   };
   const displayTime = (node, count = 1) => node.time ? timeLabel(node, count) : "즉시";
@@ -1466,6 +1495,20 @@
   function clearTreeFocus(){
     state.highlightKey = null;
     state.materialFocus = null;
+  }
+  function collectCraftKeys(node, acc){
+    if(node.node) acc.add(node.key);
+    (node.children || []).forEach(child => collectCraftKeys(child, acc));
+    return acc;
+  }
+  function toggleSecuredSubtree(node){
+    if(!node.node) return;
+    const keys = collectCraftKeys(node, new Set());
+    const nowSecured = !state.markedSecured.has(node.key);
+    keys.forEach(key => {
+      if(nowSecured) state.markedSecured.add(key);
+      else state.markedSecured.delete(key);
+    });
   }
   function nodeSearchMatches(query){
     const value = query.trim().toLowerCase();
@@ -1767,16 +1810,37 @@
         if(node) rowsByKey.set(key, {key, node, qty:node.yield, count:1, produced:node.yield});
       }
     });
-    return [...rowsByKey.values()].sort((a,b) => a.key.localeCompare(b.key, "ko"));
+    if(targetKey && !rowsByKey.has(targetKey)){
+      const hasAltProducers = producers.has(targetKey) && producers.get(targetKey).length > 1;
+      if(hasAltProducers || hasObtainMethod(targetKey)){
+        rowsByKey.set(targetKey, {
+          key:targetKey,
+          node:result.tree.node || pickProducer(targetKey),
+          qty:result.tree.required,
+          count:result.tree.count,
+          produced:result.tree.produced
+        });
+      }
+    }
+    const targetHighlighted = targetKey && hasObtainMethod(targetKey) && rowsByKey.has(targetKey);
+    return [...rowsByKey.values()].sort((a,b) => {
+      if(targetHighlighted){
+        if(a.key === targetKey) return -1;
+        if(b.key === targetKey) return 1;
+      }
+      return a.key.localeCompare(b.key, "ko");
+    });
   }
   function renderAlternatives(result){
     const body = el("altTable");
     body.innerHTML = "";
     const rows = alternativeRows(result);
     el("altBadge").textContent = rows.length + "개";
+    const targetKey = producedKey(getNodeById(state.selectedId)?.name || "");
     rows.forEach(row => {
       const key = row.key;
       const tr = document.createElement("tr");
+      if(key === targetKey && hasObtainMethod(key)) tr.classList.add("alt-row-method");
       const list = producers.get(key) || [];
       const selected = pickProducer(key);
       const ownedValue = state.owned[key] ?? "";
@@ -1834,7 +1898,7 @@
       body.appendChild(tr);
     });
     if(!body.children.length){
-      body.innerHTML = `<tr><td colspan="6" class="empty">선택 가능한 가공 대체 항목이 없습니다.</td></tr>`;
+      body.innerHTML = `<tr><td colspan="6" class="empty">선택 가능한 교환 및 가공 대체 항목이 없습니다.</td></tr>`;
     }
   }
   function drawTree(tree){
@@ -1913,7 +1977,7 @@
       rect.setAttribute("width", String(nodeWidth));
       rect.setAttribute("height", String(nodeHeight));
       rect.setAttribute("rx", "8");
-      const isStruck = node.node && (node.direct || isDirectMaterial(node.key, node.required));
+      const isStruck = node.node && (node.direct || isDirectMaterial(node.key, node.required) || state.markedSecured.has(node.key));
       rect.setAttribute("class", "node-card" + (node.id === state.selectedId ? " target" : "") + (node.direct && node.node ? " direct" : "") + (highlightedUids.has(node.uid) ? " highlight" : "") + (isStruck ? " struck" : ""));
       group.appendChild(rect);
       const image = document.createElementNS("http://www.w3.org/2000/svg", "image");
@@ -1963,6 +2027,7 @@
             required:node.required
           };
         }
+        if(!isRoot) toggleSecuredSubtree(node);
         render();
       });
       svg.appendChild(group);
@@ -2034,6 +2099,7 @@
   el("sortTierBtn").addEventListener("click", () => { state.sort = "tier"; render(); });
   el("resetDirectBtn").addEventListener("click", () => {
     state.direct.clear();
+    state.markedSecured.clear();
     state.owned = {};
     render();
   });
