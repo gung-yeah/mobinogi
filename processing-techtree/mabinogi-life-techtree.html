@@ -637,6 +637,26 @@
   .node-alt-badge:hover .node-alt-rect{
     fill:rgba(115,167,242,.36);
   }
+  .node-checkbox-box{
+    fill:rgba(15,23,42,.5);
+    stroke:var(--line-strong);
+    stroke-width:1.4;
+  }
+  .node-checkbox-box.checked{
+    fill:var(--danger);
+    stroke:var(--danger);
+  }
+  .node-checkbox:hover .node-checkbox-box{
+    stroke:var(--danger);
+  }
+  .node-checkbox-mark{
+    fill:none;
+    stroke:#0a0d14;
+    stroke-width:2.2;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+    pointer-events:none;
+  }
   .edge{
     fill:none;
     stroke:#506782;
@@ -1119,7 +1139,6 @@
     targetQty:1,
     navStack:[],
     direct:new Set(),
-    markedSecured:new Set(),
     owned:{},
     highlightKey:null,
     materialFocus:null,
@@ -1566,23 +1585,7 @@
     state.highlightKey = null;
     state.materialFocus = null;
   }
-  function nodePathStr(node){
-    return (node.path || [node.key]).join(">");
-  }
-  function isPathMarked(path){
-    let acc = "";
-    for(let i = 0; i < path.length; i++){
-      acc = i === 0 ? path[0] : acc + ">" + path[i];
-      if(state.markedSecured.has(acc)) return true;
-    }
-    return false;
-  }
-  function toggleSecuredSubtree(node){
-    const pathStr = nodePathStr(node);
-    if(state.markedSecured.has(pathStr)) state.markedSecured.delete(pathStr);
-    else state.markedSecured.add(pathStr);
-  }
-  function toggleRawMaterialDirect(node){
+  function toggleNodeDirect(node){
     if(state.direct.has(node.key)) state.direct.delete(node.key);
     else state.direct.add(node.key);
   }
@@ -1727,7 +1730,18 @@
     const body = el("rawTable");
     body.innerHTML = "";
     el("rawTotalBadge").textContent = rows.length + "종";
-    rows.forEach(row => {
+    const isRowSecured = row => {
+      const key = producedKey(row.name);
+      const ownedNumber = Math.max(0, Number(state.owned[key]) || 0);
+      return row.kind === "direct" || isDirectMaterial(key, row.qty) || ownedNumber >= row.qty;
+    };
+    const sortedRows = [...rows].sort((a,b) => {
+      const securedA = isRowSecured(a);
+      const securedB = isRowSecured(b);
+      if(securedA !== securedB) return securedA ? 1 : -1;
+      return 0;
+    });
+    sortedRows.forEach(row => {
       const tr = document.createElement("tr");
       const key = producedKey(row.name);
       const ownedValue = state.owned[key] ?? "";
@@ -1907,6 +1921,9 @@
     }
     const targetHighlighted = targetKey && hasObtainMethod(targetKey) && rowsByKey.has(targetKey);
     return [...rowsByKey.values()].sort((a,b) => {
+      const securedA = state.direct.has(a.key);
+      const securedB = state.direct.has(b.key);
+      if(securedA !== securedB) return securedA ? 1 : -1;
       if(targetHighlighted){
         if(a.key === targetKey) return -1;
         if(b.key === targetKey) return 1;
@@ -2039,8 +2056,7 @@
       rect.setAttribute("rx", "8");
       const isRootNode = node.uid === rootId;
       const directCascaded = !isRootNode && node.path.some(key => state.direct.has(key));
-      const pathMarked = !isRootNode && isPathMarked(node.path);
-      const isStruck = directCascaded || pathMarked;
+      const isStruck = directCascaded;
       rect.setAttribute("class", "node-card" + (node.id === state.selectedId ? " target" : "") + (node.direct && node.node ? " direct" : "") + (highlightedUids.has(node.uid) ? " highlight" : "") + (isStruck ? " struck" : ""));
       group.appendChild(rect);
       const image = document.createElementNS("http://www.w3.org/2000/svg", "image");
@@ -2113,12 +2129,40 @@
         });
         group.appendChild(altGroup);
       }
+      if(!isRootNode){
+        const boxSize = 16;
+        const boxX = node.x + nodeWidth - boxSize - 8;
+        const boxY = node.y + nodeHeight / 2 - boxSize - 6;
+        const checkGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        checkGroup.setAttribute("class", "node-checkbox");
+        checkGroup.style.cursor = "pointer";
+        const checkRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+        checkRect.setAttribute("x", boxX);
+        checkRect.setAttribute("y", boxY);
+        checkRect.setAttribute("width", boxSize);
+        checkRect.setAttribute("height", boxSize);
+        checkRect.setAttribute("rx", 4);
+        checkRect.setAttribute("class", "node-checkbox-box" + (isStruck ? " checked" : ""));
+        checkGroup.appendChild(checkRect);
+        if(isStruck){
+          const check = document.createElementNS("http://www.w3.org/2000/svg", "path");
+          check.setAttribute("d", `M${boxX + 3},${boxY + 8.5} L${boxX + 6.5},${boxY + 12} L${boxX + 13},${boxY + 4}`);
+          check.setAttribute("class", "node-checkbox-mark");
+          checkGroup.appendChild(check);
+        }
+        const checkTitle = document.createElementNS("http://www.w3.org/2000/svg", "title");
+        checkTitle.textContent = isStruck ? "확보 완료 해제" : "확보 완료로 표시";
+        checkGroup.appendChild(checkTitle);
+        checkGroup.addEventListener("click", event => {
+          event.stopPropagation();
+          toggleNodeDirect(node);
+          render();
+        });
+        group.appendChild(checkGroup);
+      }
       group.addEventListener("click", () => {
         const isRoot = node.uid === rootId;
-        if(!isRoot){
-          if(node.node) toggleSecuredSubtree(node);
-          else toggleRawMaterialDirect(node);
-        }
+        if(!isRoot) toggleNodeDirect(node);
         render();
       });
       svg.appendChild(group);
@@ -2184,7 +2228,6 @@
   el("sortTierBtn").addEventListener("click", () => { state.sort = "tier"; render(); });
   function resetSecuredState(){
     state.direct.clear();
-    state.markedSecured.clear();
     state.owned = {};
     render();
   }
