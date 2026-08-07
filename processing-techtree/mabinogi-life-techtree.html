@@ -1177,6 +1177,8 @@
     navStack:[],
     direct:new Set(),
     owned:{},
+    rawOwned:{},
+    rawDirect:{},
     favorites:new Set(),
     showFavoritesOnly:false,
     highlightKey:null,
@@ -1193,6 +1195,14 @@
     if(typeof parsed.owned === "object") state.owned = parsed.owned;
     if(Array.isArray(parsed.direct)) state.direct = new Set(parsed.direct);
     if(Array.isArray(parsed.favorites)) state.favorites = new Set(parsed.favorites);
+    if(parsed.rawOwned && typeof parsed.rawOwned === "object") state.rawOwned = parsed.rawOwned;
+    if(parsed.rawDirect && typeof parsed.rawDirect === "object"){
+      const out = {};
+      Object.keys(parsed.rawDirect).forEach(id => {
+        if(Array.isArray(parsed.rawDirect[id])) out[id] = new Set(parsed.rawDirect[id]);
+      });
+      state.rawDirect = out;
+    }
   }
   (function loadPersistedState(){
     try {
@@ -1213,8 +1223,55 @@
       }
     });
   }
+  function serializeRawDirect(){
+    const out = {};
+    Object.keys(state.rawDirect).forEach(id => { out[id] = [...state.rawDirect[id]]; });
+    return out;
+  }
+  function targetOwnedBucket(){
+    const id = state.selectedId;
+    if(!state.rawOwned[id]) state.rawOwned[id] = {};
+    return state.rawOwned[id];
+  }
+  function getRawOwned(key){
+    const bucket = state.rawOwned[state.selectedId];
+    return bucket ? bucket[key] : undefined;
+  }
+  function setRawOwned(key, value){
+    const bucket = targetOwnedBucket();
+    if(value === undefined || value === "") delete bucket[key];
+    else bucket[key] = value;
+  }
+  function targetDirectSet(){
+    const id = state.selectedId;
+    if(!state.rawDirect[id]) state.rawDirect[id] = new Set();
+    return state.rawDirect[id];
+  }
+  function nodePathStr(node){
+    return (node.path || [node.key]).join(">");
+  }
+  function clearRawDirectForKey(key){
+    const set = targetDirectSet();
+    [...set].forEach(pathStr => {
+      if(pathStr.split(">").pop() === key) set.delete(pathStr);
+    });
+  }
+  let creditedByKey = new Map();
+  function computeCreditedByKey(tree){
+    const map = new Map();
+    const set = targetDirectSet();
+    const walk = (node, parentPath) => {
+      const path = parentPath.concat(node.key);
+      if(!node.node && set.has(path.join(">"))){
+        map.set(node.key, (map.get(node.key) || 0) + node.required);
+      }
+      (node.children || []).forEach(child => walk(child, path));
+    };
+    if(tree) walk(tree, []);
+    return map;
+  }
   function savePersistedState(){
-    const payload = {owned:state.owned, direct:[...state.direct], favorites:[...state.favorites]};
+    const payload = {owned:state.owned, direct:[...state.direct], favorites:[...state.favorites], rawOwned:state.rawOwned, rawDirect:serializeRawDirect()};
     try {
       localStorage.setItem(STORE_KEY, JSON.stringify(payload));
     } catch(error) {}
@@ -1661,8 +1718,15 @@
     state.materialFocus = null;
   }
   function toggleNodeDirect(node){
-    if(state.direct.has(node.key)) state.direct.delete(node.key);
-    else state.direct.add(node.key);
+    if(node.node){
+      if(state.direct.has(node.key)) state.direct.delete(node.key);
+      else state.direct.add(node.key);
+    }else{
+      const set = targetDirectSet();
+      const pathStr = nodePathStr(node);
+      if(set.has(pathStr)) set.delete(pathStr);
+      else set.add(pathStr);
+    }
   }
   function nodeSearchMatches(query){
     const value = query.trim().toLowerCase();
@@ -1823,32 +1887,32 @@
       render();
     };
   }
-  function isDirectMaterial(key, required){
-    return state.direct.has(key);
+  function isRawRowSecured(row){
+    const key = producedKey(row.name);
+    if(row.kind === "direct") return true;
+    const ownedNumber = Math.max(0, Number(getRawOwned(key)) || 0);
+    const credited = creditedByKey.get(key) || 0;
+    return (ownedNumber + credited) >= row.qty;
   }
   function renderRawRows(rows){
     const body = el("rawTable");
     body.innerHTML = "";
     el("rawTotalBadge").textContent = rows.length + "종";
-    const isRowSecured = row => {
-      const key = producedKey(row.name);
-      const ownedNumber = Math.max(0, Number(state.owned[key]) || 0);
-      return row.kind === "direct" || isDirectMaterial(key, row.qty) || ownedNumber >= row.qty;
-    };
     const sortedRows = [...rows].sort((a,b) => {
-      const securedA = isRowSecured(a);
-      const securedB = isRowSecured(b);
+      const securedA = isRawRowSecured(a);
+      const securedB = isRawRowSecured(b);
       if(securedA !== securedB) return securedA ? 1 : -1;
       return 0;
     });
     sortedRows.forEach(row => {
       const tr = document.createElement("tr");
       const key = producedKey(row.name);
-      const rawOwnedValue = state.owned[key] ?? "";
+      const rawOwnedValue = row.kind === "direct" ? "" : (getRawOwned(key) ?? "");
       const rawOwnedNumber = Math.max(0, Number(rawOwnedValue) || 0);
-      const isDirect = row.kind === "direct" || isDirectMaterial(key, row.qty) || rawOwnedNumber >= row.qty;
+      const credited = row.kind === "direct" ? 0 : (creditedByKey.get(key) || 0);
+      const isDirect = isRawRowSecured(row);
       const ownedValue = isDirect ? row.qty : rawOwnedValue;
-      const shortage = isDirect ? 0 : Math.max(0, row.qty - rawOwnedNumber);
+      const shortage = isDirect ? 0 : Math.max(0, row.qty - rawOwnedNumber - credited);
       const produced = directAllowed(row.name);
       tr.innerHTML = `
         <td>
@@ -1858,30 +1922,35 @@
           </div>
         </td>
         <td class="num">${formatNumber(row.qty)}</td>
-        <td class="num"><input class="owned-input" type="number" min="0" step="1" value="${ownedValue}" aria-label="${row.name} 소유 수량"></td>
+        <td class="num"><input class="owned-input" data-key="${escapeHtml(key)}" type="number" min="0" step="1" value="${ownedValue}" aria-label="${row.name} 소유 수량"></td>
         <td class="num shortage-cell">${formatNumber(shortage)}</td>
         <td class="state-cell"><button class="tag action ${isDirect ? "direct" : ""}" type="button">${isDirect ? "확보 완료" : "원재료 확보"}</button></td>
       `;
-      tr.querySelector(".owned-input").addEventListener("input", event => {
+      const input = tr.querySelector(".owned-input");
+      input.addEventListener("input", event => {
+        if(row.kind === "direct") return;
+        const selStart = event.target.selectionStart;
+        const selEnd = event.target.selectionEnd;
         const value = event.target.value;
-        if(value === "") delete state.owned[key];
-        else state.owned[key] = Math.max(0, Math.floor(Number(value) || 0));
-        const currentOwned = Math.max(0, Number(state.owned[key]) || 0);
-        const currentDirect = row.kind === "direct" || state.direct.has(key) || currentOwned >= row.qty;
-        tr.querySelector(".shortage-cell").textContent = formatNumber(Math.max(0, row.qty - currentOwned));
-        const button = tr.querySelector(".tag.action");
-        button.classList.toggle("direct", currentDirect);
-        button.textContent = currentDirect ? "확보 완료" : "원재료 확보";
+        setRawOwned(key, value === "" ? undefined : Math.max(0, Math.floor(Number(value) || 0)));
+        render();
+        const restored = document.querySelector(`.owned-input[data-key="${key.replace(/"/g, '\\"')}"]`);
+        if(restored){
+          restored.focus();
+          try { restored.setSelectionRange(selStart, selEnd); } catch(err) {}
+        }
       });
       tr.querySelector(".tag.action").addEventListener("click", () => {
-        const currentOwned = Math.max(0, Number(state.owned[key]) || 0);
-        const currentDirect = row.kind === "direct" || state.direct.has(key) || currentOwned >= row.qty;
-        if(currentDirect){
+        if(row.kind === "direct"){
           state.direct.delete(key);
-          delete state.owned[key];
+          render();
+          return;
+        }
+        if(isRawRowSecured(row)){
+          setRawOwned(key, undefined);
+          clearRawDirectForKey(key);
         }else{
-          state.owned[key] = row.qty;
-          state.direct.add(key);
+          setRawOwned(key, row.qty);
         }
         render();
       });
@@ -2022,8 +2091,8 @@
     }
     const targetHighlighted = targetKey && hasObtainMethod(targetKey) && rowsByKey.has(targetKey);
     return [...rowsByKey.values()].sort((a,b) => {
-      const securedA = state.direct.has(a.key);
-      const securedB = state.direct.has(b.key);
+      const securedA = a.node ? state.direct.has(a.key) : isRawRowSecured({name:a.key, qty:a.qty, kind:"raw"});
+      const securedB = b.node ? state.direct.has(b.key) : isRawRowSecured({name:b.key, qty:b.qty, kind:"raw"});
       if(securedA !== securedB) return securedA ? 1 : -1;
       if(targetHighlighted){
         if(a.key === targetKey) return -1;
@@ -2044,7 +2113,8 @@
       if(key === targetKey && hasObtainMethod(key)) tr.classList.add("alt-row-method");
       const list = producers.get(key) || [];
       const selected = pickProducer(key);
-      const isDirect = state.direct.has(key);
+      const isRawKey = !list.length;
+      const isDirect = isRawKey ? isRawRowSecured({name:key, qty:row.qty, kind:"raw"}) : state.direct.has(key);
       tr.innerHTML = `
         <td>
           <div class="material-cell">
@@ -2068,8 +2138,17 @@
         });
       }
       tr.querySelector(".tag.action").addEventListener("click", () => {
-        if(state.direct.has(key)) state.direct.delete(key);
-        else state.direct.add(key);
+        if(isRawKey){
+          if(isRawRowSecured({name:key, qty:row.qty, kind:"raw"})){
+            setRawOwned(key, undefined);
+            clearRawDirectForKey(key);
+          }else{
+            setRawOwned(key, row.qty);
+          }
+        }else{
+          if(state.direct.has(key)) state.direct.delete(key);
+          else state.direct.add(key);
+        }
         render();
       });
       body.appendChild(tr);
@@ -2078,7 +2157,7 @@
       body.innerHTML = `<tr><td colspan="3" class="empty">선택 가능한 교환 및 구입처 항목이 없습니다.</td></tr>`;
     }
   }
-  function drawTree(tree){
+  function drawTree(tree, securedRawKeys){
     const svg = el("treeSvg");
     svg.innerHTML = "";
     const levels = [];
@@ -2156,8 +2235,9 @@
       rect.setAttribute("height", String(nodeHeight));
       rect.setAttribute("rx", "8");
       const isRootNode = node.uid === rootId;
-      const directCascaded = !isRootNode && node.path.some(key => state.direct.has(key));
-      const isStruck = directCascaded;
+      const ancestorSecured = !isRootNode && node.path.slice(0, -1).some(key => state.direct.has(key));
+      const selfSecured = !isRootNode && (node.node ? state.direct.has(node.key) : (targetDirectSet().has(nodePathStr(node)) || securedRawKeys.has(node.key)));
+      const isStruck = ancestorSecured || selfSecured;
       rect.setAttribute("class", "node-card" + (node.id === state.selectedId ? " target" : "") + (node.direct && node.node ? " direct" : "") + (highlightedUids.has(node.uid) ? " highlight" : "") + (isStruck ? " struck" : ""));
       group.appendChild(rect);
       const image = document.createElementNS("http://www.w3.org/2000/svg", "image");
@@ -2292,11 +2372,13 @@
     });
     const result = calculate(node, state.targetQty);
     lastResult = result;
+    creditedByKey = computeCreditedByKey(result.tree);
     renderHeader(node, result);
     renderRawRows(materialRowsForFocus(result));
     renderSteps(result.craftRows);
     renderAlternatives(result);
-    drawTree(result.tree);
+    const securedRawKeys = new Set(result.rawRows.filter(isRawRowSecured).map(row => producedKey(row.name)));
+    drawTree(result.tree, securedRawKeys);
     savePersistedState();
   }
   function toast(message){
@@ -2345,6 +2427,8 @@
   function resetSecuredState(){
     state.direct.clear();
     state.owned = {};
+    state.rawOwned = {};
+    state.rawDirect = {};
     render();
   }
   el("resetDirectBtn").addEventListener("click", resetSecuredState);
