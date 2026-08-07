@@ -1040,6 +1040,7 @@
           <div class="panel-title-row">
             <h3 class="panel-title">총 재료</h3>
             <span class="badge" id="rawTotalBadge">0종</span>
+            <button class="btn danger status-reset" id="resetRawBtn" type="button">상태 초기화</button>
           </div>
         </div>
         <div class="panel-body table-wrap">
@@ -1070,9 +1071,6 @@
             <thead>
               <tr>
                 <th>가공품</th>
-                <th class="num">필요 수량</th>
-                <th class="num">소유</th>
-                <th class="num">부족</th>
                 <th>상태</th>
                 <th>구하는 방법</th>
               </tr>
@@ -1555,36 +1553,22 @@
     state.highlightKey = null;
     state.materialFocus = null;
   }
-  function collectCraftKeys(node, acc){
-    acc.add(node.key);
-    (node.children || []).forEach(child => collectCraftKeys(child, acc));
-    return acc;
+  function nodePathStr(node){
+    return (node.path || [node.key]).join(">");
+  }
+  function isPathMarked(path){
+    let acc = "";
+    for(let i = 0; i < path.length; i++){
+      acc = i === 0 ? path[0] : acc + ">" + path[i];
+      if(state.markedSecured.has(acc)) return true;
+    }
+    return false;
   }
   function toggleSecuredSubtree(node){
     if(!node.node) return;
-    const keys = collectCraftKeys(node, new Set());
-    const nowSecured = !state.markedSecured.has(node.key);
-    keys.forEach(key => {
-      if(nowSecured) state.markedSecured.add(key);
-      else state.markedSecured.delete(key);
-    });
-  }
-  function findTreeItemByKey(tree, key){
-    if(!tree) return null;
-    if(tree.key === key) return tree;
-    for(const child of tree.children){
-      const found = findTreeItemByKey(child, key);
-      if(found) return found;
-    }
-    return null;
-  }
-  function syncMarkedSecuredForKey(key, secured){
-    const item = lastResult && findTreeItemByKey(lastResult.tree, key);
-    const keys = item ? collectCraftKeys(item, new Set()) : new Set([key]);
-    keys.forEach(k => {
-      if(secured) state.markedSecured.add(k);
-      else state.markedSecured.delete(k);
-    });
+    const pathStr = nodePathStr(node);
+    if(state.markedSecured.has(pathStr)) state.markedSecured.delete(pathStr);
+    else state.markedSecured.add(pathStr);
   }
   function nodeSearchMatches(query){
     const value = query.trim().toLowerCase();
@@ -1764,11 +1748,9 @@
         if(currentDirect){
           state.direct.delete(key);
           delete state.owned[key];
-          syncMarkedSecuredForKey(key, false);
         }else{
           state.owned[key] = row.qty;
           state.direct.add(key);
-          syncMarkedSecuredForKey(key, true);
         }
         render();
       });
@@ -1921,10 +1903,7 @@
       if(key === targetKey && hasObtainMethod(key)) tr.classList.add("alt-row-method");
       const list = producers.get(key) || [];
       const selected = pickProducer(key);
-      const ownedValue = state.owned[key] ?? "";
-      const ownedNumber = Math.max(0, Number(ownedValue) || 0);
-      const shortage = Math.max(0, row.qty - ownedNumber);
-      const isDirect = isDirectMaterial(key, row.qty) || ownedNumber >= row.qty;
+      const isDirect = state.direct.has(key);
       tr.innerHTML = `
         <td>
           <div class="material-cell">
@@ -1937,9 +1916,6 @@
             </select>
           ` : ""}
         </td>
-        <td class="num">${formatNumber(row.qty)}</td>
-        <td class="num"><input class="owned-input" type="number" min="0" step="1" value="${ownedValue}" aria-label="${escapeHtml(key)} 소유 수량"></td>
-        <td class="num shortage-cell">${formatNumber(shortage)}</td>
         <td class="state-cell"><button class="tag action ${isDirect ? "direct" : ""}" type="button">${isDirect ? "확보 완료" : "원재료 확보"}</button></td>
         <td class="method-cell">${methodDisplayHtml(key)}</td>
       `;
@@ -1950,35 +1926,15 @@
           render();
         });
       }
-      tr.querySelector(".owned-input").addEventListener("input", event => {
-        const value = event.target.value;
-        if(value === "") delete state.owned[key];
-        else state.owned[key] = Math.max(0, Math.floor(Number(value) || 0));
-        const currentOwned = Math.max(0, Number(state.owned[key]) || 0);
-        const currentDirect = state.direct.has(key) || currentOwned >= row.qty;
-        tr.querySelector(".shortage-cell").textContent = formatNumber(Math.max(0, row.qty - currentOwned));
-        const button = tr.querySelector(".tag.action");
-        button.classList.toggle("direct", currentDirect);
-        button.textContent = currentDirect ? "확보 완료" : "원재료 확보";
-      });
       tr.querySelector(".tag.action").addEventListener("click", () => {
-        const currentOwned = Math.max(0, Number(state.owned[key]) || 0);
-        const currentDirect = state.direct.has(key) || currentOwned >= row.qty;
-        if(currentDirect){
-          state.direct.delete(key);
-          delete state.owned[key];
-          syncMarkedSecuredForKey(key, false);
-        }else{
-          state.owned[key] = row.qty;
-          state.direct.add(key);
-          syncMarkedSecuredForKey(key, true);
-        }
+        if(state.direct.has(key)) state.direct.delete(key);
+        else state.direct.add(key);
         render();
       });
       body.appendChild(tr);
     });
     if(!body.children.length){
-      body.innerHTML = `<tr><td colspan="6" class="empty">선택 가능한 교환 및 구입처 항목이 없습니다.</td></tr>`;
+      body.innerHTML = `<tr><td colspan="3" class="empty">선택 가능한 교환 및 구입처 항목이 없습니다.</td></tr>`;
     }
   }
   function drawTree(tree){
@@ -1986,15 +1942,16 @@
     svg.innerHTML = "";
     const levels = [];
     const seen = new Map();
-    const walk = (node, depth) => {
+    const walk = (node, depth, parentPath) => {
       if(!levels[depth]) levels[depth] = [];
-      const copy = {...node, depth, uid:node.id + "-" + depth + "-" + levels[depth].length};
+      const path = parentPath.concat(node.key);
+      const copy = {...node, depth, uid:node.id + "-" + depth + "-" + levels[depth].length, path};
       levels[depth].push(copy);
       seen.set(copy.uid, copy);
-      copy.childrenRefs = node.children.map(child => walk(child, depth + 1));
+      copy.childrenRefs = node.children.map(child => walk(child, depth + 1, path));
       return copy.uid;
     };
-    const rootId = walk(tree, 0);
+    const rootId = walk(tree, 0, []);
     const flat = [...seen.values()];
     const nodeWidth = 236;
     const nodeHeight = 68;
@@ -2057,9 +2014,10 @@
       rect.setAttribute("width", String(nodeWidth));
       rect.setAttribute("height", String(nodeHeight));
       rect.setAttribute("rx", "8");
-      const isStruck = node.node
-        ? (node.direct || isDirectMaterial(node.key, node.required) || state.markedSecured.has(node.key))
-        : (state.direct.has(node.key) || state.markedSecured.has(node.key));
+      const isRootNode = node.uid === rootId;
+      const directCascaded = !isRootNode && node.path.some(key => state.direct.has(key));
+      const pathMarked = !isRootNode && isPathMarked(node.path);
+      const isStruck = directCascaded || pathMarked;
       rect.setAttribute("class", "node-card" + (node.id === state.selectedId ? " target" : "") + (node.direct && node.node ? " direct" : "") + (highlightedUids.has(node.uid) ? " highlight" : "") + (isStruck ? " struck" : ""));
       group.appendChild(rect);
       const image = document.createElementNS("http://www.w3.org/2000/svg", "image");
@@ -2204,12 +2162,14 @@
   el("sortNameBtn").addEventListener("click", () => { state.sort = "name"; render(); });
   el("sortTimeBtn").addEventListener("click", () => { state.sort = "time"; render(); });
   el("sortTierBtn").addEventListener("click", () => { state.sort = "tier"; render(); });
-  el("resetDirectBtn").addEventListener("click", () => {
+  function resetSecuredState(){
     state.direct.clear();
     state.markedSecured.clear();
     state.owned = {};
     render();
-  });
+  }
+  el("resetDirectBtn").addEventListener("click", resetSecuredState);
+  el("resetRawBtn").addEventListener("click", resetSecuredState);
   el("copyBtn").addEventListener("click", () => {
     const node = nodeById.get(state.selectedId);
     if(node && lastResult) copySummary(node, lastResult);
