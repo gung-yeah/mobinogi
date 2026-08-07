@@ -608,6 +608,19 @@
     stroke-width:2.2;
     pointer-events:none;
   }
+  .node-alt-rect{
+    fill:rgba(115,167,242,.22);
+    stroke:var(--blue);
+    stroke-width:1.2;
+  }
+  .node-alt-text{
+    fill:var(--blue);
+    font-size:11px;
+    font-weight:800;
+  }
+  .node-alt-badge:hover .node-alt-rect{
+    fill:rgba(115,167,242,.36);
+  }
   .edge{
     fill:none;
     stroke:#506782;
@@ -1048,7 +1061,7 @@
       <div class="panel">
         <div class="panel-head">
           <div class="panel-title-row">
-            <h3 class="panel-title">교환 및 가공 대체</h3>
+            <h3 class="panel-title">교환 및 구입처</h3>
             <span class="badge" id="altBadge">0개</span>
           </div>
         </div>
@@ -1412,6 +1425,11 @@
     };
     if(direct){
       addMap(raw, key, amount, {name:key, kind:"direct", source:node});
+      if(!visits.has(node.id)){
+        const nextVisits = new Set(visits);
+        nextVisits.add(node.id);
+        current.children = buildDisplayChildren(node, count, nextVisits);
+      }
       return current;
     }
     addCraft(crafts, node, key, count, produced);
@@ -1438,6 +1456,47 @@
         });
       }
     });
+    return current;
+  }
+  function buildDisplayChildren(node, count, visits){
+    return (node.materials || []).map(material => {
+      const needed = material.qty * count;
+      const producer = pickProducer(material.name);
+      if(producer && producer.id !== node.id){
+        return buildDisplayNode(producer, needed, visits);
+      }
+      return {
+        id:"raw-" + material.name,
+        name:material.name,
+        key:material.name,
+        required:needed,
+        produced:needed,
+        count:0,
+        node:null,
+        direct:true,
+        children:[]
+      };
+    });
+  }
+  function buildDisplayNode(node, amount, visits){
+    const key = producedKey(node.name);
+    const count = Math.ceil(amount / node.yield);
+    const produced = count * node.yield;
+    const current = {
+      id:node.id,
+      name:node.name,
+      key,
+      required:amount,
+      produced,
+      count,
+      node,
+      direct:state.direct.has(key),
+      children:[]
+    };
+    if(visits.has(node.id)) return current;
+    const nextVisits = new Set(visits);
+    nextVisits.add(node.id);
+    current.children = buildDisplayChildren(node, count, nextVisits);
     return current;
   }
   const el = id => document.getElementById(id);
@@ -1497,7 +1556,7 @@
     state.materialFocus = null;
   }
   function collectCraftKeys(node, acc){
-    if(node.node) acc.add(node.key);
+    acc.add(node.key);
     (node.children || []).forEach(child => collectCraftKeys(child, acc));
     return acc;
   }
@@ -1508,6 +1567,23 @@
     keys.forEach(key => {
       if(nowSecured) state.markedSecured.add(key);
       else state.markedSecured.delete(key);
+    });
+  }
+  function findTreeItemByKey(tree, key){
+    if(!tree) return null;
+    if(tree.key === key) return tree;
+    for(const child of tree.children){
+      const found = findTreeItemByKey(child, key);
+      if(found) return found;
+    }
+    return null;
+  }
+  function syncMarkedSecuredForKey(key, secured){
+    const item = lastResult && findTreeItemByKey(lastResult.tree, key);
+    const keys = item ? collectCraftKeys(item, new Set()) : new Set([key]);
+    keys.forEach(k => {
+      if(secured) state.markedSecured.add(k);
+      else state.markedSecured.delete(k);
     });
   }
   function nodeSearchMatches(query){
@@ -1688,9 +1764,11 @@
         if(currentDirect){
           state.direct.delete(key);
           delete state.owned[key];
+          syncMarkedSecuredForKey(key, false);
         }else{
           state.owned[key] = row.qty;
           state.direct.add(key);
+          syncMarkedSecuredForKey(key, true);
         }
         render();
       });
@@ -1889,16 +1967,18 @@
         if(currentDirect){
           state.direct.delete(key);
           delete state.owned[key];
+          syncMarkedSecuredForKey(key, false);
         }else{
           state.owned[key] = row.qty;
           state.direct.add(key);
+          syncMarkedSecuredForKey(key, true);
         }
         render();
       });
       body.appendChild(tr);
     });
     if(!body.children.length){
-      body.innerHTML = `<tr><td colspan="6" class="empty">선택 가능한 교환 및 가공 대체 항목이 없습니다.</td></tr>`;
+      body.innerHTML = `<tr><td colspan="6" class="empty">선택 가능한 교환 및 구입처 항목이 없습니다.</td></tr>`;
     }
   }
   function drawTree(tree){
@@ -1977,7 +2057,9 @@
       rect.setAttribute("width", String(nodeWidth));
       rect.setAttribute("height", String(nodeHeight));
       rect.setAttribute("rx", "8");
-      const isStruck = node.node && (node.direct || isDirectMaterial(node.key, node.required) || state.markedSecured.has(node.key));
+      const isStruck = node.node
+        ? (node.direct || isDirectMaterial(node.key, node.required) || state.markedSecured.has(node.key))
+        : (state.direct.has(node.key) || state.markedSecured.has(node.key));
       rect.setAttribute("class", "node-card" + (node.id === state.selectedId ? " target" : "") + (node.direct && node.node ? " direct" : "") + (highlightedUids.has(node.uid) ? " highlight" : "") + (isStruck ? " struck" : ""));
       group.appendChild(rect);
       const image = document.createElementNS("http://www.w3.org/2000/svg", "image");
@@ -2013,20 +2095,45 @@
         strike.setAttribute("class", "node-strike");
         group.appendChild(strike);
       }
+      const altList = node.node ? (producers.get(node.key) || []) : [];
+      if(altList.length > 1){
+        const badgeW = 34, badgeH = 20;
+        const badgeX = node.x + nodeWidth - badgeW - 6;
+        const badgeY = node.y - nodeHeight / 2 + 6;
+        const altGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        altGroup.setAttribute("class", "node-alt-badge");
+        altGroup.style.cursor = "pointer";
+        const altRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+        altRect.setAttribute("x", badgeX);
+        altRect.setAttribute("y", badgeY);
+        altRect.setAttribute("width", badgeW);
+        altRect.setAttribute("height", badgeH);
+        altRect.setAttribute("rx", 6);
+        altRect.setAttribute("class", "node-alt-rect");
+        altGroup.appendChild(altRect);
+        const altText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        altText.setAttribute("x", badgeX + badgeW / 2);
+        altText.setAttribute("y", badgeY + badgeH / 2 + 4);
+        altText.setAttribute("text-anchor", "middle");
+        altText.setAttribute("class", "node-alt-text");
+        altText.textContent = "⇄" + altList.length;
+        altGroup.appendChild(altText);
+        const selectedProducer = pickProducer(node.key);
+        const titleEl = document.createElementNS("http://www.w3.org/2000/svg", "title");
+        titleEl.textContent = `제작 방법 ${altList.length}종 (현재: ${selectedProducer ? selectedProducer.name : node.key}) · 클릭하여 전환`;
+        altGroup.appendChild(titleEl);
+        altGroup.addEventListener("click", event => {
+          event.stopPropagation();
+          const currentId = state.choices[node.key] || (selectedProducer && selectedProducer.id);
+          const idx = altList.findIndex(item => item.id === currentId);
+          const next = altList[(idx + 1) % altList.length];
+          state.choices[node.key] = next.id;
+          render();
+        });
+        group.appendChild(altGroup);
+      }
       group.addEventListener("click", () => {
         const isRoot = node.uid === rootId;
-        const isSelected = state.highlightKey === node.uid;
-        if(isRoot || isSelected){
-          clearTreeFocus();
-        }else{
-          state.highlightKey = node.uid;
-          state.materialFocus = {
-            uid:node.uid,
-            nodeId:node.node ? node.node.id : null,
-            key:node.key,
-            required:node.required
-          };
-        }
         if(!isRoot) toggleSecuredSubtree(node);
         render();
       });
