@@ -988,7 +988,7 @@
       <label class="label" for="searchInput"><span>아이템 검색</span><span id="resultCount"></span></label>
       <div class="search-wrap">
         <span aria-hidden="true">⌕</span>
-        <input class="search" id="searchInput" type="search" autocomplete="off">
+        <input class="search" id="searchInput" type="search" autocomplete="off" lang="ko" inputmode="text">
       </div>
       <div class="qty-row">
         <div class="qty-control">
@@ -1147,6 +1147,21 @@
     treePanY:0,
     choices:{}
   };
+  const STORE_KEY = "mabinogi-life-techtree-v1";
+  (function loadPersistedState(){
+    try {
+      const raw = localStorage.getItem(STORE_KEY);
+      if(!raw) return;
+      const parsed = JSON.parse(raw);
+      if(parsed && typeof parsed.owned === "object") state.owned = parsed.owned;
+      if(parsed && Array.isArray(parsed.direct)) state.direct = new Set(parsed.direct);
+    } catch(error) {}
+  })();
+  function savePersistedState(){
+    try {
+      localStorage.setItem(STORE_KEY, JSON.stringify({owned:state.owned, direct:[...state.direct]}));
+    } catch(error) {}
+  }
   const nodeById = new Map(NODES.map(node => [node.id, node]));
   const extractedCatalog = window.MABIMOBI_ITEM_LIST || Object.values(window.MABIMOBI_ITEMS || {});
   const extractedCategoryLabel = info => info?.categoryLabel || ({
@@ -1744,10 +1759,11 @@
     sortedRows.forEach(row => {
       const tr = document.createElement("tr");
       const key = producedKey(row.name);
-      const ownedValue = state.owned[key] ?? "";
-      const ownedNumber = Math.max(0, Number(ownedValue) || 0);
-      const shortage = Math.max(0, row.qty - ownedNumber);
-      const isDirect = row.kind === "direct" || isDirectMaterial(key, row.qty) || ownedNumber >= row.qty;
+      const rawOwnedValue = state.owned[key] ?? "";
+      const rawOwnedNumber = Math.max(0, Number(rawOwnedValue) || 0);
+      const isDirect = row.kind === "direct" || isDirectMaterial(key, row.qty) || rawOwnedNumber >= row.qty;
+      const ownedValue = isDirect ? row.qty : rawOwnedValue;
+      const shortage = isDirect ? 0 : Math.max(0, row.qty - rawOwnedNumber);
       const produced = directAllowed(row.name);
       tr.innerHTML = `
         <td>
@@ -2196,6 +2212,7 @@
     renderSteps(result.craftRows);
     renderAlternatives(result);
     drawTree(result.tree);
+    savePersistedState();
   }
   function toast(message){
     const box = el("toast");
