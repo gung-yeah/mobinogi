@@ -1911,7 +1911,7 @@
       const rawOwnedNumber = Math.max(0, Number(rawOwnedValue) || 0);
       const credited = row.kind === "direct" ? 0 : (creditedByKey.get(key) || 0);
       const isDirect = isRawRowSecured(row);
-      const ownedValue = isDirect ? row.qty : rawOwnedValue;
+      const ownedValue = rawOwnedValue;
       const shortage = isDirect ? 0 : Math.max(0, row.qty - rawOwnedNumber - credited);
       const produced = directAllowed(row.name);
       tr.innerHTML = `
