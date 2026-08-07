@@ -1922,22 +1922,22 @@
           </div>
         </td>
         <td class="num">${formatNumber(row.qty)}</td>
-        <td class="num"><input class="owned-input" data-key="${escapeHtml(key)}" type="number" min="0" step="1" value="${ownedValue}" aria-label="${row.name} 소유 수량"></td>
+        <td class="num"><input class="owned-input" data-key="${escapeHtml(key)}" type="text" inputmode="numeric" pattern="[0-9]*" value="${ownedValue}" aria-label="${row.name} 소유 수량"></td>
         <td class="num shortage-cell">${formatNumber(shortage)}</td>
         <td class="state-cell"><button class="tag action ${isDirect ? "direct" : ""}" type="button">${isDirect ? "확보 완료" : "원재료 확보"}</button></td>
       `;
       const input = tr.querySelector(".owned-input");
       input.addEventListener("input", event => {
         if(row.kind === "direct") return;
+        const digitsOnly = event.target.value.replace(/[^0-9]/g, "");
         const selStart = event.target.selectionStart;
-        const selEnd = event.target.selectionEnd;
-        const value = event.target.value;
-        setRawOwned(key, value === "" ? undefined : Math.max(0, Math.floor(Number(value) || 0)));
+        setRawOwned(key, digitsOnly === "" ? undefined : Math.max(0, parseInt(digitsOnly, 10) || 0));
         render();
         const restored = document.querySelector(`.owned-input[data-key="${key.replace(/"/g, '\\"')}"]`);
         if(restored){
           restored.focus();
-          try { restored.setSelectionRange(selStart, selEnd); } catch(err) {}
+          const pos = Math.min(selStart, restored.value.length);
+          try { restored.setSelectionRange(pos, pos); } catch(err) {}
         }
       });
       tr.querySelector(".tag.action").addEventListener("click", () => {
