@@ -1148,19 +1148,39 @@
     choices:{}
   };
   const STORE_KEY = "mabinogi-life-techtree-v1";
+  const isEmbedded = window.parent !== window;
+  function applyPersistedPayload(parsed){
+    if(!parsed) return;
+    if(typeof parsed.owned === "object") state.owned = parsed.owned;
+    if(Array.isArray(parsed.direct)) state.direct = new Set(parsed.direct);
+  }
   (function loadPersistedState(){
     try {
       const raw = localStorage.getItem(STORE_KEY);
-      if(!raw) return;
-      const parsed = JSON.parse(raw);
-      if(parsed && typeof parsed.owned === "object") state.owned = parsed.owned;
-      if(parsed && Array.isArray(parsed.direct)) state.direct = new Set(parsed.direct);
+      if(raw) applyPersistedPayload(JSON.parse(raw));
     } catch(error) {}
+    if(isEmbedded){
+      window.parent.postMessage({type:"mabinogi-techtree-request-storage", key:STORE_KEY}, "*");
+    }
   })();
+  if(isEmbedded){
+    window.addEventListener("message", event => {
+      if(event.data && event.data.type === "mabinogi-techtree-storage-data" && event.data.key === STORE_KEY){
+        if(event.data.payload){
+          applyPersistedPayload(event.data.payload);
+          render();
+        }
+      }
+    });
+  }
   function savePersistedState(){
+    const payload = {owned:state.owned, direct:[...state.direct]};
     try {
-      localStorage.setItem(STORE_KEY, JSON.stringify({owned:state.owned, direct:[...state.direct]}));
+      localStorage.setItem(STORE_KEY, JSON.stringify(payload));
     } catch(error) {}
+    if(isEmbedded){
+      window.parent.postMessage({type:"mabinogi-techtree-save", key:STORE_KEY, payload}, "*");
+    }
   }
   const nodeById = new Map(NODES.map(node => [node.id, node]));
   const extractedCatalog = window.MABIMOBI_ITEM_LIST || Object.values(window.MABIMOBI_ITEMS || {});
