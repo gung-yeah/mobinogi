@@ -1870,6 +1870,13 @@
         if(node) rowsByKey.set(key, {key, node, qty:node.yield, count:1, produced:node.yield});
       }
     });
+    result.rawRows.forEach(row => {
+      const key = producedKey(row.name);
+      if(key === targetKey || rowsByKey.has(key)) return;
+      if(hasObtainMethod(key)){
+        rowsByKey.set(key, {key, node:pickProducer(key), qty:row.qty, count:0, produced:row.qty});
+      }
+    });
     if(targetKey && !rowsByKey.has(targetKey)){
       const hasAltProducers = producers.has(targetKey) && producers.get(targetKey).length > 1;
       if(hasAltProducers || hasObtainMethod(targetKey)){
