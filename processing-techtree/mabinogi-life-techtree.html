@@ -311,6 +311,9 @@
     display:grid;
     gap:8px;
     margin-top:10px;
+    max-height:clamp(360px, 60vh, 640px);
+    overflow-y:auto;
+    overscroll-behavior:contain;
   }
   .recipe-btn{
     display:grid;
@@ -1001,9 +1004,6 @@
             </div>
           </div>
         </div>
-      </div>
-      <div class="actions compact">
-        <button class="btn primary" id="copyBtn" type="button">제작식 복사</button>
       </div>
     </section>
 
@@ -2109,12 +2109,6 @@
   function trimText(value, max){
     return value.length > max ? value.slice(0, max - 1) + "…" : value;
   }
-  function copySummary(node, result){
-    const raw = result.rawRows.map(row => `- ${row.name}: ${formatNumber(row.qty)}개 (${row.kind === "direct" ? "직접 확보" : "원재료"})`).join("\n");
-    const steps = result.craftRows.map(row => `- ${row.node.name}: ${formatNumber(row.count)}회, ${formatNumber(row.produced)}개 생산`).join("\n");
-    const text = `[${node.name} ${formatNumber(state.targetQty)}개]\n제작 시간: ${formatSeconds(result.totalTime)}\n\n총 재료\n${raw || "- 없음"}\n\n제작 순서\n${steps || "- 없음"}`;
-    navigator.clipboard.writeText(text).then(() => toast("제작식을 클립보드에 복사했습니다.")).catch(() => toast("브라우저 권한 때문에 자동 복사하지 못했습니다."));
-  }
   let lastResult = null;
   function render(){
     renderCategories();
@@ -2177,10 +2171,6 @@
   }
   el("resetDirectBtn").addEventListener("click", resetSecuredState);
   el("resetRawBtn").addEventListener("click", resetSecuredState);
-  el("copyBtn").addEventListener("click", () => {
-    const node = nodeById.get(state.selectedId);
-    if(node && lastResult) copySummary(node, lastResult);
-  });
   const treeSvg = el("treeSvg");
   const treeWrap = treeSvg.parentElement;
   function treeMapSize(){
