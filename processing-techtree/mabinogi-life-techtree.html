@@ -613,6 +613,35 @@
   .tree-wrap.dragging{
     cursor:grabbing;
   }
+  .tree-zoom-controls{
+    position:absolute;
+    right:14px;
+    bottom:14px;
+    z-index:3;
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+  }
+  .tree-zoom-btn{
+    width:38px;
+    height:38px;
+    border-radius:9px;
+    border:1px solid var(--line-strong);
+    background:rgba(15,23,42,.88);
+    color:var(--ink);
+    font-size:18px;
+    font-weight:800;
+    line-height:1;
+    backdrop-filter:blur(8px);
+    box-shadow:0 8px 20px rgba(0,0,0,.32);
+    cursor:pointer;
+  }
+  .tree-zoom-btn:hover{
+    border-color:var(--accent);
+  }
+  .tree-zoom-btn:active{
+    background:rgba(88,196,182,.18);
+  }
   .tree-svg{
     display:block;
     min-width:760px;
@@ -772,17 +801,17 @@
     min-height:22px;
     padding:2px 7px;
     border-radius:999px;
-    background:rgba(255,255,255,.06);
-    border:1px solid var(--line);
-    color:var(--soft);
+    background:#b06a1f;
+    border:1px solid #b06a1f;
+    color:#ffffff;
     font-size:11px;
     font-weight:800;
     white-space:nowrap;
   }
   .tag.direct{
-    color:#ffe2a0;
-    border-color:rgba(229,190,95,.45);
-    background:rgba(229,190,95,.1);
+    color:#ffffff;
+    border-color:#2f6fb0;
+    background:#2f6fb0;
   }
   .tag.action{
     cursor:pointer;
@@ -1088,6 +1117,10 @@
         <div class="tree-wrap">
           <svg class="tree-svg" id="treeSvg" role="img" aria-label="선택한 목표 아이템의 제작 단계"></svg>
           <button class="btn danger status-reset tree-reset-btn" id="resetDirectBtn" type="button">상태 초기화</button>
+          <div class="tree-zoom-controls">
+            <button class="tree-zoom-btn" id="treeZoomInBtn" type="button" aria-label="확대">+</button>
+            <button class="tree-zoom-btn" id="treeZoomOutBtn" type="button" aria-label="축소">−</button>
+          </div>
         </div>
       </div>
     </section>
@@ -2471,6 +2504,23 @@
       viewHeight
     };
   }
+  function zoomTreeByFactor(factor){
+    if(!lastResult) return;
+    const oldZoom = state.treeZoom || 1;
+    const nextZoom = Math.min(2.4, Math.max(0.55, oldZoom * factor));
+    if(Math.abs(nextZoom - oldZoom) < 0.001) return;
+    const map = treeMapSize();
+    const viewWidth = map.width / oldZoom;
+    const viewHeight = map.height / oldZoom;
+    const focusX = state.treePanX + viewWidth / 2;
+    const focusY = state.treePanY + viewHeight / 2;
+    state.treeZoom = nextZoom;
+    state.treePanX = focusX - (map.width / nextZoom) / 2;
+    state.treePanY = focusY - (map.height / nextZoom) / 2;
+    applyTreeViewBox();
+  }
+  el("treeZoomInBtn").addEventListener("click", () => zoomTreeByFactor(1.2));
+  el("treeZoomOutBtn").addEventListener("click", () => zoomTreeByFactor(1 / 1.2));
   treeWrap.addEventListener("wheel", event => {
     if(!lastResult) return;
     event.preventDefault();
@@ -2486,8 +2536,40 @@
   }, {passive:false});
   let treeDrag = null;
   let treeDragBlockClick = false;
+  const activePointers = new Map();
+  let pinch = null;
+  function pinchPointerDistance(){
+    const pts = [...activePointers.values()];
+    return Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+  }
+  function pinchPointerMidpoint(){
+    const pts = [...activePointers.values()];
+    return {x:(pts[0].x + pts[1].x) / 2, y:(pts[0].y + pts[1].y) / 2};
+  }
   treeWrap.addEventListener("pointerdown", event => {
     if(event.button !== 0) return;
+    activePointers.set(event.pointerId, {x:event.clientX, y:event.clientY});
+    if(activePointers.size === 2){
+      treeDrag = null;
+      const mid = pinchPointerMidpoint();
+      const rect = treeSvg.getBoundingClientRect();
+      const map = treeMapSize();
+      const viewWidth = map.width / (state.treeZoom || 1);
+      const viewHeight = map.height / (state.treeZoom || 1);
+      const ratioX = (mid.x - rect.left) / rect.width;
+      const ratioY = (mid.y - rect.top) / rect.height;
+      pinch = {
+        dist:pinchPointerDistance(),
+        zoom:state.treeZoom || 1,
+        focusX:state.treePanX + ratioX * viewWidth,
+        focusY:state.treePanY + ratioY * viewHeight,
+        ratioX,
+        ratioY
+      };
+      treeWrap.classList.add("dragging");
+      return;
+    }
+    if(activePointers.size > 2) return;
     const point = treePointFromEvent(event);
     treeDrag = {
       id:event.pointerId,
@@ -2503,6 +2585,21 @@
     treeWrap.classList.add("dragging");
   });
   treeWrap.addEventListener("pointermove", event => {
+    if(activePointers.has(event.pointerId)){
+      activePointers.set(event.pointerId, {x:event.clientX, y:event.clientY});
+    }
+    if(pinch && activePointers.size === 2){
+      event.preventDefault();
+      const newDist = pinchPointerDistance();
+      if(newDist <= 0) return;
+      const nextZoom = Math.min(2.4, Math.max(0.55, pinch.zoom * (newDist / pinch.dist)));
+      const map = treeMapSize();
+      state.treeZoom = nextZoom;
+      state.treePanX = pinch.focusX - pinch.ratioX * (map.width / nextZoom);
+      state.treePanY = pinch.focusY - pinch.ratioY * (map.height / nextZoom);
+      applyTreeViewBox();
+      return;
+    }
     if(!treeDrag || event.pointerId !== treeDrag.id) return;
     const dx = event.clientX - treeDrag.x;
     const dy = event.clientY - treeDrag.y;
@@ -2519,6 +2616,14 @@
     applyTreeViewBox();
   });
   const finishTreeDrag = event => {
+    activePointers.delete(event.pointerId);
+    const wasPinching = !!pinch;
+    if(activePointers.size < 2) pinch = null;
+    if(wasPinching){
+      treeWrap.classList.remove("dragging");
+      treeDragBlockClick = true;
+      window.setTimeout(() => { treeDragBlockClick = false; }, 0);
+    }
     if(!treeDrag || event.pointerId !== treeDrag.id) return;
     if(treeDrag.moved){
       treeDragBlockClick = true;
