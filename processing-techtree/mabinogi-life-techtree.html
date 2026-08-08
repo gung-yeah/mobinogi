@@ -2079,6 +2079,11 @@
     if(state.hwCardDone[id]) delete state.hwCardDone[id];
     else state.hwCardDone[id] = true;
   }
+  function hwSyncMaterialSecured(material){
+    const anyDone = EXCHANGES.filter(ex => ex.material === material).some(ex => hwIsCardDone(ex.id));
+    if(anyDone) state.hwSecured[material] = true;
+    else delete state.hwSecured[material];
+  }
   function renderHomeworkTotals(){
     const body = el("rawTable");
     if(!body) return;
@@ -2203,8 +2208,13 @@
     }
     box.querySelectorAll(".hw-card").forEach(cardEl => {
       cardEl.addEventListener("click", () => {
-        hwToggleCardDone(Number(cardEl.dataset.hwCardId));
+        const id = Number(cardEl.dataset.hwCardId);
+        hwToggleCardDone(id);
+        const ex = EXCHANGES.find(item => item.id === id);
+        if(ex) hwSyncMaterialSecured(ex.material);
         renderHomeworkBoard();
+        renderHomeworkTotals();
+        renderHomeworkAlt();
         savePersistedState();
       });
     });
