@@ -34,6 +34,7 @@
   *{box-sizing:border-box}
   body{
     margin:0;
+    overflow-x:hidden;
     background:
       radial-gradient(circle at 22% 14%, rgba(88,196,182,.13), transparent 28rem),
       radial-gradient(circle at 84% 10%, rgba(229,190,95,.12), transparent 28rem),
@@ -163,6 +164,10 @@
     grid-template-columns:repeat(3,minmax(0,1fr));
     width:100%;
   }
+  #sidebarModeSwitch{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    margin:14px 0;
+  }
   .category-stage{
     display:grid;
     gap:14px;
@@ -209,7 +214,7 @@
   }
   .favorites-toggle{
     width:100%;
-    margin-top:8px;
+    margin-bottom:8px;
   }
   .favorites-toggle[aria-pressed="true"]{
     background:rgba(229,190,95,.18);
@@ -246,6 +251,11 @@
     border:1px solid var(--line);
     border-radius:8px;
     outline:none;
+  }
+  .qty-input{
+    color:var(--accent-2);
+    font-weight:600;
+    text-align:center;
   }
   .qty-row{
     display:grid;
@@ -613,6 +623,9 @@
   .tree-wrap.dragging{
     cursor:grabbing;
   }
+  .tree-wrap.hw-mode{
+    cursor:default;
+  }
   .tree-zoom-controls{
     position:absolute;
     right:14px;
@@ -826,6 +839,12 @@
     grid-template-columns:minmax(240px,.8fr) minmax(340px,1fr) minmax(520px,1.45fr);
     gap:16px;
   }
+  .two-col.hw-order{
+    grid-template-columns:repeat(3, minmax(0, 1fr));
+  }
+  .two-col.hw-order #rawPanel{order:1}
+  .two-col.hw-order #stepPanel{order:2}
+  .two-col.hw-order #altPanel{order:3}
   .state-cell{
     text-align:center;
     white-space:nowrap;
@@ -983,6 +1002,308 @@
     font-size:13px;
     line-height:1.55;
   }
+  .hw-header-label{
+    font-size:11px;
+    font-weight:800;
+    color:var(--muted);
+    text-align:left;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    min-width:0;
+  }
+  .hw-header-qty{
+    text-align:right;
+  }
+  .hw-header-gauge{
+    text-align:left;
+    margin-left:10px;
+  }
+  .hw-table{
+    display:grid;
+    gap:3px;
+    max-height:clamp(360px, 62vh, 680px);
+    overflow-y:auto;
+    overscroll-behavior:contain;
+  }
+  .hw-row{
+    display:grid;
+    grid-template-columns:24px minmax(0,1fr) 36px 116px;
+    align-items:center;
+    gap:6px;
+    padding:6px 5px;
+    border-radius:6px;
+  }
+  .hw-row:nth-child(odd){
+    background:rgba(255,255,255,.025);
+  }
+  .hw-row.hw-head{
+    position:sticky;
+    top:0;
+    z-index:1;
+    background:rgba(10,15,24,.94);
+    backdrop-filter:blur(4px);
+    align-items:end;
+    padding-bottom:8px;
+    border-bottom:1px solid var(--line-strong);
+    margin-bottom:2px;
+  }
+  .hw-icon{
+    width:24px;
+    height:24px;
+    border-radius:6px;
+    object-fit:contain;
+    background:var(--panel-2);
+  }
+  .hw-icon-broken{
+    visibility:hidden;
+  }
+  .hw-food-name{
+    min-width:0;
+    font-size:11.5px;
+    font-weight:700;
+    line-height:1.3;
+    overflow-wrap:break-word;
+  }
+  .hw-qty{
+    text-align:right;
+    color:var(--muted);
+    font-size:11px;
+    font-variant-numeric:tabular-nums;
+    white-space:nowrap;
+  }
+  .hw-gauge{
+    display:flex;
+    align-items:center;
+    gap:4px;
+    margin-left:10px;
+  }
+  .hw-gauge-track{
+    display:flex;
+    gap:2px;
+  }
+  .hw-gauge-seg{
+    width:12px;
+    height:15px;
+    padding:0;
+    border-radius:3px;
+    border:1.4px solid var(--accent);
+    background:rgba(88,196,182,.08);
+    cursor:pointer;
+  }
+  .hw-gauge-seg.filled{
+    background:#ff8a3d;
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.25);
+  }
+  .hw-gauge-count{
+    min-width:14px;
+    text-align:right;
+    font-size:11px;
+    font-weight:900;
+    color:var(--ink);
+    font-variant-numeric:tabular-nums;
+  }
+  .hw-cycle-daily{color:var(--accent-2)}
+  .hw-cycle-weekly{color:var(--blue)}
+  .homework-board{
+    position:absolute;
+    inset:0;
+    overflow:auto;
+    padding:16px;
+  }
+  .hw-villages{
+    display:grid;
+    grid-template-columns:repeat(5,minmax(230px,1fr));
+    gap:0 10px;
+    min-width:1250px;
+  }
+  .hw-village-col-stack{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+  }
+  .hw-village{
+    border-radius:10px;
+    background:rgba(255,255,255,.02);
+    padding:10px 10px 16px;
+  }
+  .hw-village-col-stack .hw-village{
+    flex:0 0 auto;
+  }
+  .hw-village-title{
+    text-align:center;
+    font-size:14px;
+    font-weight:900;
+    color:var(--accent-2);
+    margin-bottom:12px;
+    padding-bottom:8px;
+    border-bottom:1px solid rgba(229,190,95,.28);
+  }
+  .hw-merchant{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:12px;
+    padding:8px;
+    border-radius:9px;
+    background:color-mix(in srgb, var(--hw-mc, var(--accent)) 10%, rgba(255,255,255,.02));
+    border:1px solid color-mix(in srgb, var(--hw-mc, var(--accent)) 45%, transparent);
+    border-left:4px solid var(--hw-mc, var(--accent));
+  }
+  .hw-merchant-head{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:4px;
+    flex:0 0 auto;
+    width:58px;
+    text-align:center;
+  }
+  .hw-merchant-face{
+    width:30px;
+    height:30px;
+    flex:0 0 auto;
+    object-fit:cover;
+    border-color:var(--hw-mc, var(--accent));
+  }
+  .hw-merchant-face-fallback{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:50%;
+    background:var(--hw-mc, var(--accent));
+    color:#0a0d14;
+    font-weight:900;
+    font-size:13px;
+  }
+  .hw-merchant-name{
+    text-align:center;
+    font-size:11px;
+    line-height:1.35;
+    color:var(--soft);
+    font-weight:800;
+  }
+  .hw-merchant-name .hw-cycle-daily,.hw-merchant-name .hw-cycle-weekly{
+    display:block;
+    font-size:9px;
+    font-weight:900;
+    margin-top:2px;
+  }
+  .hw-cards{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    flex:1;
+    min-width:0;
+  }
+  .hw-cards-grid{
+    display:grid;
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+    gap:8px 6px;
+  }
+  .hw-card{
+    position:relative;
+    display:flex;
+    align-items:center;
+    gap:3px;
+    padding:3px 8px 3px 3px;
+    border-radius:8px;
+    cursor:pointer;
+    transition:opacity .15s ease, background .15s ease, filter .15s ease;
+  }
+  .hw-card:hover{
+    background:rgba(255,255,255,.06);
+  }
+  .hw-card.hw-card-done{
+    opacity:.5;
+    background:rgba(242,124,124,.16);
+    filter:saturate(.65) brightness(.82);
+  }
+  .hw-card.hw-card-done:hover{
+    background:rgba(242,124,124,.24);
+  }
+  .hw-card-check{
+    position:absolute;
+    top:-6px;
+    right:-2px;
+    z-index:1;
+    width:17px;
+    height:17px;
+    border-radius:999px;
+    background:#facc15;
+    color:#3a2a00;
+    font-size:11px;
+    font-weight:900;
+    line-height:17px;
+    text-align:center;
+    box-shadow:0 2px 6px rgba(0,0,0,.4);
+  }
+  .hw-merchant.hw-merchant-done{
+    border-color:rgba(242,124,124,.55);
+    background:rgba(242,124,124,.06);
+  }
+  .hw-merchant-check{
+    margin-top:2px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    padding:1px 6px;
+    border-radius:999px;
+    background:#facc15;
+    color:#3a2a00;
+    font-size:9px;
+    font-weight:900;
+  }
+  .hw-icon-wrap{
+    position:relative;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    width:46px;
+  }
+  .hw-icon-wrap img{
+    width:38px;
+    height:38px;
+    border-radius:8px;
+    object-fit:contain;
+    background:var(--panel-2);
+    border:1px solid rgba(255,255,255,.1);
+  }
+  .hw-icon-wrap.hw-material img{
+    width:32px;
+    height:32px;
+  }
+  .hw-icon-name{
+    margin-top:3px;
+    font-size:9.5px;
+    text-align:center;
+    color:var(--soft);
+    max-width:48px;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .hw-count-badge{
+    position:absolute;
+    right:-2px;
+    bottom:16px;
+    min-width:16px;
+    height:16px;
+    padding:0 3px;
+    border-radius:999px;
+    background:#fff;
+    border:1px solid rgba(0,0,0,.25);
+    color:#171717;
+    font-size:10px;
+    font-weight:900;
+    line-height:16px;
+    text-align:center;
+  }
+  .hw-arrow{
+    color:var(--muted);
+    font-size:13px;
+    margin:0 1px;
+  }
   .toast{
     position:fixed;
     right:18px;
@@ -1017,7 +1338,7 @@
       max-height:360px;
       overflow:auto;
     }
-    .layout,.two-col{grid-template-columns:1fr}
+    .layout,.two-col,.two-col.hw-order{grid-template-columns:1fr}
   }
   @media (max-width:760px){
     .main{padding:16px}
@@ -1033,6 +1354,11 @@
     .stats{grid-template-columns:1fr}
     .qty-row{grid-template-columns:1fr 1fr}
     .title-line{align-items:flex-start}
+    .hw-row{grid-template-columns:22px minmax(0,1fr) 30px 96px; gap:4px}
+    .hw-gauge-seg{width:10px}
+    .hw-gauge-track{gap:1px}
+    .hw-food-name{font-size:11px}
+    .hw-qty{font-size:10px}
   }
 </style>
 </head>
@@ -1049,45 +1375,56 @@
       </div>
     </div>
 
-    <div class="control-block">
-      <label class="label" for="searchInput"><span>아이템 검색</span><span id="resultCount"></span></label>
-      <div class="search-wrap">
-        <span aria-hidden="true">⌕</span>
-        <input class="search" id="searchInput" type="search" autocomplete="off" lang="ko" inputmode="text">
-      </div>
-      <div class="qty-row">
-        <div class="qty-control">
-          <label class="label" for="targetQty"><span>수량</span></label>
-          <input class="qty-input" id="targetQty" type="number" min="1" step="1" value="1" aria-label="목표 수량">
+    <div class="segmented" id="sidebarModeSwitch">
+      <button class="chip" id="sidebarModeLifeBtn" type="button" aria-pressed="true">생활</button>
+      <button class="chip" id="sidebarModeHomeworkBtn" type="button" aria-pressed="false">숙제</button>
+    </div>
+
+    <div id="lifeSidebarPanel">
+      <div class="control-block">
+        <label class="label" for="searchInput"><span>아이템 검색</span><span id="resultCount"></span></label>
+        <div class="search-wrap">
+          <span aria-hidden="true">⌕</span>
+          <input class="search" id="searchInput" type="search" autocomplete="off" lang="ko" inputmode="text">
         </div>
-        <div class="membership-control">
-          <button class="membership-badge on" id="membershipToggle" type="button" aria-pressed="true">멤버십 ON</button>
+        <div class="qty-row">
+          <div class="qty-control">
+            <label class="label" for="targetQty"><span>수량</span></label>
+            <input class="qty-input" id="targetQty" type="number" min="1" step="1" value="1" aria-label="목표 수량">
+          </div>
+          <div class="membership-control">
+            <button class="membership-badge on" id="membershipToggle" type="button" aria-pressed="true">멤버십 ON</button>
+          </div>
         </div>
       </div>
+
+      <div class="control-block category-stage">
+        <div>
+          <button class="chip favorites-toggle" id="favoritesToggleBtn" type="button" aria-pressed="false">⭐ 즐겨찾기</button>
+          <div class="label"><span>1차 카테고리</span></div>
+          <div class="category-list" id="primaryCategoryList"></div>
+        </div>
+        <div>
+          <div class="label"><span>2차 카테고리</span></div>
+          <div class="category-list" id="secondaryCategoryList"></div>
+        </div>
+      </div>
+
+      <div class="control-block">
+        <div class="label"><span>표시 기준</span></div>
+        <div class="segmented">
+          <button class="chip" id="sortNameBtn" type="button" aria-pressed="true">이름순</button>
+          <button class="chip" id="sortTimeBtn" type="button" aria-pressed="false">시간순</button>
+          <button class="chip" id="sortTierBtn" type="button" aria-pressed="false">단계순</button>
+        </div>
+      </div>
+
+      <div class="recipe-list" id="recipeList"></div>
     </div>
 
-    <div class="control-block category-stage">
-      <div>
-        <div class="label"><span>1차 카테고리</span></div>
-        <div class="category-list" id="primaryCategoryList"></div>
-        <button class="chip favorites-toggle" id="favoritesToggleBtn" type="button" aria-pressed="false">⭐ 즐겨찾기</button>
-      </div>
-      <div>
-        <div class="label"><span>2차 카테고리</span></div>
-        <div class="category-list" id="secondaryCategoryList"></div>
-      </div>
+    <div id="homeworkSidebarPanel" class="is-hidden">
+      <div id="homeworkSidebarTable"></div>
     </div>
-
-    <div class="control-block">
-      <div class="label"><span>표시 기준</span></div>
-      <div class="segmented">
-        <button class="chip" id="sortNameBtn" type="button" aria-pressed="true">이름순</button>
-        <button class="chip" id="sortTimeBtn" type="button" aria-pressed="false">시간순</button>
-        <button class="chip" id="sortTierBtn" type="button" aria-pressed="false">단계순</button>
-      </div>
-    </div>
-
-    <div class="recipe-list" id="recipeList"></div>
   </aside>
 
   <main class="main">
@@ -1110,14 +1447,15 @@
       <div class="panel">
         <div class="panel-head">
           <div class="panel-title-row">
-            <h3 class="panel-title">제작 단계</h3>
+            <h3 class="panel-title" id="mainPanelTitle">제작 단계</h3>
             <span class="badge" id="statTime">0초</span>
           </div>
         </div>
-        <div class="tree-wrap">
+        <div class="tree-wrap" id="treeWrap">
           <svg class="tree-svg" id="treeSvg" role="img" aria-label="선택한 목표 아이템의 제작 단계"></svg>
+          <div class="homework-board is-hidden" id="homeworkBoard"></div>
           <button class="btn danger status-reset tree-reset-btn" id="resetDirectBtn" type="button">상태 초기화</button>
-          <div class="tree-zoom-controls">
+          <div class="tree-zoom-controls" id="treeZoomControls">
             <button class="tree-zoom-btn" id="treeZoomInBtn" type="button" aria-label="확대">+</button>
             <button class="tree-zoom-btn" id="treeZoomOutBtn" type="button" aria-label="축소">−</button>
           </div>
@@ -1125,23 +1463,37 @@
       </div>
     </section>
 
-    <section class="two-col" style="margin-top:16px">
-      <div class="panel">
+    <section class="two-col" style="margin-top:16px" id="craftDetailSection">
+      <div class="panel" id="stepPanel">
         <div class="panel-head">
           <div class="panel-title-row">
-            <h3 class="panel-title">제작 순서</h3>
+            <h3 class="panel-title" id="stepPanelTitle">제작 순서</h3>
             <span class="badge" id="stepBadge">0개</span>
+            <span class="badge is-hidden" id="altBadge2">0개</span>
+            <button class="btn danger status-reset is-hidden" id="resetAlt2Btn" type="button">상태 초기화</button>
           </div>
         </div>
         <div class="panel-body">
           <div class="step-list" id="stepList"></div>
+          <div class="table-wrap is-hidden" id="altTable2Wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>가공품</th>
+                  <th>상태</th>
+                  <th>구하는 방법</th>
+                </tr>
+              </thead>
+              <tbody id="altTable2"></tbody>
+            </table>
+          </div>
         </div>
       </div>
 
-      <div class="panel">
+      <div class="panel" id="rawPanel">
         <div class="panel-head">
           <div class="panel-title-row">
-            <h3 class="panel-title">총 재료</h3>
+            <h3 class="panel-title" id="rawPanelTitle">총 재료</h3>
             <span class="badge" id="rawTotalBadge">0종</span>
             <button class="btn danger status-reset" id="resetRawBtn" type="button">상태 초기화</button>
           </div>
@@ -1162,11 +1514,12 @@
         </div>
       </div>
 
-      <div class="panel">
+      <div class="panel" id="altPanel">
         <div class="panel-head">
           <div class="panel-title-row">
             <h3 class="panel-title">교환 및 구입처</h3>
             <span class="badge" id="altBadge">0개</span>
+            <button class="btn danger status-reset is-hidden" id="resetAltBtn" type="button">상태 초기화</button>
           </div>
         </div>
         <div class="panel-body table-wrap">
@@ -1199,6 +1552,61 @@
     pink:{name:"에픽", color:"var(--pink)"},
     orange:{name:"전설", color:"var(--orange)"}
   };
+  const HW_VILLAGES = ["이멘마하","반호르","던바튼","두갈드아일","티르코네일","콜헨"];
+  const HW_COLUMNS = [["이멘마하"],["반호르"],["던바튼"],["두갈드아일","콜헨"],["티르코네일"]];
+  function hwMerchantColor(){
+    return "#58c4b6";
+  }
+  const EXCHANGES = [
+    {id:5, food:"카레라이스", foodQty:4, material:"운철괴", matQty:2, cycle:"weekly", npc:"오슬라", place:"대장간", village:"이멘마하"},
+    {id:13, food:"매콤 파프리카 스튜", foodQty:4, material:"백금강괴", matQty:2, cycle:"weekly", npc:"오슬라", place:"대장간", village:"이멘마하"},
+    {id:7, food:"호박 수프", foodQty:4, material:"최상급 목재+", matQty:2, cycle:"weekly", npc:"델렌", place:"잡화점", village:"이멘마하"},
+    {id:8, food:"호박 수프", foodQty:4, material:"최상급 가죽+", matQty:2, cycle:"weekly", npc:"델렌", place:"잡화점", village:"이멘마하"},
+    {id:14, food:"오트밀 영양죽", foodQty:4, material:"특급 가죽", matQty:2, cycle:"weekly", npc:"델렌", place:"잡화점", village:"이멘마하"},
+    {id:15, food:"가든 샐러드", foodQty:4, material:"특급 목재", matQty:2, cycle:"weekly", npc:"델렌", place:"잡화점", village:"이멘마하"},
+    {id:6, food:"녹차 크레이프 케이크", foodQty:2, material:"최상급 옷감+", matQty:4, cycle:"weekly", npc:"엘레노아", place:"의상점", village:"이멘마하"},
+    {id:16, food:"넛츠 초코 비스킷", foodQty:4, material:"특급 실크", matQty:2, cycle:"weekly", npc:"엘레노아", place:"의상점", village:"이멘마하"},
+    {id:17, food:"달콤쌉쌀 푸딩", foodQty:4, material:"특급 옷감", matQty:2, cycle:"weekly", npc:"엘레노아", place:"의상점", village:"이멘마하"},
+    {id:25, food:"점토", foodQty:100, material:"선물용 꽃다발", matQty:1, cycle:"weekly", npc:"델", place:"꽃집", village:"이멘마하"},
+    {id:26, food:"선물용 꽃다발", foodQty:1, material:"성수", matQty:1, cycle:"weekly", npc:"도나", place:"교회", village:"이멘마하"},
+    {id:27, food:"쌀", foodQty:150, material:"밀가루", matQty:50, cycle:"weekly", npc:"고든", place:"레스토랑", village:"이멘마하"},
+    {id:12, food:"농어 매운탕", foodQty:1, material:"은합금괴", matQty:10, cycle:"weekly", npc:"아이데른", place:"대장간", village:"반호르"},
+    {id:24, food:"특수강괴", foodQty:3, material:"은합금괴", matQty:1, cycle:"weekly", npc:"에일렌", place:"대장간", village:"반호르"},
+    {id:10, food:"크림소스 스테이크", foodQty:2, material:"상급 실크", matQty:8, cycle:"daily", npc:"제롬", place:"의상점", village:"던바튼"},
+    {id:9, food:"사과 생크림케이크", foodQty:2, material:"상급 옷감", matQty:8, cycle:"daily", npc:"제이미", place:"의상점", village:"던바튼"},
+    {id:18, food:"합금강괴", foodQty:8, material:"특수강괴", matQty:4, cycle:"daily", npc:"네리스", place:"대장간", village:"던바튼"},
+    {id:23, food:"생크림", foodQty:4, material:"글리니스의 애플 밀크티", matQty:1, cycle:"daily", npc:"글리니스", place:"식료품점", village:"던바튼"},
+    {id:22, food:"글리니스의 애플 밀크티", foodQty:1, material:"가죽+", matQty:10, cycle:"daily", npc:"칼릭스", place:"여관", village:"던바튼"},
+    {id:11, food:"야채볶음", foodQty:2, material:"상급 목재", matQty:8, cycle:"daily", npc:"앨빈", place:"벌목 광장", village:"두갈드아일"},
+    {id:1, food:"우유", foodQty:10, material:"케이틴 특제 통밀빵", matQty:3, cycle:"daily", npc:"케이틴", place:"식료품점", village:"티르코네일"},
+    {id:19, food:"강철괴", foodQty:8, material:"합금강괴", matQty:4, cycle:"daily", npc:"퍼거스", place:"대장간", village:"티르코네일"},
+    {id:2, food:"케이틴 특제 통밀빵", foodQty:1, material:"성수", matQty:1, cycle:"weekly", npc:"메이븐", place:"교회", village:"티르코네일"},
+    {id:3, food:"케이틴 특제 통밀빵", foodQty:10, material:"성수", matQty:10, cycle:"daily", npc:"엔델리온", place:"교회", village:"티르코네일"},
+    {id:20, food:"사과 주스", foodQty:1, material:"고급 연금술 재연소 촉매", matQty:1, cycle:"daily", npc:"라사", place:"학교", village:"티르코네일"},
+    {id:4, food:"특수강괴", foodQty:2, material:"은합금괴", matQty:1, cycle:"weekly", npc:"아르미스", place:"대장간", village:"콜헨"}
+  ];
+  const HW_NPC_FACES = {
+    "오슬라":"https://mabimobi.life/assets/image/npc/%EC%98%A4%EC%8A%AC%EB%9D%BC.png",
+    "델렌":"https://mabimobi.life/assets/image/npc/%EB%8D%B8%EB%A0%8C.png",
+    "엘레노아":"https://mabimobi.life/assets/image/npc/%EC%97%98%EB%A0%88%EB%85%B8%EC%95%84.png",
+    "아이데른":"https://mabimobi.life/assets/image/npc/%EC%95%84%EC%9D%B4%EB%8D%B0%EB%A5%B8.png",
+    "에일렌":"https://mabimobi.life/assets/image/npc/%EC%97%90%EC%9D%BC%EB%A0%8C.png",
+    "제롬":"https://mabimobi.life/assets/image/npc/%EC%A0%9C%EB%A1%AC.png",
+    "제이미":"https://mabimobi.life/assets/image/npc/%EC%A0%9C%EC%9D%B4%EB%AF%B8.png",
+    "네리스":"https://mabimobi.life/assets/image/npc/%EB%84%A4%EB%A6%AC%EC%8A%A4.png",
+    "글리니스":"https://mabimobi.life/assets/image/npc/%EA%B8%80%EB%A6%AC%EB%8B%88%EC%8A%A4.png",
+    "칼릭스":"https://mabimobi.life/assets/image/npc/%EC%B9%BC%EB%A6%AD%EC%8A%A4.png",
+    "케이틴":"https://mabimobi.life/assets/image/npc/%EC%BC%80%EC%9D%B4%ED%8B%B4.png",
+    "퍼거스":"https://mabimobi.life/assets/image/npc/%ED%8D%BC%EA%B1%B0%EC%8A%A4.png",
+    "라사":"https://mabimobi.life/assets/image/npc/%EB%9D%BC%EC%82%AC.png",
+    "아르미스":"https://mabimobi.life/assets/image/npc/%EC%95%84%EB%A5%B4%EB%AF%B8%EC%8A%A4.png",
+    "델":"https://mabimobi.life/assets/image/npc/%EB%8D%B8.png",
+    "도나":"https://mabimobi.life/assets/image/npc/%EB%8F%84%EB%82%98.png",
+    "고든":"https://mabimobi.life/assets/image/npc/%EA%B3%A0%EB%93%A0.png",
+    "메이븐":"icons/메이븐.webp",
+    "엔델리온":"icons/엔델리온.webp",
+    "앨빈":"https://mabimobi.life/assets/image/npc/%EC%95%A8%EB%B9%88.png"
+  };
   const state = {
     query:"",
     primaryCategory:"processing",
@@ -1206,6 +1614,7 @@
     sort:"name",
     membership:true,
     selectedId:"m9",
+    sidebarMode:"life",
     targetQty:1,
     navStack:[],
     direct:new Set(),
@@ -1219,7 +1628,11 @@
     treeZoom:1,
     treePanX:0,
     treePanY:0,
-    choices:{}
+    choices:{},
+    homeworkChecks:{},
+    hwOwned:{},
+    hwSecured:{},
+    hwCardDone:{}
   };
   const STORE_KEY = "mabinogi-life-techtree-v1";
   const isEmbedded = window.parent !== window;
@@ -1236,6 +1649,10 @@
       });
       state.rawDirect = out;
     }
+    if(parsed.homeworkChecks && typeof parsed.homeworkChecks === "object") state.homeworkChecks = parsed.homeworkChecks;
+    if(parsed.hwOwned && typeof parsed.hwOwned === "object") state.hwOwned = parsed.hwOwned;
+    if(parsed.hwSecured && typeof parsed.hwSecured === "object") state.hwSecured = parsed.hwSecured;
+    if(parsed.hwCardDone && typeof parsed.hwCardDone === "object") state.hwCardDone = parsed.hwCardDone;
   }
   (function loadPersistedState(){
     try {
@@ -1304,7 +1721,7 @@
     return map;
   }
   function savePersistedState(){
-    const payload = {owned:state.owned, direct:[...state.direct], favorites:[...state.favorites], rawOwned:state.rawOwned, rawDirect:serializeRawDirect()};
+    const payload = {owned:state.owned, direct:[...state.direct], favorites:[...state.favorites], rawOwned:state.rawOwned, rawDirect:serializeRawDirect(), homeworkChecks:state.homeworkChecks, hwOwned:state.hwOwned, hwSecured:state.hwSecured, hwCardDone:state.hwCardDone};
     try {
       localStorage.setItem(STORE_KEY, JSON.stringify(payload));
     } catch(error) {}
@@ -1483,6 +1900,261 @@
     if(!url) return "";
     return String(url).startsWith("/assets/") ? "https://mabimobi.life" + url : String(url);
   };
+  function hwCharCount(id){
+    const saved = state.homeworkChecks[id];
+    return Number.isInteger(saved) && saved >= 0 && saved <= 6 ? saved : 6;
+  }
+  function hwSetCharCount(id, count){
+    state.homeworkChecks[id] = Math.max(0, Math.min(6, count));
+  }
+  function hwApplyChange(id, count){
+    hwSetCharCount(id, count);
+    renderHomeworkSidebar();
+    renderHomeworkBoard();
+    renderHomeworkTotals();
+    renderHomeworkAlt();
+    savePersistedState();
+  }
+  function hwGaugeHtml(id){
+    const count = hwCharCount(id);
+    const segs = [1,2,3,4,5,6].map(n => `<button type="button" class="hw-gauge-seg${n <= count ? " filled" : ""}" data-hw-id="${id}" data-hw-count="${n}" aria-label="캐릭터 ${n}까지 사용"></button>`).join("");
+    return `<span class="hw-gauge" data-hw-gauge-id="${id}"><span class="hw-gauge-track">${segs}</span><span class="hw-gauge-count">${count}</span></span>`;
+  }
+  function renderHomeworkSidebar(){
+    const box = el("homeworkSidebarTable");
+    if(!box) return;
+    const rows = [];
+    rows.push(`<div class="hw-row hw-head">
+      <span></span>
+      <span class="hw-header-label">음식</span>
+      <span class="hw-header-label hw-header-qty">수량</span>
+      <span class="hw-header-label hw-header-gauge">캐릭터 수</span>
+    </div>`);
+    EXCHANGES.forEach(ex => {
+      rows.push(`<div class="hw-row" data-hw-id="${ex.id}">
+        <img class="hw-icon" src="${iconPath(ex.food)}" alt="" loading="lazy" onerror="this.classList.add('hw-icon-broken')">
+        <span class="hw-food-name" title="${escapeHtml(ex.food)}">${escapeHtml(ex.food)}</span>
+        <span class="hw-qty">×${ex.foodQty}</span>
+        ${hwGaugeHtml(ex.id)}
+      </div>`);
+    });
+    box.innerHTML = rows.join("");
+    box.className = "hw-table";
+    box.querySelectorAll(".hw-gauge-seg").forEach(btn => {
+      btn.addEventListener("click", () => {
+        hwApplyChange(Number(btn.dataset.hwId), Number(btn.dataset.hwCount));
+      });
+    });
+  }
+  function hwMaterialTotals(){
+    const totals = new Map();
+    EXCHANGES.forEach(ex => {
+      const gained = ex.matQty * hwCharCount(ex.id);
+      totals.set(ex.material, (totals.get(ex.material) || 0) + gained);
+    });
+    return totals;
+  }
+  function hwGetOwned(name){
+    return state.hwOwned[name] ?? "";
+  }
+  function hwSetOwned(name, value){
+    if(value === undefined || value === "") delete state.hwOwned[name];
+    else state.hwOwned[name] = value;
+  }
+  function hwIsSecured(name){
+    return !!state.hwSecured[name];
+  }
+  function hwToggleSecured(name){
+    if(state.hwSecured[name]) delete state.hwSecured[name];
+    else state.hwSecured[name] = true;
+    renderHomeworkTotals();
+    renderHomeworkAlt();
+    savePersistedState();
+  }
+  function hwIsCardDone(id){
+    return !!state.hwCardDone[id];
+  }
+  function hwToggleCardDone(id){
+    if(state.hwCardDone[id]) delete state.hwCardDone[id];
+    else state.hwCardDone[id] = true;
+  }
+  function renderHomeworkTotals(){
+    const body = el("rawTable");
+    if(!body) return;
+    const totals = hwMaterialTotals();
+    const rows = [...totals.entries()].sort((a, b) => {
+      const securedA = hwIsSecured(a[0]);
+      const securedB = hwIsSecured(b[0]);
+      if(securedA !== securedB) return securedA ? 1 : -1;
+      return b[1] - a[1];
+    });
+    el("rawTotalBadge").textContent = rows.length + "종";
+    body.innerHTML = rows.map(([name, qty]) => {
+      const owned = hwGetOwned(name);
+      const ownedNumber = Math.max(0, Number(owned) || 0);
+      const secured = hwIsSecured(name);
+      const shortage = secured ? 0 : Math.max(0, qty - ownedNumber);
+      return `
+      <tr>
+        <td>
+          <div class="material-cell">
+            <img src="${iconPath(name)}" alt="" onerror="this.remove()">
+            <span class="material-name">${escapeHtml(name)}</span>
+          </div>
+        </td>
+        <td class="num">${formatNumber(qty)}</td>
+        <td class="num"><input class="owned-input" data-hw-owned="${escapeHtml(name)}" type="text" inputmode="numeric" pattern="[0-9]*" value="${owned}" aria-label="${escapeHtml(name)} 소유 수량"></td>
+        <td class="num shortage-cell">${formatNumber(shortage)}</td>
+        <td class="state-cell"><button class="tag action hw-secure-btn ${secured ? "direct" : ""}" type="button" data-hw-material="${escapeHtml(name)}">${secured ? "확보 완료" : "원재료 확보"}</button></td>
+      </tr>
+    `;
+    }).join("");
+    body.querySelectorAll(".owned-input").forEach(input => {
+      input.addEventListener("input", event => {
+        const name = input.dataset.hwOwned;
+        const digitsOnly = event.target.value.replace(/[^0-9]/g, "");
+        const selStart = event.target.selectionStart;
+        hwSetOwned(name, digitsOnly === "" ? undefined : Math.max(0, parseInt(digitsOnly, 10) || 0));
+        const ownedNumber = Math.max(0, Number(hwGetOwned(name)) || 0);
+        const total = totals.get(name) || 0;
+        if(ownedNumber >= total && total > 0) state.hwSecured[name] = true;
+        else delete state.hwSecured[name];
+        savePersistedState();
+        renderHomeworkTotals();
+        renderHomeworkAlt();
+        const restored = document.querySelector(`.owned-input[data-hw-owned="${name.replace(/"/g, '\\"')}"]`);
+        if(restored){
+          restored.focus();
+          const pos = Math.min(selStart, restored.value.length);
+          try { restored.setSelectionRange(pos, pos); } catch(err) {}
+        }
+      });
+    });
+    body.querySelectorAll(".hw-secure-btn").forEach(btn => {
+      btn.addEventListener("click", () => hwToggleSecured(btn.dataset.hwMaterial));
+    });
+  }
+  function renderHomeworkBoard(){
+    const box = el("homeworkBoard");
+    if(!box) return;
+    const byVillage = new Map(HW_VILLAGES.map(v => [v, []]));
+    EXCHANGES.forEach(ex => { if(byVillage.has(ex.village)) byVillage.get(ex.village).push(ex); });
+    const villageHtml = HW_VILLAGES.map(village => {
+      const items = byVillage.get(village) || [];
+      const byMerchant = new Map();
+      items.forEach(ex => {
+        const key = ex.npc + "|" + ex.place;
+        if(!byMerchant.has(key)) byMerchant.set(key, []);
+        byMerchant.get(key).push(ex);
+      });
+      const merchantHtml = [...byMerchant.entries()].map(([key, list]) => {
+        const [npc, place] = key.split("|");
+        const cycleClass = list.every(ex => ex.cycle === "daily") ? "hw-cycle-daily" : (list.every(ex => ex.cycle === "weekly") ? "hw-cycle-weekly" : "");
+        const cards = list.map(ex => {
+          const needed = ex.foodQty * hwCharCount(ex.id);
+          const gained = ex.matQty * hwCharCount(ex.id);
+          const done = hwIsCardDone(ex.id);
+          return `<div class="hw-card${done ? " hw-card-done" : ""}" data-hw-card-id="${ex.id}" title="${escapeHtml(ex.cycle === "daily" ? "일일 교환" : "주간 교환")} · 클릭해서 완료 표시">
+            ${done ? `<span class="hw-card-check">✓</span>` : ""}
+            <div class="hw-icon-wrap">
+              <img src="${iconPath(ex.food)}" alt="">
+              <span class="hw-count-badge" data-hw-badge-id="${ex.id}">${needed}</span>
+              <span class="hw-icon-name">${escapeHtml(ex.food)}</span>
+            </div>
+            <span class="hw-arrow">→</span>
+            <div class="hw-icon-wrap hw-material">
+              <img src="${iconPath(ex.material)}" alt="">
+              <span class="hw-count-badge" data-hw-mat-badge-id="${ex.id}">${gained}</span>
+              <span class="hw-icon-name">${escapeHtml(ex.material)}</span>
+            </div>
+          </div>`;
+        }).join("");
+        const merchantDone = list.every(ex => hwIsCardDone(ex.id));
+        const faceUrl = HW_NPC_FACES[npc];
+        const faceHtml = faceUrl ? `<img class="npc-face hw-merchant-face" src="${assetUrl(faceUrl)}" alt="">` : `<span class="hw-merchant-face hw-merchant-face-fallback">${escapeHtml(npc.slice(0,1))}</span>`;
+        const mc = hwMerchantColor(npc);
+        return `<div class="hw-merchant${merchantDone ? " hw-merchant-done" : ""}" style="--hw-mc:${mc}">
+          <div class="hw-merchant-head">
+            ${faceHtml}
+            <div class="hw-merchant-name">${escapeHtml(npc)}<br>${escapeHtml(place)}<span class="${cycleClass}">${list[0].cycle === "daily" ? "일일" : "주간"}</span></div>
+            ${merchantDone ? `<span class="hw-merchant-check">✓ 완료</span>` : ""}
+          </div>
+          <div class="hw-cards${list.length >= 3 ? " hw-cards-grid" : ""}">${cards}</div>
+        </div>`;
+      }).join("");
+      return `<div class="hw-village">
+        <div class="hw-village-title">${escapeHtml(village)}</div>
+        ${merchantHtml}
+      </div>`;
+    });
+    const villageByName = new Map(HW_VILLAGES.map((v, i) => [v, villageHtml[i]]));
+    const columnHtml = HW_COLUMNS.map(group => {
+      const inner = group.map(v => villageByName.get(v)).join("");
+      return group.length > 1 ? `<div class="hw-village-col hw-village-col-stack">${inner}</div>` : `<div class="hw-village-col">${inner}</div>`;
+    }).join("");
+    box.innerHTML = `<div class="hw-villages">${columnHtml}</div>`;
+    box.querySelectorAll(".hw-card").forEach(cardEl => {
+      cardEl.addEventListener("click", () => {
+        hwToggleCardDone(Number(cardEl.dataset.hwCardId));
+        renderHomeworkBoard();
+        savePersistedState();
+      });
+    });
+  }
+  function hwAltRowHtml(material, list){
+    const secured = hwIsSecured(material);
+    const chips = list.map(ex => {
+      const faceUrl = HW_NPC_FACES[ex.npc];
+      const face = faceUrl ? `<img class="method-icon face" src="${assetUrl(faceUrl)}" alt="">` : "";
+      const cycleLabel = ex.cycle === "daily" ? "일일" : "주간";
+      return `<span class="method-shop" title="${escapeHtml(ex.npc + " · " + ex.place + " · " + ex.village)}">
+        ${face}<span>${escapeHtml(ex.npc)}(${escapeHtml(ex.village)})</span>
+        <span class="exchange-mark">↔</span>
+        <img class="method-icon" src="${iconPath(ex.food)}" alt="">
+        <span>${escapeHtml(ex.food)} ${ex.foodQty}개 · ${cycleLabel}</span>
+      </span>`;
+    }).join("");
+    return `
+      <tr>
+        <td>
+          <div class="material-cell">
+            <img src="${iconPath(material)}" alt="" onerror="this.remove()">
+            <span class="material-name">${escapeHtml(material)}</span>
+          </div>
+        </td>
+        <td class="state-cell"><button class="tag action hw-secure-btn ${secured ? "direct" : ""}" type="button" data-hw-material="${escapeHtml(material)}">${secured ? "확보 완료" : "원재료 확보"}</button></td>
+        <td class="method-cell"><div class="method-list">${chips}</div></td>
+      </tr>
+    `;
+  }
+  function renderHomeworkAlt(){
+    const bodyA = el("altTable");
+    const bodyB = el("altTable2");
+    if(!bodyA || !bodyB) return;
+    const byMaterial = new Map();
+    EXCHANGES.forEach(ex => {
+      if(!byMaterial.has(ex.material)) byMaterial.set(ex.material, []);
+      byMaterial.get(ex.material).push(ex);
+    });
+    const rows = [...byMaterial.entries()].sort((a, b) => {
+      const securedA = hwIsSecured(a[0]);
+      const securedB = hwIsSecured(b[0]);
+      if(securedA !== securedB) return securedA ? 1 : -1;
+      return a[0].localeCompare(b[0], "ko");
+    });
+    const half = Math.ceil(rows.length / 2);
+    const rowsA = rows.slice(0, half);
+    const rowsB = rows.slice(half);
+    el("altBadge").textContent = rowsA.length + "개";
+    el("altBadge2").textContent = rowsB.length + "개";
+    bodyA.innerHTML = rowsA.map(([material, list]) => hwAltRowHtml(material, list)).join("");
+    bodyB.innerHTML = rowsB.map(([material, list]) => hwAltRowHtml(material, list)).join("");
+    [bodyA, bodyB].forEach(body => {
+      body.querySelectorAll(".hw-secure-btn").forEach(btn => {
+        btn.addEventListener("click", () => hwToggleSecured(btn.dataset.hwMaterial));
+      });
+    });
+  }
   const normalizedObtainText = (text, key) => {
     let value = String(text || "").trim();
     if(!value || value === "획득" || value.includes("상자")) return "";
@@ -2451,12 +3123,55 @@
     event.preventDefault();
   });
   el("targetQty").addEventListener("input", event => {
-    state.targetQty = Math.max(1, Math.floor(Number(event.target.value) || 1));
+    const digitsOnly = event.target.value.replace(/[^0-9]/g, "");
+    const selStart = event.target.selectionStart;
+    state.targetQty = digitsOnly === "" ? 1 : Math.max(1, parseInt(digitsOnly, 10) || 1);
     render();
+    const input = el("targetQty");
+    input.value = digitsOnly;
+    input.focus();
+    const pos = Math.min(selStart, input.value.length);
+    try { input.setSelectionRange(pos, pos); } catch(err) {}
+  });
+  el("targetQty").addEventListener("blur", () => {
+    el("targetQty").value = state.targetQty;
   });
   el("sortNameBtn").addEventListener("click", () => { state.sort = "name"; render(); });
   el("sortTimeBtn").addEventListener("click", () => { state.sort = "time"; render(); });
   el("sortTierBtn").addEventListener("click", () => { state.sort = "tier"; render(); });
+  function setSidebarMode(mode){
+    state.sidebarMode = mode;
+    const isHomework = mode === "homework";
+    el("sidebarModeLifeBtn").setAttribute("aria-pressed", String(!isHomework));
+    el("sidebarModeHomeworkBtn").setAttribute("aria-pressed", String(isHomework));
+    el("lifeSidebarPanel").classList.toggle("is-hidden", isHomework);
+    el("homeworkSidebarPanel").classList.toggle("is-hidden", !isHomework);
+    el("mainPanelTitle").textContent = isHomework ? "숙제장" : "제작 단계";
+    el("statTime").classList.toggle("is-hidden", isHomework);
+    el("treeSvg").classList.toggle("is-hidden", isHomework);
+    el("homeworkBoard").classList.toggle("is-hidden", !isHomework);
+    el("treeWrap").classList.toggle("hw-mode", isHomework);
+    el("treeZoomControls").classList.toggle("is-hidden", isHomework);
+    el("resetDirectBtn").classList.toggle("is-hidden", isHomework);
+    el("craftDetailSection").classList.toggle("hw-order", isHomework);
+    el("stepPanelTitle").textContent = isHomework ? "교환 및 구입처" : "제작 순서";
+    el("resetAltBtn").classList.toggle("is-hidden", !isHomework);
+    el("resetAlt2Btn").classList.toggle("is-hidden", !isHomework);
+    el("stepList").classList.toggle("is-hidden", isHomework);
+    el("altTable2Wrap").classList.toggle("is-hidden", !isHomework);
+    el("stepBadge").classList.toggle("is-hidden", isHomework);
+    el("altBadge2").classList.toggle("is-hidden", !isHomework);
+    if(isHomework){
+      renderHomeworkSidebar();
+      renderHomeworkBoard();
+      renderHomeworkTotals();
+      renderHomeworkAlt();
+    } else {
+      render();
+    }
+  }
+  el("sidebarModeLifeBtn").addEventListener("click", () => setSidebarMode("life"));
+  el("sidebarModeHomeworkBtn").addEventListener("click", () => setSidebarMode("homework"));
   function resetSecuredState(){
     state.direct.clear();
     state.owned = {};
@@ -2464,8 +3179,24 @@
     state.rawDirect = {};
     render();
   }
+  function resetHomeworkChecks(){
+    state.homeworkChecks = {};
+    state.hwOwned = {};
+    state.hwSecured = {};
+    state.hwCardDone = {};
+    renderHomeworkSidebar();
+    renderHomeworkBoard();
+    renderHomeworkTotals();
+    renderHomeworkAlt();
+    savePersistedState();
+  }
   el("resetDirectBtn").addEventListener("click", resetSecuredState);
-  el("resetRawBtn").addEventListener("click", resetSecuredState);
+  el("resetRawBtn").addEventListener("click", () => {
+    if(state.sidebarMode === "homework") resetHomeworkChecks();
+    else resetSecuredState();
+  });
+  el("resetAltBtn").addEventListener("click", resetHomeworkChecks);
+  el("resetAlt2Btn").addEventListener("click", resetHomeworkChecks);
   const treeSvg = el("treeSvg");
   const treeWrap = treeSvg.parentElement;
   function treeMapSize(){
@@ -2522,6 +3253,7 @@
   el("treeZoomInBtn").addEventListener("click", () => zoomTreeByFactor(1.2));
   el("treeZoomOutBtn").addEventListener("click", () => zoomTreeByFactor(1 / 1.2));
   treeWrap.addEventListener("wheel", event => {
+    if(state.sidebarMode === "homework") return;
     if(!lastResult) return;
     event.preventDefault();
     const point = treePointFromEvent(event);
@@ -2547,6 +3279,7 @@
     return {x:(pts[0].x + pts[1].x) / 2, y:(pts[0].y + pts[1].y) / 2};
   }
   treeWrap.addEventListener("pointerdown", event => {
+    if(state.sidebarMode === "homework") return;
     if(event.button !== 0) return;
     activePointers.set(event.pointerId, {x:event.clientX, y:event.clientY});
     if(activePointers.size === 2){
@@ -2642,6 +3375,7 @@
     treeDragBlockClick = false;
   }, true);
   render();
+  setSidebarMode(state.sidebarMode || "life");
 })();
 </script>
 <script>
