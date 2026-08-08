@@ -1167,13 +1167,15 @@
     width:100%;
   }
   .hw-solo-merchants{
-    display:grid;
-    grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));
+    display:flex;
+    flex-wrap:wrap;
     gap:12px;
-    align-items:start;
+    align-items:flex-start;
   }
   .hw-solo-merchants .hw-merchant{
+    flex:0 0 auto;
     margin-bottom:0;
+    min-width:190px;
   }
   .hw-village-col-stack{
     display:flex;
@@ -1256,12 +1258,11 @@
   }
   .hw-cards-grid{
     display:grid;
-    grid-template-columns:repeat(2, minmax(0, 1fr));
+    grid-template-columns:repeat(2, 134px);
     gap:8px 6px;
   }
   .hw-cards-grid .hw-card{
     min-width:0;
-    overflow:hidden;
   }
   .hw-card{
     position:relative;
