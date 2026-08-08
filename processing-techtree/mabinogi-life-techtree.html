@@ -1002,6 +1002,41 @@
     font-size:13px;
     line-height:1.55;
   }
+  .hw-village-badges{
+    display:grid;
+    grid-template-columns:repeat(3, minmax(0, 1fr));
+    gap:8px;
+  }
+  .hw-village-badge{
+    min-height:34px;
+    padding:6px 8px;
+    border-radius:8px;
+    background:var(--panel);
+    border:1px solid var(--line);
+    color:var(--soft);
+    font-size:12px;
+    font-weight:800;
+    text-align:center;
+  }
+  .hw-village-badge[aria-pressed="true"]{
+    background:rgba(88,196,182,.2);
+    border-color:var(--accent);
+    color:var(--ink);
+  }
+  .hw-bulk-row{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+  }
+  .hw-bulk-input{
+    width:100%;
+    text-align:center;
+  }
+  .hw-bulk-hint{
+    color:var(--muted);
+    font-size:11px;
+    line-height:1.4;
+  }
   .hw-header-label{
     font-size:11px;
     font-weight:800;
@@ -1116,6 +1151,22 @@
     grid-template-columns:repeat(5,minmax(230px,1fr));
     gap:0 10px;
     min-width:1250px;
+  }
+  .hw-villages.hw-villages-solo{
+    display:block;
+    min-width:0;
+  }
+  .hw-village.hw-village-solo{
+    width:100%;
+  }
+  .hw-solo-merchants{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));
+    gap:12px;
+    align-items:start;
+  }
+  .hw-solo-merchants .hw-merchant{
+    margin-bottom:0;
   }
   .hw-village-col-stack{
     display:flex;
@@ -1423,6 +1474,17 @@
     </div>
 
     <div id="homeworkSidebarPanel" class="is-hidden">
+      <div class="control-block">
+        <div class="label"><span>마을 카테고리</span></div>
+        <div class="hw-village-badges" id="hwVillageBadges"></div>
+      </div>
+      <div class="control-block">
+        <div class="label"><span>캐릭터 수 일괄 설정 (0~6)</span></div>
+        <div class="hw-bulk-row">
+          <input class="qty-input hw-bulk-input" id="hwBulkCount" type="number" min="0" max="6" step="1" placeholder="0~6" aria-label="캐릭터 수 일괄 설정">
+          <span class="hw-bulk-hint">게이지바를 클릭하면 항목별로 개별 설정도 가능합니다.</span>
+        </div>
+      </div>
       <div id="homeworkSidebarTable"></div>
     </div>
   </aside>
@@ -1554,6 +1616,7 @@
   };
   const HW_VILLAGES = ["이멘마하","반호르","던바튼","두갈드아일","티르코네일","콜헨"];
   const HW_COLUMNS = [["이멘마하"],["반호르"],["던바튼"],["두갈드아일","콜헨"],["티르코네일"]];
+  const HW_VILLAGE_ROWS = [["티르코네일","던바튼","반호르"],["콜헨","두갈드아일","이멘마하"]];
   function hwMerchantColor(){
     return "#58c4b6";
   }
@@ -1616,6 +1679,7 @@
     selectedId:"m9",
     sidebarMode:"life",
     targetQty:1,
+    targetQtyById:{},
     navStack:[],
     direct:new Set(),
     owned:{},
@@ -1632,7 +1696,8 @@
     homeworkChecks:{},
     hwOwned:{},
     hwSecured:{},
-    hwCardDone:{}
+    hwCardDone:{},
+    hwSelectedVillage:null
   };
   const STORE_KEY = "mabinogi-life-techtree-v1";
   const isEmbedded = window.parent !== window;
@@ -1653,6 +1718,7 @@
     if(parsed.hwOwned && typeof parsed.hwOwned === "object") state.hwOwned = parsed.hwOwned;
     if(parsed.hwSecured && typeof parsed.hwSecured === "object") state.hwSecured = parsed.hwSecured;
     if(parsed.hwCardDone && typeof parsed.hwCardDone === "object") state.hwCardDone = parsed.hwCardDone;
+    if(parsed.targetQtyById && typeof parsed.targetQtyById === "object") state.targetQtyById = parsed.targetQtyById;
   }
   (function loadPersistedState(){
     try {
@@ -1721,7 +1787,7 @@
     return map;
   }
   function savePersistedState(){
-    const payload = {owned:state.owned, direct:[...state.direct], favorites:[...state.favorites], rawOwned:state.rawOwned, rawDirect:serializeRawDirect(), homeworkChecks:state.homeworkChecks, hwOwned:state.hwOwned, hwSecured:state.hwSecured, hwCardDone:state.hwCardDone};
+    const payload = {owned:state.owned, direct:[...state.direct], favorites:[...state.favorites], rawOwned:state.rawOwned, rawDirect:serializeRawDirect(), homeworkChecks:state.homeworkChecks, hwOwned:state.hwOwned, hwSecured:state.hwSecured, hwCardDone:state.hwCardDone, targetQtyById:state.targetQtyById};
     try {
       localStorage.setItem(STORE_KEY, JSON.stringify(payload));
     } catch(error) {}
@@ -1900,9 +1966,26 @@
     if(!url) return "";
     return String(url).startsWith("/assets/") ? "https://mabimobi.life" + url : String(url);
   };
+  function hwFilteredExchanges(){
+    return state.hwSelectedVillage ? EXCHANGES.filter(ex => ex.village === state.hwSelectedVillage) : EXCHANGES;
+  }
+  function renderHwVillageBadges(){
+    const box = el("hwVillageBadges");
+    if(!box) return;
+    box.innerHTML = HW_VILLAGE_ROWS.flat().map(village => `<button type="button" class="hw-village-badge" data-hw-village="${escapeHtml(village)}" aria-pressed="${state.hwSelectedVillage === village}">${escapeHtml(village)}</button>`).join("");
+    box.querySelectorAll(".hw-village-badge").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const village = btn.dataset.hwVillage;
+        state.hwSelectedVillage = state.hwSelectedVillage === village ? null : village;
+        renderHwVillageBadges();
+        renderHomeworkSidebar();
+        renderHomeworkBoard();
+      });
+    });
+  }
   function hwCharCount(id){
     const saved = state.homeworkChecks[id];
-    return Number.isInteger(saved) && saved >= 0 && saved <= 6 ? saved : 6;
+    return Number.isInteger(saved) && saved >= 0 && saved <= 6 ? saved : 0;
   }
   function hwSetCharCount(id, count){
     state.homeworkChecks[id] = Math.max(0, Math.min(6, count));
@@ -1930,7 +2013,7 @@
       <span class="hw-header-label hw-header-qty">수량</span>
       <span class="hw-header-label hw-header-gauge">캐릭터 수</span>
     </div>`);
-    EXCHANGES.forEach(ex => {
+    hwFilteredExchanges().forEach(ex => {
       rows.push(`<div class="hw-row" data-hw-id="${ex.id}">
         <img class="hw-icon" src="${iconPath(ex.food)}" alt="" loading="lazy" onerror="this.classList.add('hw-icon-broken')">
         <span class="hw-food-name" title="${escapeHtml(ex.food)}">${escapeHtml(ex.food)}</span>
@@ -1942,7 +2025,10 @@
     box.className = "hw-table";
     box.querySelectorAll(".hw-gauge-seg").forEach(btn => {
       btn.addEventListener("click", () => {
-        hwApplyChange(Number(btn.dataset.hwId), Number(btn.dataset.hwCount));
+        const id = Number(btn.dataset.hwId);
+        const clicked = Number(btn.dataset.hwCount);
+        const next = clicked === hwCharCount(id) ? clicked - 1 : clicked;
+        hwApplyChange(id, next);
       });
     });
   }
@@ -2037,9 +2123,10 @@
   function renderHomeworkBoard(){
     const box = el("homeworkBoard");
     if(!box) return;
+    const selectedVillage = state.hwSelectedVillage;
     const byVillage = new Map(HW_VILLAGES.map(v => [v, []]));
-    EXCHANGES.forEach(ex => { if(byVillage.has(ex.village)) byVillage.get(ex.village).push(ex); });
-    const villageHtml = HW_VILLAGES.map(village => {
+    hwFilteredExchanges().forEach(ex => { if(byVillage.has(ex.village)) byVillage.get(ex.village).push(ex); });
+    const buildVillage = (village, solo) => {
       const items = byVillage.get(village) || [];
       const byMerchant = new Map();
       items.forEach(ex => {
@@ -2082,17 +2169,22 @@
           <div class="hw-cards${list.length >= 3 ? " hw-cards-grid" : ""}">${cards}</div>
         </div>`;
       }).join("");
-      return `<div class="hw-village">
+      return `<div class="hw-village${solo ? " hw-village-solo" : ""}">
         <div class="hw-village-title">${escapeHtml(village)}</div>
-        ${merchantHtml}
+        <div class="${solo ? "hw-solo-merchants" : ""}">${merchantHtml}</div>
       </div>`;
-    });
-    const villageByName = new Map(HW_VILLAGES.map((v, i) => [v, villageHtml[i]]));
-    const columnHtml = HW_COLUMNS.map(group => {
-      const inner = group.map(v => villageByName.get(v)).join("");
-      return group.length > 1 ? `<div class="hw-village-col hw-village-col-stack">${inner}</div>` : `<div class="hw-village-col">${inner}</div>`;
-    }).join("");
-    box.innerHTML = `<div class="hw-villages">${columnHtml}</div>`;
+    };
+    if(selectedVillage){
+      box.innerHTML = `<div class="hw-villages hw-villages-solo">${buildVillage(selectedVillage, true)}</div>`;
+    } else {
+      const villageHtml = HW_VILLAGES.map(v => buildVillage(v, false));
+      const villageByName = new Map(HW_VILLAGES.map((v, i) => [v, villageHtml[i]]));
+      const columnHtml = HW_COLUMNS.map(group => {
+        const inner = group.map(v => villageByName.get(v)).join("");
+        return group.length > 1 ? `<div class="hw-village-col hw-village-col-stack">${inner}</div>` : `<div class="hw-village-col">${inner}</div>`;
+      }).join("");
+      box.innerHTML = `<div class="hw-villages">${columnHtml}</div>`;
+    }
     box.querySelectorAll(".hw-card").forEach(cardEl => {
       cardEl.addEventListener("click", () => {
         hwToggleCardDone(Number(cardEl.dataset.hwCardId));
@@ -2546,6 +2638,10 @@
         : `<div class="empty">검색 결과가 없습니다.</div>`;
     }
   }
+  function applyTargetQtyFor(node){
+    const saved = state.targetQtyById[node.id];
+    state.targetQty = saved !== undefined ? saved : Math.max(1, node.yield || 1);
+  }
   function selectNode(id, options = {}){
     const node = getNodeById(id);
     if(!node) return;
@@ -2554,7 +2650,7 @@
     }
     state.selectedId = node.id;
     if(options.syncCategory !== false) syncCategoryToNode(node);
-    state.targetQty = Math.max(1, Number(el("targetQty").value) || node.yield || 1);
+    applyTargetQtyFor(node);
     state.direct.delete(producedKey(node.name));
     clearTreeFocus();
     render();
@@ -2570,6 +2666,7 @@
     if(next){
       state.selectedId = next.id;
       state.navStack = [];
+      applyTargetQtyFor(next);
     }
   }
   function renderHeader(node, result){
@@ -3099,6 +3196,7 @@
     if(match){
       syncCategoryToNode(match);
       state.selectedId = match.id;
+      applyTargetQtyFor(match);
       clearTreeFocus();
       state.direct.delete(producedKey(match.name));
     }
@@ -3126,6 +3224,7 @@
     const digitsOnly = event.target.value.replace(/[^0-9]/g, "");
     const selStart = event.target.selectionStart;
     state.targetQty = digitsOnly === "" ? 1 : Math.max(1, parseInt(digitsOnly, 10) || 1);
+    state.targetQtyById[state.selectedId] = state.targetQty;
     render();
     const input = el("targetQty");
     input.value = digitsOnly;
@@ -3162,6 +3261,7 @@
     el("stepBadge").classList.toggle("is-hidden", isHomework);
     el("altBadge2").classList.toggle("is-hidden", !isHomework);
     if(isHomework){
+      renderHwVillageBadges();
       renderHomeworkSidebar();
       renderHomeworkBoard();
       renderHomeworkTotals();
@@ -3197,6 +3297,18 @@
   });
   el("resetAltBtn").addEventListener("click", resetHomeworkChecks);
   el("resetAlt2Btn").addEventListener("click", resetHomeworkChecks);
+  el("hwBulkCount").addEventListener("input", event => {
+    const digitsOnly = event.target.value.replace(/[^0-9]/g, "");
+    if(digitsOnly === "") return;
+    const count = Math.max(0, Math.min(6, parseInt(digitsOnly, 10) || 0));
+    hwFilteredExchanges().forEach(ex => hwSetCharCount(ex.id, count));
+    renderHomeworkSidebar();
+    renderHomeworkBoard();
+    renderHomeworkTotals();
+    renderHomeworkAlt();
+    savePersistedState();
+    el("hwBulkCount").focus();
+  });
   const treeSvg = el("treeSvg");
   const treeWrap = treeSvg.parentElement;
   function treeMapSize(){
