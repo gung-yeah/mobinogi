@@ -1003,8 +1003,12 @@
     line-height:1.55;
   }
   .hw-village-badges{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+  .hw-village-row{
     display:grid;
-    grid-template-columns:repeat(3, minmax(0, 1fr));
     gap:8px;
   }
   .hw-village-badge{
@@ -1148,13 +1152,16 @@
   }
   .hw-villages{
     display:grid;
-    grid-template-columns:repeat(5,minmax(230px,1fr));
+    grid-template-columns:repeat(6,minmax(200px,1fr));
     gap:0 10px;
-    min-width:1250px;
+    min-width:1350px;
   }
   .hw-villages.hw-villages-solo{
-    display:block;
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));
+    gap:16px;
     min-width:0;
+    align-items:start;
   }
   .hw-village.hw-village-solo{
     width:100%;
@@ -1251,6 +1258,10 @@
     display:grid;
     grid-template-columns:repeat(2, minmax(0, 1fr));
     gap:8px 6px;
+  }
+  .hw-cards-grid .hw-card{
+    min-width:0;
+    overflow:hidden;
   }
   .hw-card{
     position:relative;
@@ -1475,11 +1486,11 @@
 
     <div id="homeworkSidebarPanel" class="is-hidden">
       <div class="control-block">
-        <div class="label"><span>마을 카테고리</span></div>
+        <div class="label"><span>마을</span></div>
         <div class="hw-village-badges" id="hwVillageBadges"></div>
       </div>
       <div class="control-block">
-        <div class="label"><span>캐릭터 수 일괄 설정 (0~6)</span></div>
+        <div class="label"><span>캐릭터 수 일괄 설정</span></div>
         <div class="hw-bulk-row">
           <input class="qty-input hw-bulk-input" id="hwBulkCount" type="number" min="0" max="6" step="1" placeholder="0~6" aria-label="캐릭터 수 일괄 설정">
           <span class="hw-bulk-hint">게이지바를 클릭하면 항목별로 개별 설정도 가능합니다.</span>
@@ -1614,9 +1625,9 @@
     pink:{name:"에픽", color:"var(--pink)"},
     orange:{name:"전설", color:"var(--orange)"}
   };
-  const HW_VILLAGES = ["이멘마하","반호르","던바튼","두갈드아일","티르코네일","콜헨"];
-  const HW_COLUMNS = [["이멘마하"],["반호르"],["던바튼"],["두갈드아일","콜헨"],["티르코네일"]];
-  const HW_VILLAGE_ROWS = [["티르코네일","던바튼","반호르"],["콜헨","두갈드아일","이멘마하"]];
+  const HW_VILLAGES = ["이멘마하","반호르","던바튼","두갈드아일","티르코네일","콜헨","가이레흐 언덕"];
+  const HW_COLUMNS = [["이멘마하"],["반호르"],["던바튼"],["두갈드아일","콜헨"],["티르코네일"],["가이레흐 언덕"]];
+  const HW_VILLAGE_ROWS = [["이멘마하","반호르","던바튼","콜헨"],["티르코네일","가이레흐 언덕","두갈드아일"]];
   function hwMerchantColor(){
     return "#58c4b6";
   }
@@ -1646,7 +1657,8 @@
     {id:2, food:"케이틴 특제 통밀빵", foodQty:1, material:"성수", matQty:1, cycle:"weekly", npc:"메이븐", place:"교회", village:"티르코네일"},
     {id:3, food:"케이틴 특제 통밀빵", foodQty:10, material:"성수", matQty:10, cycle:"daily", npc:"엔델리온", place:"교회", village:"티르코네일"},
     {id:20, food:"사과 주스", foodQty:1, material:"고급 연금술 재연소 촉매", matQty:1, cycle:"daily", npc:"라사", place:"학교", village:"티르코네일"},
-    {id:4, food:"특수강괴", foodQty:2, material:"은합금괴", matQty:1, cycle:"weekly", npc:"아르미스", place:"대장간", village:"콜헨"}
+    {id:4, food:"특수강괴", foodQty:2, material:"은합금괴", matQty:1, cycle:"weekly", npc:"아르미스", place:"대장간", village:"콜헨"},
+    {id:28, food:"샤와르마", foodQty:3, material:"뛰어난 붕대", matQty:9, cycle:"weekly", npc:"셰이머스", place:"용의 유적", village:"가이레흐 언덕"}
   ];
   const HW_NPC_FACES = {
     "오슬라":"https://mabimobi.life/assets/image/npc/%EC%98%A4%EC%8A%AC%EB%9D%BC.png",
@@ -1666,6 +1678,7 @@
     "델":"https://mabimobi.life/assets/image/npc/%EB%8D%B8.png",
     "도나":"https://mabimobi.life/assets/image/npc/%EB%8F%84%EB%82%98.png",
     "고든":"https://mabimobi.life/assets/image/npc/%EA%B3%A0%EB%93%A0.png",
+    "셰이머스":"https://mabimobi.life/assets/image/npc/%EC%85%B0%EC%9D%B4%EB%A8%B8%EC%8A%A4.png",
     "메이븐":"icons/메이븐.webp",
     "엔델리온":"icons/엔델리온.webp",
     "앨빈":"https://mabimobi.life/assets/image/npc/%EC%95%A8%EB%B9%88.png"
@@ -1697,7 +1710,7 @@
     hwOwned:{},
     hwSecured:{},
     hwCardDone:{},
-    hwSelectedVillage:null
+    hwSelectedVillages:new Set()
   };
   const STORE_KEY = "mabinogi-life-techtree-v1";
   const isEmbedded = window.parent !== window;
@@ -1967,16 +1980,17 @@
     return String(url).startsWith("/assets/") ? "https://mabimobi.life" + url : String(url);
   };
   function hwFilteredExchanges(){
-    return state.hwSelectedVillage ? EXCHANGES.filter(ex => ex.village === state.hwSelectedVillage) : EXCHANGES;
+    return state.hwSelectedVillages.size ? EXCHANGES.filter(ex => state.hwSelectedVillages.has(ex.village)) : EXCHANGES;
   }
   function renderHwVillageBadges(){
     const box = el("hwVillageBadges");
     if(!box) return;
-    box.innerHTML = HW_VILLAGE_ROWS.flat().map(village => `<button type="button" class="hw-village-badge" data-hw-village="${escapeHtml(village)}" aria-pressed="${state.hwSelectedVillage === village}">${escapeHtml(village)}</button>`).join("");
+    box.innerHTML = HW_VILLAGE_ROWS.map(row => `<div class="hw-village-row" style="grid-template-columns:repeat(${row.length},minmax(0,1fr))">${row.map(village => `<button type="button" class="hw-village-badge" data-hw-village="${escapeHtml(village)}" aria-pressed="${state.hwSelectedVillages.has(village)}">${escapeHtml(village)}</button>`).join("")}</div>`).join("");
     box.querySelectorAll(".hw-village-badge").forEach(btn => {
       btn.addEventListener("click", () => {
         const village = btn.dataset.hwVillage;
-        state.hwSelectedVillage = state.hwSelectedVillage === village ? null : village;
+        if(state.hwSelectedVillages.has(village)) state.hwSelectedVillages.delete(village);
+        else state.hwSelectedVillages.add(village);
         renderHwVillageBadges();
         renderHomeworkSidebar();
         renderHomeworkBoard();
@@ -2123,7 +2137,7 @@
   function renderHomeworkBoard(){
     const box = el("homeworkBoard");
     if(!box) return;
-    const selectedVillage = state.hwSelectedVillage;
+    const selectedVillages = state.hwSelectedVillages;
     const byVillage = new Map(HW_VILLAGES.map(v => [v, []]));
     hwFilteredExchanges().forEach(ex => { if(byVillage.has(ex.village)) byVillage.get(ex.village).push(ex); });
     const buildVillage = (village, solo) => {
@@ -2166,7 +2180,7 @@
             <div class="hw-merchant-name">${escapeHtml(npc)}<br>${escapeHtml(place)}<span class="${cycleClass}">${list[0].cycle === "daily" ? "일일" : "주간"}</span></div>
             ${merchantDone ? `<span class="hw-merchant-check">✓ 완료</span>` : ""}
           </div>
-          <div class="hw-cards${list.length >= 3 ? " hw-cards-grid" : ""}">${cards}</div>
+          <div class="hw-cards${solo && list.length >= 3 ? " hw-cards-grid" : ""}">${cards}</div>
         </div>`;
       }).join("");
       return `<div class="hw-village${solo ? " hw-village-solo" : ""}">
@@ -2174,8 +2188,9 @@
         <div class="${solo ? "hw-solo-merchants" : ""}">${merchantHtml}</div>
       </div>`;
     };
-    if(selectedVillage){
-      box.innerHTML = `<div class="hw-villages hw-villages-solo">${buildVillage(selectedVillage, true)}</div>`;
+    if(selectedVillages.size){
+      const blocks = HW_VILLAGES.filter(v => selectedVillages.has(v)).map(v => buildVillage(v, true)).join("");
+      box.innerHTML = `<div class="hw-villages hw-villages-solo">${blocks}</div>`;
     } else {
       const villageHtml = HW_VILLAGES.map(v => buildVillage(v, false));
       const villageByName = new Map(HW_VILLAGES.map((v, i) => [v, villageHtml[i]]));
