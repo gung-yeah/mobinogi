@@ -2047,9 +2047,11 @@
       });
     });
   }
+  const HW_FOOD_NAMES = new Set(EXCHANGES.map(ex => ex.food));
   function hwMaterialTotals(){
     const totals = new Map();
     EXCHANGES.forEach(ex => {
+      if(!HW_FOOD_NAMES.has(ex.material)) return;
       const gained = ex.matQty * hwCharCount(ex.id);
       totals.set(ex.material, (totals.get(ex.material) || 0) + gained);
     });
