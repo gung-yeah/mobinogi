@@ -840,11 +840,10 @@
     gap:16px;
   }
   .two-col.hw-order{
-    grid-template-columns:repeat(3, minmax(0, 1fr));
+    grid-template-columns:repeat(2, minmax(0, 1fr));
   }
   .two-col.hw-order #rawPanel{order:1}
-  .two-col.hw-order #stepPanel{order:2}
-  .two-col.hw-order #altPanel{order:3}
+  .two-col.hw-order #altPanel{order:2}
   .state-cell{
     text-align:center;
     white-space:nowrap;
@@ -1550,27 +1549,12 @@
       <div class="panel" id="stepPanel">
         <div class="panel-head">
           <div class="panel-title-row">
-            <h3 class="panel-title" id="stepPanelTitle">제작 순서</h3>
+            <h3 class="panel-title">제작 순서</h3>
             <span class="badge" id="stepBadge">0개</span>
-            <span class="badge is-hidden" id="altBadge2">0개</span>
-            <button class="btn danger status-reset is-hidden" id="resetAlt2Btn" type="button">상태 초기화</button>
           </div>
         </div>
         <div class="panel-body">
           <div class="step-list" id="stepList"></div>
-          <div class="table-wrap is-hidden" id="altTable2Wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>가공품</th>
-                  <th>상태</th>
-                  <th>구하는 방법</th>
-                  <th>이 재료의 쓰임</th>
-                </tr>
-              </thead>
-              <tbody id="altTable2"></tbody>
-            </table>
-          </div>
         </div>
       </div>
 
@@ -2291,8 +2275,7 @@
   }
   function renderHomeworkAlt(){
     const bodyA = el("altTable");
-    const bodyB = el("altTable2");
-    if(!bodyA || !bodyB) return;
+    if(!bodyA) return;
     const byMaterial = new Map();
     hwFilteredExchanges().forEach(ex => {
       if(!byMaterial.has(ex.material)) byMaterial.set(ex.material, []);
@@ -2304,14 +2287,9 @@
       if(securedA !== securedB) return securedA ? 1 : -1;
       return a[0].localeCompare(b[0], "ko");
     });
-    const half = Math.ceil(rows.length / 2);
-    const rowsA = rows.slice(0, half);
-    const rowsB = rows.slice(half);
-    el("altBadge").textContent = rowsA.length + "개";
-    el("altBadge2").textContent = rowsB.length + "개";
-    bodyA.innerHTML = rowsA.map(([material, list]) => hwAltRowHtml(material, list)).join("");
-    bodyB.innerHTML = rowsB.map(([material, list]) => hwAltRowHtml(material, list)).join("");
-    [bodyA, bodyB].forEach(body => {
+    el("altBadge").textContent = rows.length + "개";
+    bodyA.innerHTML = rows.map(([material, list]) => hwAltRowHtml(material, list)).join("");
+    [bodyA].forEach(body => {
       body.querySelectorAll(".hw-secure-btn").forEach(btn => {
         btn.addEventListener("click", () => hwToggleSecured(btn.dataset.hwMaterial));
       });
@@ -3323,15 +3301,10 @@
     el("treeZoomControls").classList.toggle("is-hidden", isHomework);
     el("resetDirectBtn").classList.toggle("is-hidden", isHomework);
     el("craftDetailSection").classList.toggle("hw-order", isHomework);
-    el("stepPanelTitle").textContent = isHomework ? "교환 및 구입처" : "제작 순서";
+    el("stepPanel").classList.toggle("is-hidden", isHomework);
     el("resetAltBtn").classList.toggle("is-hidden", !isHomework);
-    el("resetAlt2Btn").classList.toggle("is-hidden", !isHomework);
     el("rawTableMethodHeader").classList.toggle("is-hidden", !isHomework);
     el("altTableUseHeader").classList.toggle("is-hidden", !isHomework);
-    el("stepList").classList.toggle("is-hidden", isHomework);
-    el("altTable2Wrap").classList.toggle("is-hidden", !isHomework);
-    el("stepBadge").classList.toggle("is-hidden", isHomework);
-    el("altBadge2").classList.toggle("is-hidden", !isHomework);
     if(isHomework){
       renderHwVillageBadges();
       renderHomeworkSidebar();
@@ -3368,7 +3341,6 @@
     else resetSecuredState();
   });
   el("resetAltBtn").addEventListener("click", resetHomeworkChecks);
-  el("resetAlt2Btn").addEventListener("click", resetHomeworkChecks);
   el("hwBulkCount").addEventListener("input", event => {
     const digitsOnly = event.target.value.replace(/[^0-9]/g, "");
     if(digitsOnly === "") return;
