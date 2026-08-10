@@ -2049,13 +2049,11 @@
       });
     });
   }
-  const HW_FOOD_NAMES = new Set(EXCHANGES.map(ex => ex.food));
   function hwMaterialTotals(){
     const totals = new Map();
     hwFilteredExchanges().forEach(ex => {
-      if(!HW_FOOD_NAMES.has(ex.material)) return;
-      const gained = ex.matQty * hwCharCount(ex.id);
-      totals.set(ex.material, (totals.get(ex.material) || 0) + gained);
+      const needed = ex.foodQty * hwCharCount(ex.id);
+      totals.set(ex.food, (totals.get(ex.food) || 0) + needed);
     });
     return totals;
   }
@@ -2087,6 +2085,11 @@
     const anyDone = EXCHANGES.filter(ex => ex.material === material).some(ex => hwIsCardDone(ex.id));
     if(anyDone) state.hwSecured[material] = true;
     else delete state.hwSecured[material];
+  }
+  function hwSyncFoodSecured(food){
+    const anyDone = EXCHANGES.filter(ex => ex.food === food).some(ex => hwIsCardDone(ex.id));
+    if(anyDone) state.hwSecured[food] = true;
+    else delete state.hwSecured[food];
   }
   function renderHomeworkTotals(){
     const body = el("rawTable");
@@ -2215,7 +2218,10 @@
         const id = Number(cardEl.dataset.hwCardId);
         hwToggleCardDone(id);
         const ex = EXCHANGES.find(item => item.id === id);
-        if(ex) hwSyncMaterialSecured(ex.material);
+        if(ex){
+          hwSyncMaterialSecured(ex.material);
+          hwSyncFoodSecured(ex.food);
+        }
         renderHomeworkBoard();
         renderHomeworkTotals();
         renderHomeworkAlt();
