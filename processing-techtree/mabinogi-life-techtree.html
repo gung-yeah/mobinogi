@@ -1035,6 +1035,22 @@
     border-color:var(--accent);
     color:var(--ink);
   }
+  .hw-char-select-btn{
+    min-height:34px;
+    padding:6px 8px;
+    border-radius:8px;
+    background:var(--panel);
+    border:1.4px solid var(--chip-color, var(--line));
+    color:var(--chip-color, var(--soft));
+    font-size:12px;
+    font-weight:800;
+    text-align:center;
+  }
+  .hw-char-select-btn[aria-pressed="true"]{
+    background:var(--chip-color, var(--accent));
+    border-color:var(--chip-color, var(--accent));
+    color:var(--chip-text, var(--ink));
+  }
   .hw-bulk-row{
     display:flex;
     flex-direction:column;
@@ -1069,9 +1085,6 @@
     white-space:nowrap;
     min-width:0;
   }
-  .hw-header-qty{
-    text-align:right;
-  }
   .hw-header-gauge{
     text-align:left;
     margin-left:10px;
@@ -1085,7 +1098,7 @@
   }
   .hw-row{
     display:grid;
-    grid-template-columns:24px minmax(0,1fr) 36px 150px;
+    grid-template-columns:24px minmax(0,1fr) 150px;
     align-items:center;
     gap:6px;
     padding:6px 5px;
@@ -1120,14 +1133,14 @@
     font-size:11.5px;
     font-weight:700;
     line-height:1.3;
-    overflow-wrap:break-word;
-  }
-  .hw-qty{
-    text-align:right;
-    color:var(--muted);
-    font-size:11px;
-    font-variant-numeric:tabular-nums;
     white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .hw-food-name .hw-food-qty{
+    color:var(--muted);
+    font-weight:800;
+    margin-left:2px;
   }
   .hw-char-row{
     display:flex;
@@ -1141,18 +1154,19 @@
     height:20px;
     padding:0;
     border-radius:50%;
-    border:1.4px solid var(--line-strong);
+    border:1.4px solid var(--chip-color, var(--line-strong));
     background:var(--panel);
     color:var(--muted);
     font-size:8.5px;
     font-weight:900;
     line-height:1;
     cursor:pointer;
+    opacity:.55;
   }
   .hw-char-chip.on{
-    border-color:var(--accent);
-    background:rgba(88,196,182,.22);
-    color:var(--ink);
+    background:var(--chip-color, var(--accent));
+    color:var(--chip-text, var(--ink));
+    opacity:1;
   }
   .hw-charname-grid{
     display:grid;
@@ -1451,11 +1465,10 @@
     .stats{grid-template-columns:1fr}
     .qty-row{grid-template-columns:1fr 1fr}
     .title-line{align-items:flex-start}
-    .hw-row{grid-template-columns:22px minmax(0,1fr) 30px 118px; gap:4px}
+    .hw-row{grid-template-columns:22px minmax(0,1fr) 118px; gap:4px}
     .hw-char-chip{width:17px;height:17px;font-size:7.5px}
     .hw-char-row{gap:2px;margin-left:4px}
     .hw-food-name{font-size:11px}
-    .hw-qty{font-size:10px}
   }
 </style>
 </head>
@@ -1529,7 +1542,7 @@
         <div class="hw-charname-grid" id="hwCharNames"></div>
       </div>
       <div class="control-block">
-        <div class="label"><span>캐릭터별 일괄 켜기/끄기</span></div>
+        <div class="label"><span>캐릭터 선택</span></div>
         <div class="hw-bulk-row">
           <div class="hw-charbtn-grid" id="hwBulkChars"></div>
           <span class="hw-bulk-hint">캐릭터를 누르면 현재 표시된 항목 전체에서 그 캐릭터만 켜지거나 꺼집니다. 항목별 개별 설정은 각 행의 캐릭터 칩을 클릭하세요.</span>
@@ -1663,6 +1676,14 @@
   const HW_VILLAGES = ["이멘마하","반호르","던바튼","두갈드아일","티르코네일","콜헨","가이레흐 언덕"];
   const HW_COLUMNS = [["이멘마하"],["반호르"],["던바튼"],["두갈드아일","콜헨","가이레흐 언덕"],["티르코네일"]];
   const HW_VILLAGE_ROWS = [["이멘마하","반호르","던바튼","콜헨"],["티르코네일","가이레흐 언덕","두갈드아일"]];
+  const HW_CHAR_COLORS = [
+    { bg: "#e5484d", text: "#fff" },
+    { bg: "#f2994a", text: "#241400" },
+    { bg: "#e6c229", text: "#241d00" },
+    { bg: "#4caf6b", text: "#04150a" },
+    { bg: "#4a90e2", text: "#04101f" },
+    { bg: "#e07ec0", text: "#240a1b" }
+  ];
   function hwMerchantColor(){
     return "#58c4b6";
   }
@@ -2071,7 +2092,10 @@
   }
   function hwCharChipsHtml(id){
     const arr = hwCharArray(id);
-    const chips = arr.map((on, i) => `<button type="button" class="hw-char-chip${on ? " on" : ""}" data-hw-id="${id}" data-hw-idx="${i}" title="${escapeHtml(hwCharName(i))}" aria-pressed="${on}">${escapeHtml(hwCharName(i).slice(0, 2))}</button>`).join("");
+    const chips = arr.map((on, i) => {
+      const c = HW_CHAR_COLORS[i];
+      return `<button type="button" class="hw-char-chip${on ? " on" : ""}" style="--chip-color:${c.bg};--chip-text:${c.text}" data-hw-id="${id}" data-hw-idx="${i}" title="${escapeHtml(hwCharName(i))}" aria-pressed="${on}">${escapeHtml(hwCharName(i).slice(0, 2))}</button>`;
+    }).join("");
     return `<span class="hw-char-row" data-hw-gauge-id="${id}">${chips}</span>`;
   }
   function renderHomeworkSidebar(){
@@ -2081,14 +2105,12 @@
     rows.push(`<div class="hw-row hw-head">
       <span></span>
       <span class="hw-header-label">음식</span>
-      <span class="hw-header-label hw-header-qty">수량</span>
       <span class="hw-header-label hw-header-gauge">캐릭터</span>
     </div>`);
     hwFilteredExchanges().forEach(ex => {
       rows.push(`<div class="hw-row" data-hw-id="${ex.id}">
         <img class="hw-icon" src="${iconPath(ex.food)}" alt="" loading="lazy" onerror="this.classList.add('hw-icon-broken')">
-        <span class="hw-food-name" title="${escapeHtml(ex.food)}">${escapeHtml(ex.food)}</span>
-        <span class="hw-qty">×${ex.foodQty}</span>
+        <span class="hw-food-name" title="${escapeHtml(ex.food)} ${ex.foodQty}">${escapeHtml(ex.food)}<span class="hw-food-qty">${ex.foodQty}</span></span>
         ${hwCharChipsHtml(ex.id)}
       </div>`);
     });
@@ -3437,7 +3459,8 @@
     const list = hwFilteredExchanges();
     box.innerHTML = [0,1,2,3,4,5].map(i => {
       const allOn = list.length > 0 && list.every(ex => hwCharArray(ex.id)[i]);
-      return `<button type="button" class="hw-village-badge" data-hw-bulk-idx="${i}" aria-pressed="${allOn}">${escapeHtml(hwCharName(i))}</button>`;
+      const c = HW_CHAR_COLORS[i];
+      return `<button type="button" class="hw-char-select-btn" style="--chip-color:${c.bg};--chip-text:${c.text}" data-hw-bulk-idx="${i}" aria-pressed="${allOn}">${escapeHtml(hwCharName(i))}</button>`;
     }).join("");
     box.querySelectorAll("[data-hw-bulk-idx]").forEach(btn => {
       btn.addEventListener("click", () => {
