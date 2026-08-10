@@ -1995,6 +1995,8 @@
         renderHwVillageBadges();
         renderHomeworkSidebar();
         renderHomeworkBoard();
+        renderHomeworkTotals();
+        renderHomeworkAlt();
       });
     });
   }
@@ -2050,7 +2052,7 @@
   const HW_FOOD_NAMES = new Set(EXCHANGES.map(ex => ex.food));
   function hwMaterialTotals(){
     const totals = new Map();
-    EXCHANGES.forEach(ex => {
+    hwFilteredExchanges().forEach(ex => {
       if(!HW_FOOD_NAMES.has(ex.material)) return;
       const gained = ex.matQty * hwCharCount(ex.id);
       totals.set(ex.material, (totals.get(ex.material) || 0) + gained);
@@ -2252,7 +2254,7 @@
     const bodyB = el("altTable2");
     if(!bodyA || !bodyB) return;
     const byMaterial = new Map();
-    EXCHANGES.forEach(ex => {
+    hwFilteredExchanges().forEach(ex => {
       if(!byMaterial.has(ex.material)) byMaterial.set(ex.material, []);
       byMaterial.get(ex.material).push(ex);
     });
