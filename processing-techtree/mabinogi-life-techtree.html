@@ -1049,6 +1049,16 @@
     font-size:11px;
     line-height:1.4;
   }
+  .hw-reset-row{
+    display:grid;
+    grid-template-columns:repeat(3, minmax(0, 1fr));
+    gap:8px;
+  }
+  .hw-reset-btn{
+    min-height:36px;
+    padding:0 6px;
+    font-size:11.5px;
+  }
   .hw-header-label{
     font-size:11px;
     font-weight:800;
@@ -1503,6 +1513,14 @@
         <div class="hw-bulk-row">
           <input class="qty-input hw-bulk-input" id="hwBulkCount" type="number" min="0" max="6" step="1" placeholder="0~6" aria-label="캐릭터 수 일괄 설정">
           <span class="hw-bulk-hint">게이지바를 클릭하면 항목별로 개별 설정도 가능합니다.</span>
+        </div>
+      </div>
+      <div class="control-block">
+        <div class="label"><span>완료 상태 초기화</span></div>
+        <div class="hw-reset-row">
+          <button class="btn hw-reset-btn" id="hwResetDailyBtn" type="button">일일 초기화</button>
+          <button class="btn hw-reset-btn" id="hwResetWeeklyBtn" type="button">주간 초기화</button>
+          <button class="btn danger hw-reset-btn" id="hwResetAllBtn" type="button">전체 초기화</button>
         </div>
       </div>
       <div id="homeworkSidebarTable"></div>
@@ -3335,6 +3353,23 @@
     renderHomeworkAlt();
     savePersistedState();
   }
+  function hwResetByCycle(cycle){
+    const affectedFoods = new Set();
+    const affectedMaterials = new Set();
+    EXCHANGES.forEach(ex => {
+      if(ex.cycle === cycle && state.hwCardDone[ex.id]){
+        delete state.hwCardDone[ex.id];
+        affectedFoods.add(ex.food);
+        affectedMaterials.add(ex.material);
+      }
+    });
+    affectedFoods.forEach(hwSyncFoodSecured);
+    affectedMaterials.forEach(hwSyncMaterialSecured);
+    renderHomeworkBoard();
+    renderHomeworkTotals();
+    renderHomeworkAlt();
+    savePersistedState();
+  }
   el("resetDirectBtn").addEventListener("click", resetSecuredState);
   el("resetRawBtn").addEventListener("click", () => {
     if(state.sidebarMode === "homework") resetHomeworkChecks();
@@ -3353,6 +3388,9 @@
     savePersistedState();
     el("hwBulkCount").focus();
   });
+  el("hwResetDailyBtn").addEventListener("click", () => hwResetByCycle("daily"));
+  el("hwResetWeeklyBtn").addEventListener("click", () => hwResetByCycle("weekly"));
+  el("hwResetAllBtn").addEventListener("click", resetHomeworkChecks);
   const treeSvg = el("treeSvg");
   const treeWrap = treeSvg.parentElement;
   function treeMapSize(){
