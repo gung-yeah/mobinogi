@@ -1085,7 +1085,7 @@
   }
   .hw-row{
     display:grid;
-    grid-template-columns:24px minmax(0,1fr) 36px 116px;
+    grid-template-columns:24px minmax(0,1fr) 36px 150px;
     align-items:center;
     gap:6px;
     padding:6px 5px;
@@ -1129,36 +1129,52 @@
     font-variant-numeric:tabular-nums;
     white-space:nowrap;
   }
-  .hw-gauge{
+  .hw-char-row{
     display:flex;
-    align-items:center;
-    gap:4px;
+    gap:3px;
     margin-left:10px;
+    flex-wrap:wrap;
+    justify-content:flex-end;
   }
-  .hw-gauge-track{
-    display:flex;
-    gap:2px;
-  }
-  .hw-gauge-seg{
-    width:12px;
-    height:15px;
+  .hw-char-chip{
+    width:20px;
+    height:20px;
     padding:0;
-    border-radius:3px;
-    border:1.4px solid var(--accent);
-    background:rgba(88,196,182,.08);
+    border-radius:50%;
+    border:1.4px solid var(--line-strong);
+    background:var(--panel);
+    color:var(--muted);
+    font-size:8.5px;
+    font-weight:900;
+    line-height:1;
     cursor:pointer;
   }
-  .hw-gauge-seg.filled{
-    background:#ff8a3d;
-    box-shadow:inset 0 0 0 1px rgba(255,255,255,.25);
-  }
-  .hw-gauge-count{
-    min-width:14px;
-    text-align:right;
-    font-size:11px;
-    font-weight:900;
+  .hw-char-chip.on{
+    border-color:var(--accent);
+    background:rgba(88,196,182,.22);
     color:var(--ink);
-    font-variant-numeric:tabular-nums;
+  }
+  .hw-charname-grid{
+    display:grid;
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+    gap:8px;
+  }
+  .hw-charname-input{
+    width:100%;
+    height:32px;
+    padding:0 8px;
+    border-radius:7px;
+    border:1px solid var(--line);
+    background:var(--panel);
+    color:var(--ink);
+    font-size:12px;
+    outline:none;
+  }
+  .hw-charname-input::placeholder{color:var(--muted)}
+  .hw-charbtn-grid{
+    display:grid;
+    grid-template-columns:repeat(3, minmax(0, 1fr));
+    gap:8px;
   }
   .hw-cycle-daily{color:var(--accent-2)}
   .hw-cycle-weekly{color:var(--blue)}
@@ -1435,9 +1451,9 @@
     .stats{grid-template-columns:1fr}
     .qty-row{grid-template-columns:1fr 1fr}
     .title-line{align-items:flex-start}
-    .hw-row{grid-template-columns:22px minmax(0,1fr) 30px 96px; gap:4px}
-    .hw-gauge-seg{width:10px}
-    .hw-gauge-track{gap:1px}
+    .hw-row{grid-template-columns:22px minmax(0,1fr) 30px 118px; gap:4px}
+    .hw-char-chip{width:17px;height:17px;font-size:7.5px}
+    .hw-char-row{gap:2px;margin-left:4px}
     .hw-food-name{font-size:11px}
     .hw-qty{font-size:10px}
   }
@@ -1509,10 +1525,14 @@
         <div class="hw-village-badges" id="hwVillageBadges"></div>
       </div>
       <div class="control-block">
-        <div class="label"><span>캐릭터 수 일괄 설정</span></div>
+        <div class="label"><span>캐릭터 이름 (선택)</span></div>
+        <div class="hw-charname-grid" id="hwCharNames"></div>
+      </div>
+      <div class="control-block">
+        <div class="label"><span>캐릭터별 일괄 켜기/끄기</span></div>
         <div class="hw-bulk-row">
-          <input class="qty-input hw-bulk-input" id="hwBulkCount" type="number" min="0" max="6" step="1" placeholder="0~6" aria-label="캐릭터 수 일괄 설정">
-          <span class="hw-bulk-hint">게이지바를 클릭하면 항목별로 개별 설정도 가능합니다.</span>
+          <div class="hw-charbtn-grid" id="hwBulkChars"></div>
+          <span class="hw-bulk-hint">캐릭터를 누르면 현재 표시된 항목 전체에서 그 캐릭터만 켜지거나 꺼집니다. 항목별 개별 설정은 각 행의 캐릭터 칩을 클릭하세요.</span>
         </div>
       </div>
       <div class="control-block">
@@ -1725,7 +1745,8 @@
     hwOwned:{},
     hwSecured:{},
     hwCardDone:{},
-    hwSelectedVillages:new Set()
+    hwSelectedVillages:new Set(),
+    hwCharNames:["","","","","",""]
   };
   const STORE_KEY = "mabinogi-life-techtree-v1";
   const isEmbedded = window.parent !== window;
@@ -1746,6 +1767,7 @@
     if(parsed.hwOwned && typeof parsed.hwOwned === "object") state.hwOwned = parsed.hwOwned;
     if(parsed.hwSecured && typeof parsed.hwSecured === "object") state.hwSecured = parsed.hwSecured;
     if(parsed.hwCardDone && typeof parsed.hwCardDone === "object") state.hwCardDone = parsed.hwCardDone;
+    if(Array.isArray(parsed.hwCharNames) && parsed.hwCharNames.length === 6) state.hwCharNames = parsed.hwCharNames;
     if(parsed.targetQtyById && typeof parsed.targetQtyById === "object") state.targetQtyById = parsed.targetQtyById;
   }
   (function loadPersistedState(){
@@ -1815,7 +1837,7 @@
     return map;
   }
   function savePersistedState(){
-    const payload = {owned:state.owned, direct:[...state.direct], favorites:[...state.favorites], rawOwned:state.rawOwned, rawDirect:serializeRawDirect(), homeworkChecks:state.homeworkChecks, hwOwned:state.hwOwned, hwSecured:state.hwSecured, hwCardDone:state.hwCardDone, targetQtyById:state.targetQtyById};
+    const payload = {owned:state.owned, direct:[...state.direct], favorites:[...state.favorites], rawOwned:state.rawOwned, rawDirect:serializeRawDirect(), homeworkChecks:state.homeworkChecks, hwOwned:state.hwOwned, hwSecured:state.hwSecured, hwCardDone:state.hwCardDone, targetQtyById:state.targetQtyById, hwCharNames:state.hwCharNames};
     try {
       localStorage.setItem(STORE_KEY, JSON.stringify(payload));
     } catch(error) {}
@@ -2011,28 +2033,46 @@
         renderHomeworkBoard();
         renderHomeworkTotals();
         renderHomeworkAlt();
+        renderHwBulkChars();
       });
     });
   }
-  function hwCharCount(id){
+  function hwCharName(i){
+    const custom = state.hwCharNames[i];
+    return (custom && custom.trim()) || ("캐릭터" + (i + 1));
+  }
+  function hwCharArray(id){
     const saved = state.homeworkChecks[id];
-    return Number.isInteger(saved) && saved >= 0 && saved <= 6 ? saved : 0;
+    if(Array.isArray(saved) && saved.length === 6) return saved;
+    if(Number.isInteger(saved) && saved >= 0 && saved <= 6){
+      return [0,1,2,3,4,5].map(i => i < saved);
+    }
+    return [false,false,false,false,false,false];
   }
-  function hwSetCharCount(id, count){
-    state.homeworkChecks[id] = Math.max(0, Math.min(6, count));
+  function hwCharCount(id){
+    return hwCharArray(id).filter(Boolean).length;
   }
-  function hwApplyChange(id, count){
-    hwSetCharCount(id, count);
+  function hwSetCharArray(id, arr){
+    state.homeworkChecks[id] = arr;
+  }
+  function hwToggleChar(id, idx){
+    const arr = hwCharArray(id).slice();
+    arr[idx] = !arr[idx];
+    hwSetCharArray(id, arr);
+  }
+  function hwApplyCharToggle(id, idx){
+    hwToggleChar(id, idx);
     renderHomeworkSidebar();
     renderHomeworkBoard();
     renderHomeworkTotals();
     renderHomeworkAlt();
+    renderHwBulkChars();
     savePersistedState();
   }
-  function hwGaugeHtml(id){
-    const count = hwCharCount(id);
-    const segs = [1,2,3,4,5,6].map(n => `<button type="button" class="hw-gauge-seg${n <= count ? " filled" : ""}" data-hw-id="${id}" data-hw-count="${n}" aria-label="캐릭터 ${n}까지 사용"></button>`).join("");
-    return `<span class="hw-gauge" data-hw-gauge-id="${id}"><span class="hw-gauge-track">${segs}</span><span class="hw-gauge-count">${count}</span></span>`;
+  function hwCharChipsHtml(id){
+    const arr = hwCharArray(id);
+    const chips = arr.map((on, i) => `<button type="button" class="hw-char-chip${on ? " on" : ""}" data-hw-id="${id}" data-hw-idx="${i}" title="${escapeHtml(hwCharName(i))}" aria-pressed="${on}">${escapeHtml(hwCharName(i).slice(0, 2))}</button>`).join("");
+    return `<span class="hw-char-row" data-hw-gauge-id="${id}">${chips}</span>`;
   }
   function renderHomeworkSidebar(){
     const box = el("homeworkSidebarTable");
@@ -2042,24 +2082,21 @@
       <span></span>
       <span class="hw-header-label">음식</span>
       <span class="hw-header-label hw-header-qty">수량</span>
-      <span class="hw-header-label hw-header-gauge">캐릭터 수</span>
+      <span class="hw-header-label hw-header-gauge">캐릭터</span>
     </div>`);
     hwFilteredExchanges().forEach(ex => {
       rows.push(`<div class="hw-row" data-hw-id="${ex.id}">
         <img class="hw-icon" src="${iconPath(ex.food)}" alt="" loading="lazy" onerror="this.classList.add('hw-icon-broken')">
         <span class="hw-food-name" title="${escapeHtml(ex.food)}">${escapeHtml(ex.food)}</span>
         <span class="hw-qty">×${ex.foodQty}</span>
-        ${hwGaugeHtml(ex.id)}
+        ${hwCharChipsHtml(ex.id)}
       </div>`);
     });
     box.innerHTML = rows.join("");
     box.className = "hw-table";
-    box.querySelectorAll(".hw-gauge-seg").forEach(btn => {
+    box.querySelectorAll(".hw-char-chip").forEach(btn => {
       btn.addEventListener("click", () => {
-        const id = Number(btn.dataset.hwId);
-        const clicked = Number(btn.dataset.hwCount);
-        const next = clicked === hwCharCount(id) ? clicked - 1 : clicked;
-        hwApplyChange(id, next);
+        hwApplyCharToggle(Number(btn.dataset.hwId), Number(btn.dataset.hwIdx));
       });
     });
   }
@@ -3325,6 +3362,8 @@
     el("altTableUseHeader").classList.toggle("is-hidden", !isHomework);
     if(isHomework){
       renderHwVillageBadges();
+      renderHwCharNames();
+      renderHwBulkChars();
       renderHomeworkSidebar();
       renderHomeworkBoard();
       renderHomeworkTotals();
@@ -3351,6 +3390,7 @@
     renderHomeworkBoard();
     renderHomeworkTotals();
     renderHomeworkAlt();
+    renderHwBulkChars();
     savePersistedState();
   }
   function hwResetByCycle(cycle){
@@ -3376,18 +3416,48 @@
     else resetSecuredState();
   });
   el("resetAltBtn").addEventListener("click", resetHomeworkChecks);
-  el("hwBulkCount").addEventListener("input", event => {
-    const digitsOnly = event.target.value.replace(/[^0-9]/g, "");
-    if(digitsOnly === "") return;
-    const count = Math.max(0, Math.min(6, parseInt(digitsOnly, 10) || 0));
-    hwFilteredExchanges().forEach(ex => hwSetCharCount(ex.id, count));
-    renderHomeworkSidebar();
-    renderHomeworkBoard();
-    renderHomeworkTotals();
-    renderHomeworkAlt();
-    savePersistedState();
-    el("hwBulkCount").focus();
-  });
+  function renderHwCharNames(){
+    const box = el("hwCharNames");
+    if(!box) return;
+    box.innerHTML = [0,1,2,3,4,5].map(i => `<input class="hw-charname-input" data-hw-char-idx="${i}" type="text" maxlength="8" placeholder="캐릭터${i + 1}" value="${escapeHtml(state.hwCharNames[i] || "")}" aria-label="캐릭터 ${i + 1} 이름">`).join("");
+    box.querySelectorAll(".hw-charname-input").forEach(input => {
+      input.addEventListener("input", event => {
+        const idx = Number(input.dataset.hwCharIdx);
+        state.hwCharNames[idx] = event.target.value;
+        savePersistedState();
+        renderHomeworkSidebar();
+        renderHomeworkBoard();
+        renderHwBulkChars();
+      });
+    });
+  }
+  function renderHwBulkChars(){
+    const box = el("hwBulkChars");
+    if(!box) return;
+    const list = hwFilteredExchanges();
+    box.innerHTML = [0,1,2,3,4,5].map(i => {
+      const allOn = list.length > 0 && list.every(ex => hwCharArray(ex.id)[i]);
+      return `<button type="button" class="hw-village-badge" data-hw-bulk-idx="${i}" aria-pressed="${allOn}">${escapeHtml(hwCharName(i))}</button>`;
+    }).join("");
+    box.querySelectorAll("[data-hw-bulk-idx]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const idx = Number(btn.dataset.hwBulkIdx);
+        const list = hwFilteredExchanges();
+        const allOn = list.length > 0 && list.every(ex => hwCharArray(ex.id)[idx]);
+        list.forEach(ex => {
+          const arr = hwCharArray(ex.id).slice();
+          arr[idx] = !allOn;
+          hwSetCharArray(ex.id, arr);
+        });
+        renderHomeworkSidebar();
+        renderHomeworkBoard();
+        renderHomeworkTotals();
+        renderHomeworkAlt();
+        renderHwBulkChars();
+        savePersistedState();
+      });
+    });
+  }
   el("hwResetDailyBtn").addEventListener("click", () => hwResetByCycle("daily"));
   el("hwResetWeeklyBtn").addEventListener("click", () => hwResetByCycle("weekly"));
   el("hwResetAllBtn").addEventListener("click", resetHomeworkChecks);
