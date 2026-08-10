@@ -878,6 +878,15 @@
     border-color:rgba(88,196,182,.32);
     background:rgba(88,196,182,.08);
   }
+  .method-shop.hw-use-shop{
+    border-color:rgba(229,190,95,.4);
+    background:rgba(229,190,95,.08);
+    color:var(--accent-2);
+  }
+  .hw-use-empty{
+    color:var(--muted);
+    font-size:11px;
+  }
   .method-icon{
     width:18px;
     height:18px;
@@ -1556,6 +1565,7 @@
                   <th>가공품</th>
                   <th>상태</th>
                   <th>구하는 방법</th>
+                  <th>이 재료의 쓰임</th>
                 </tr>
               </thead>
               <tbody id="altTable2"></tbody>
@@ -1581,6 +1591,7 @@
                 <th class="num">소유</th>
                 <th class="num">부족</th>
                 <th>상태</th>
+                <th id="rawTableMethodHeader" class="is-hidden">구하는 방법</th>
               </tr>
             </thead>
             <tbody id="rawTable"></tbody>
@@ -1603,6 +1614,7 @@
                 <th>가공품</th>
                 <th>상태</th>
                 <th>구하는 방법</th>
+                <th id="altTableUseHeader" class="is-hidden">이 재료의 쓰임</th>
               </tr>
             </thead>
             <tbody id="altTable"></tbody>
@@ -2119,6 +2131,7 @@
         <td class="num"><input class="owned-input" data-hw-owned="${escapeHtml(name)}" type="text" inputmode="numeric" pattern="[0-9]*" value="${owned}" aria-label="${escapeHtml(name)} 소유 수량"></td>
         <td class="num shortage-cell">${formatNumber(shortage)}</td>
         <td class="state-cell"><button class="tag action hw-secure-btn ${secured ? "direct" : ""}" type="button" data-hw-material="${escapeHtml(name)}">${secured ? "확보 완료" : "원재료 확보"}</button></td>
+        <td class="method-cell">${hwFoodUsesHtml(name)}</td>
       </tr>
     `;
     }).join("");
@@ -2229,6 +2242,26 @@
       });
     });
   }
+  function hwMethodChipHtml(ex, extraClass){
+    const faceUrl = HW_NPC_FACES[ex.npc];
+    const face = faceUrl ? `<img class="method-icon face" src="${assetUrl(faceUrl)}" alt="">` : "";
+    const cycleLabel = ex.cycle === "daily" ? "일일" : "주간";
+    return `<span class="method-shop${extraClass ? " " + extraClass : ""}" title="${escapeHtml(ex.npc + " · " + ex.place + " · " + ex.village)}">
+      ${face}<span>${escapeHtml(ex.npc)}(${escapeHtml(ex.village)})</span>
+      <span class="exchange-mark">↔</span>
+      <img class="method-icon" src="${iconPath(ex.material)}" alt="">
+      <span>${escapeHtml(ex.material)} ${ex.matQty}개 · ${cycleLabel}</span>
+    </span>`;
+  }
+  function hwFoodUsesHtml(food){
+    const list = EXCHANGES.filter(ex => ex.food === food);
+    return `<div class="method-list">${list.map(ex => hwMethodChipHtml(ex)).join("")}</div>`;
+  }
+  function hwUsedAsFoodHtml(material){
+    const list = EXCHANGES.filter(ex => ex.food === material);
+    if(!list.length) return `<span class="hw-use-empty">최종 재료 — 다른 교환에 재사용되지 않음</span>`;
+    return `<div class="method-list">${list.map(ex => hwMethodChipHtml(ex, "hw-use-shop")).join("")}</div>`;
+  }
   function hwAltRowHtml(material, list){
     const secured = hwIsSecured(material);
     const chips = list.map(ex => {
@@ -2252,6 +2285,7 @@
         </td>
         <td class="state-cell"><button class="tag action hw-secure-btn ${secured ? "direct" : ""}" type="button" data-hw-material="${escapeHtml(material)}">${secured ? "확보 완료" : "원재료 확보"}</button></td>
         <td class="method-cell"><div class="method-list">${chips}</div></td>
+        <td class="method-cell">${hwUsedAsFoodHtml(material)}</td>
       </tr>
     `;
   }
@@ -3292,6 +3326,8 @@
     el("stepPanelTitle").textContent = isHomework ? "교환 및 구입처" : "제작 순서";
     el("resetAltBtn").classList.toggle("is-hidden", !isHomework);
     el("resetAlt2Btn").classList.toggle("is-hidden", !isHomework);
+    el("rawTableMethodHeader").classList.toggle("is-hidden", !isHomework);
+    el("altTableUseHeader").classList.toggle("is-hidden", !isHomework);
     el("stepList").classList.toggle("is-hidden", isHomework);
     el("altTable2Wrap").classList.toggle("is-hidden", !isHomework);
     el("stepBadge").classList.toggle("is-hidden", isHomework);
