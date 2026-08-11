@@ -775,6 +775,9 @@
     font-variant-numeric:tabular-nums;
     white-space:nowrap;
   }
+  td.owned-cell{
+    text-align:center;
+  }
   th.num{
     text-align:center;
     font-variant-numeric:tabular-nums;
@@ -2175,6 +2178,11 @@
     });
     return groups.sort((a, b) => a.food.localeCompare(b.food, "ko"));
   }
+  function hwGrandTotals(){
+    const totals = new Map();
+    hwCraftGroups().forEach(g => g.materials.forEach(m => totals.set(m.name, (totals.get(m.name) || 0) + m.qty)));
+    return totals;
+  }
   const HW_GATHER_CATEGORIES = [
     ["일상 채집", ["달걀","거미줄","물이 든 병","우유","사과","찻잎","최상급 거미줄","특급 거미줄","헤이즐넛"]],
     ["약초 채집", ["허브","블러디 허브","화살꽃","마나 허브","새록 버섯","튼튼 버섯","끈기 풀","쑥쑥 버섯","숨숨꽃","깔끔 버섯","생채기꽃","증폭 버섯","진정초","끈적 풀","솔솔 버섯","산뜻 버섯"]],
@@ -2283,28 +2291,39 @@
     renderHomeworkBoard();
     savePersistedState();
   }
-  function hwToggleMaterialSecured(name, qty){
-    if(state.hwSecured[name]){
-      delete state.hwSecured[name];
-      if(Object.prototype.hasOwnProperty.call(state.hwOwnedPreSecure, name)){
-        const restored = state.hwOwnedPreSecure[name];
-        if(restored === undefined || restored === "") delete state.hwOwned[name];
-        else state.hwOwned[name] = restored;
-        delete state.hwOwnedPreSecure[name];
-      } else {
-        delete state.hwOwned[name];
-      }
-      hwFoodsUsingMaterial(name).forEach(hwCardsAutoUndoneCheck);
+  function hwSecureMaterial(name, qty){
+    if(state.hwSecured[name]) return;
+    state.hwOwnedPreSecure[name] = state.hwOwned[name];
+    state.hwOwned[name] = qty;
+    state.hwSecured[name] = true;
+    hwFoodsUsingMaterial(name).forEach(hwCardsAutoDoneCheck);
+  }
+  function hwUnsecureMaterial(name){
+    if(!state.hwSecured[name]) return;
+    delete state.hwSecured[name];
+    if(Object.prototype.hasOwnProperty.call(state.hwOwnedPreSecure, name)){
+      const restored = state.hwOwnedPreSecure[name];
+      if(restored === undefined || restored === "") delete state.hwOwned[name];
+      else state.hwOwned[name] = restored;
+      delete state.hwOwnedPreSecure[name];
     } else {
-      state.hwOwnedPreSecure[name] = state.hwOwned[name];
-      state.hwOwned[name] = qty;
-      state.hwSecured[name] = true;
-      hwFoodsUsingMaterial(name).forEach(hwCardsAutoDoneCheck);
+      delete state.hwOwned[name];
     }
+    hwFoodsUsingMaterial(name).forEach(hwCardsAutoUndoneCheck);
+  }
+  function hwToggleMaterialSecured(name, qty){
+    if(state.hwSecured[name]) hwUnsecureMaterial(name);
+    else hwSecureMaterial(name, qty);
     renderHomeworkTotals();
     renderHomeworkAlt();
     renderHomeworkBoard();
     savePersistedState();
+  }
+  function hwApplyMaterialsForCard(food, done){
+    const totals = hwGrandTotals();
+    const names = hwCraftMaterialNamesFor(food);
+    if(done) names.forEach(name => hwSecureMaterial(name, totals.get(name) || 0));
+    else names.forEach(name => hwUnsecureMaterial(name));
   }
   function hwIsCardDone(id){
     return !!state.hwCardDone[id];
@@ -2327,8 +2346,7 @@
     const body = el("rawTable");
     if(!body) return;
     const groups = hwCraftGroups();
-    const grandTotals = new Map();
-    groups.forEach(g => g.materials.forEach(m => grandTotals.set(m.name, (grandTotals.get(m.name) || 0) + m.qty)));
+    const grandTotals = hwGrandTotals();
     el("rawTotalBadge").textContent = groups.length + "종";
     const rowsHtml = [];
     groups.forEach(group => {
@@ -2352,7 +2370,7 @@
             </div>
           </td>
           <td class="num">${formatNumber(mat.qty)}</td>
-          <td class="num"><input class="owned-input" data-hw-owned="${escapeHtml(mat.name)}" type="text" inputmode="numeric" pattern="[0-9]*" value="${owned}" aria-label="${escapeHtml(mat.name)} 소유 수량"></td>
+          <td class="num owned-cell"><input class="owned-input" data-hw-owned="${escapeHtml(mat.name)}" type="text" inputmode="numeric" pattern="[0-9]*" value="${owned}" aria-label="${escapeHtml(mat.name)} 소유 수량"></td>
           <td class="num shortage-cell">${formatNumber(shortage)}</td>
           <td class="state-cell"><button class="tag action hw-secure-btn ${secured ? "direct" : ""}" type="button" data-hw-material="${escapeHtml(mat.name)}">${secured ? "확보 완료" : "원재료 확보"}</button></td>
           <td class="method-cell">${hwObtainMethodHtml(mat.name)}</td>
@@ -2466,6 +2484,7 @@
         if(ex){
           hwSyncMaterialSecured(ex.material);
           hwSyncFoodSecured(ex.food);
+          hwApplyMaterialsForCard(ex.food, hwIsCardDone(id));
         }
         renderHomeworkBoard();
         renderHomeworkTotals();
@@ -3001,7 +3020,7 @@
           </div>
         </td>
         <td class="num">${formatNumber(row.qty)}</td>
-        <td class="num"><input class="owned-input" data-key="${escapeHtml(key)}" type="text" inputmode="numeric" pattern="[0-9]*" value="${ownedValue}" aria-label="${row.name} 소유 수량"></td>
+        <td class="num owned-cell"><input class="owned-input" data-key="${escapeHtml(key)}" type="text" inputmode="numeric" pattern="[0-9]*" value="${ownedValue}" aria-label="${row.name} 소유 수량"></td>
         <td class="num shortage-cell">${formatNumber(shortage)}</td>
         <td class="state-cell"><button class="tag action ${isDirect ? "direct" : ""}" type="button">${isDirect ? "확보 완료" : "원재료 확보"}</button></td>
       `;
