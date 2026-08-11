@@ -1060,11 +1060,6 @@
     width:100%;
     text-align:center;
   }
-  .hw-bulk-hint{
-    color:var(--muted);
-    font-size:11px;
-    line-height:1.4;
-  }
   .hw-reset-row{
     display:grid;
     grid-template-columns:repeat(3, minmax(0, 1fr));
@@ -1098,7 +1093,7 @@
   }
   .hw-row{
     display:grid;
-    grid-template-columns:24px minmax(0,1fr) 150px;
+    grid-template-columns:24px minmax(0,1fr) 90px;
     align-items:center;
     gap:6px;
     padding:6px 5px;
@@ -1140,14 +1135,14 @@
   .hw-food-name .hw-food-qty{
     color:var(--muted);
     font-weight:800;
-    margin-left:2px;
   }
   .hw-char-row{
-    display:flex;
+    display:grid;
+    grid-template-columns:repeat(3, 20px);
+    grid-auto-rows:20px;
     gap:3px;
     margin-left:10px;
-    flex-wrap:wrap;
-    justify-content:flex-end;
+    justify-content:end;
   }
   .hw-char-chip{
     width:20px;
@@ -1182,6 +1177,7 @@
     background:var(--panel);
     color:var(--ink);
     font-size:12px;
+    text-align:center;
     outline:none;
   }
   .hw-charname-input::placeholder{color:var(--muted)}
@@ -1465,9 +1461,9 @@
     .stats{grid-template-columns:1fr}
     .qty-row{grid-template-columns:1fr 1fr}
     .title-line{align-items:flex-start}
-    .hw-row{grid-template-columns:22px minmax(0,1fr) 118px; gap:4px}
+    .hw-row{grid-template-columns:22px minmax(0,1fr) 68px; gap:4px}
     .hw-char-chip{width:17px;height:17px;font-size:7.5px}
-    .hw-char-row{gap:2px;margin-left:4px}
+    .hw-char-row{grid-template-columns:repeat(3, 17px);grid-auto-rows:17px;gap:2px;margin-left:4px}
     .hw-food-name{font-size:11px}
   }
 </style>
@@ -1538,14 +1534,13 @@
         <div class="hw-village-badges" id="hwVillageBadges"></div>
       </div>
       <div class="control-block">
-        <div class="label"><span>캐릭터 이름 (선택)</span></div>
+        <div class="label"><span>캐릭터 이름</span></div>
         <div class="hw-charname-grid" id="hwCharNames"></div>
       </div>
       <div class="control-block">
         <div class="label"><span>캐릭터 선택</span></div>
         <div class="hw-bulk-row">
           <div class="hw-charbtn-grid" id="hwBulkChars"></div>
-          <span class="hw-bulk-hint">캐릭터를 누르면 현재 표시된 항목 전체에서 그 캐릭터만 켜지거나 꺼집니다. 항목별 개별 설정은 각 행의 캐릭터 칩을 클릭하세요.</span>
         </div>
       </div>
       <div class="control-block">
@@ -2110,7 +2105,7 @@
     hwFilteredExchanges().forEach(ex => {
       rows.push(`<div class="hw-row" data-hw-id="${ex.id}">
         <img class="hw-icon" src="${iconPath(ex.food)}" alt="" loading="lazy" onerror="this.classList.add('hw-icon-broken')">
-        <span class="hw-food-name" title="${escapeHtml(ex.food)} ${ex.foodQty}">${escapeHtml(ex.food)}<span class="hw-food-qty">${ex.foodQty}</span></span>
+        <span class="hw-food-name" title="${escapeHtml(ex.food)}×${ex.foodQty}">${escapeHtml(ex.food)}<span class="hw-food-qty">×${ex.foodQty}</span></span>
         ${hwCharChipsHtml(ex.id)}
       </div>`);
     });
