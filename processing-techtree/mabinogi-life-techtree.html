@@ -1675,7 +1675,7 @@
         </div>
       </div>
       <div class="control-block">
-        <div class="label"><span>교환 추가</span></div>
+        <div class="label"><span>숙제 추가</span></div>
         <div class="hw-add-form">
           <select class="hw-add-select" id="hwAddVillage"></select>
           <div class="hw-add-row2">
@@ -1693,7 +1693,7 @@
           <div class="hw-add-actions" id="hwAddCycle">
             <button class="chip" data-cycle="daily" type="button" aria-pressed="true">일일</button>
             <button class="chip" data-cycle="weekly" type="button" aria-pressed="false">주간</button>
-            <button class="btn hw-add-submit" id="hwAddSubmitBtn" type="button">교환 추가</button>
+            <button class="btn hw-add-submit" id="hwAddSubmitBtn" type="button">숙제 추가</button>
           </div>
         </div>
         <div class="hw-custom-list" id="hwCustomList"></div>
@@ -3857,7 +3857,7 @@
       renderHomeworkAlt();
       renderHwBulkChars();
       savePersistedState();
-      toast("교환을 추가했습니다.");
+      toast("숙제를 추가했습니다.");
     });
   }
   el("hwResetDailyBtn").addEventListener("click", () => hwResetByCycle("daily"));
