@@ -849,9 +849,13 @@
     white-space:nowrap;
   }
   .hw-group-cell{
-    vertical-align:top;
+    vertical-align:middle;
+    text-align:center;
     background:rgba(255,255,255,.025);
     border-right:1px solid var(--line);
+  }
+  .hw-group-cell .material-cell{
+    justify-content:center;
   }
   tr.hw-group-start td{
     border-top:1px solid var(--line-strong);
@@ -892,6 +896,16 @@
     border-color:rgba(229,190,95,.4);
     background:rgba(229,190,95,.08);
     color:var(--accent-2);
+  }
+  .hw-facility-chip{
+    border-color:rgba(143,180,217,.4);
+    background:rgba(143,180,217,.1);
+    color:#bcd7f5;
+  }
+  .hw-gather-chip{
+    border-color:rgba(122,196,140,.4);
+    background:rgba(122,196,140,.1);
+    color:#a9e0b8;
   }
   .hw-use-empty{
     color:var(--muted);
@@ -2151,6 +2165,63 @@
     });
     return groups.sort((a, b) => a.food.localeCompare(b.food, "ko"));
   }
+  const HW_GATHER_CATEGORIES = [
+    ["일상 채집", ["달걀","거미줄","물이 든 병","우유","사과","찻잎","최상급 거미줄","특급 거미줄","헤이즐넛"]],
+    ["약초 채집", ["허브","블러디 허브","화살꽃","마나 허브","새록 버섯","튼튼 버섯","끈기 풀","쑥쑥 버섯","숨숨꽃","깔끔 버섯","생채기꽃","증폭 버섯","진정초","끈적 풀","솔솔 버섯","산뜻 버섯"]],
+    ["추수", ["밀","옥수수","콩","쌀","귀리"]],
+    ["호미질", ["감자","양파","조개","파스닙","양배추","호박","개암 버섯"]]
+  ];
+  function hwGatherTypeOf(name){
+    for(const [type, list] of HW_GATHER_CATEGORIES){
+      if(list.includes(name)) return type;
+    }
+    if(name.includes("통나무")) return "나무 베기";
+    if(name.includes("광석")) return "광석 캐기";
+    if(name.includes("양털")) return "양털 깎기";
+    if(name.includes("곤충")) return "곤충 채집";
+    return "";
+  }
+  function hwShopChipsHtml(name){
+    const info = extractedInfo(name);
+    const seen = new Set();
+    const chips = [];
+    (info?.obtainSources || []).forEach(source => {
+      if(!source?.isShop) return;
+      const place = source.shopName || source.label || source.npcName || "상점";
+      const price = source.price ?? source.quantity ?? "";
+      const currencyName = source.currencyName || "";
+      const limit = source.limit ? ` (${source.limit})` : "";
+      const signature = [place, price, currencyName, source.limit].join("|");
+      if(seen.has(signature)) return;
+      seen.add(signature);
+      const face = source.npcFaceUrl ? `<img class="method-icon face" src="${assetUrl(source.npcFaceUrl)}" alt="">` : "";
+      const currencyIcon = source.currencyIconUrl ? `<img class="method-icon" src="${assetUrl(source.currencyIconUrl)}" alt="">` : "";
+      const priceText = price !== "" && price !== null ? `${formatNumber(price)}${currencyName ? " " : ""}` : "";
+      chips.push(`<span class="method-shop">${face}<span>${escapeHtml(place)}:</span><span class="exchange-mark">↔</span>${currencyIcon}<span>${priceText}${escapeHtml(currencyName)}${escapeHtml(limit)}</span></span>`);
+    });
+    return chips;
+  }
+  function hwFacilityBadgeHtml(node){
+    const info = extractedInfo(node.name);
+    const produceSource = (info?.obtainSources || []).find(source => source.method === "produce" && source.label);
+    const label = produceSource ? produceSource.label : categoryLabel(node);
+    return `<span class="method-chip hw-facility-chip">${escapeHtml(label)}</span>`;
+  }
+  function hwObtainMethodHtml(name){
+    const shopChips = hwShopChipsHtml(name);
+    const node = hwFoodNode(name);
+    let badge = "";
+    if(node && Array.isArray(node.materials) && node.materials.length){
+      badge = hwFacilityBadgeHtml(node);
+    } else {
+      const gatherType = hwGatherTypeOf(name);
+      if(gatherType) badge = `<span class="method-chip hw-gather-chip">${escapeHtml(gatherType)}</span>`;
+    }
+    const parts = [...shopChips];
+    if(badge) parts.push(badge);
+    if(!parts.length) return `<span class="muted">확인 필요</span>`;
+    return `<div class="method-list">${parts.join("")}</div>`;
+  }
   function hwGetOwned(name){
     return state.hwOwned[name] ?? "";
   }
@@ -2217,7 +2288,7 @@
           <td class="num"><input class="owned-input" data-hw-owned="${escapeHtml(mat.name)}" type="text" inputmode="numeric" pattern="[0-9]*" value="${owned}" aria-label="${escapeHtml(mat.name)} 소유 수량"></td>
           <td class="num shortage-cell">${formatNumber(shortage)}</td>
           <td class="state-cell"><button class="tag action hw-secure-btn ${secured ? "direct" : ""}" type="button" data-hw-material="${escapeHtml(mat.name)}">${secured ? "확보 완료" : "원재료 확보"}</button></td>
-          <td class="method-cell">${methodDisplayHtml(mat.name)}</td>
+          <td class="method-cell">${hwObtainMethodHtml(mat.name)}</td>
         </tr>
       `);
       });
