@@ -1244,8 +1244,14 @@
     grid-template-columns:minmax(0,1fr) 76px;
     gap:8px;
   }
+  .hw-add-actions{
+    display:grid;
+    grid-template-columns:repeat(3, minmax(0, 1fr));
+    gap:8px;
+  }
   .hw-add-submit{
-    width:100%;
+    padding:0 6px;
+    font-size:12.5px;
   }
   .hw-custom-list{
     display:flex;
@@ -1424,6 +1430,13 @@
   }
   .hw-card.hw-card-done:hover{
     background:rgba(242,124,124,.24);
+  }
+  .hw-card.hw-card-custom:not(.hw-card-done){
+    border:1.5px solid #b98af0;
+    background:rgba(185,138,240,.14);
+  }
+  .hw-card.hw-card-custom:not(.hw-card-done):hover{
+    background:rgba(185,138,240,.22);
   }
   .hw-card-check{
     position:absolute;
@@ -1663,11 +1676,11 @@
             <input class="hw-add-input" id="hwAddMaterial" type="text" placeholder="재료 이름" maxlength="14">
             <input class="hw-add-input hw-add-qty" id="hwAddMaterialQty" type="text" inputmode="numeric" pattern="[0-9]*" placeholder="수량">
           </div>
-          <div class="segmented" id="hwAddCycle">
+          <div class="hw-add-actions" id="hwAddCycle">
             <button class="chip" data-cycle="daily" type="button" aria-pressed="true">일일</button>
             <button class="chip" data-cycle="weekly" type="button" aria-pressed="false">주간</button>
+            <button class="btn hw-add-submit" id="hwAddSubmitBtn" type="button">교환 추가</button>
           </div>
-          <button class="btn hw-add-submit" id="hwAddSubmitBtn" type="button">교환 추가</button>
         </div>
         <div class="hw-custom-list" id="hwCustomList"></div>
       </div>
@@ -1799,8 +1812,8 @@
     { bg: "#4a90e2", text: "#04101f" },
     { bg: "#e07ec0", text: "#240a1b" }
   ];
-  function hwMerchantColor(){
-    return "#58c4b6";
+  function hwMerchantColor(isCustom){
+    return isCustom ? "#b98af0" : "#58c4b6";
   }
   const EXCHANGES = [
     {id:5, food:"카레라이스", foodQty:4, material:"운철괴", matQty:2, cycle:"weekly", npc:"오슬라", place:"대장간", village:"이멘마하"},
@@ -2517,7 +2530,8 @@
           const needed = ex.foodQty * hwCharCount(ex.id);
           const gained = ex.matQty * hwCharCount(ex.id);
           const done = hwIsCardDone(ex.id);
-          return `<div class="hw-card${done ? " hw-card-done" : ""}" data-hw-card-id="${ex.id}" title="${escapeHtml(ex.cycle === "daily" ? "일일 교환" : "주간 교환")} · 클릭해서 완료 표시">
+          const isCustom = ex.id < 0;
+          return `<div class="hw-card${done ? " hw-card-done" : ""}${isCustom ? " hw-card-custom" : ""}" data-hw-card-id="${ex.id}" title="${escapeHtml(ex.cycle === "daily" ? "일일 교환" : "주간 교환")} · 클릭해서 완료 표시">
             ${done ? `<span class="hw-card-check">✓</span>` : ""}
             <div class="hw-icon-wrap">
               <img src="${iconPath(ex.food)}" alt="">
@@ -2535,7 +2549,7 @@
         const merchantDone = list.every(ex => hwIsCardDone(ex.id));
         const faceUrl = HW_NPC_FACES[npc];
         const faceHtml = faceUrl ? `<img class="npc-face hw-merchant-face" src="${assetUrl(faceUrl)}" alt="">` : `<span class="hw-merchant-face hw-merchant-face-fallback">${escapeHtml(npc.slice(0,1))}</span>`;
-        const mc = hwMerchantColor(npc);
+        const mc = hwMerchantColor(list.every(ex => ex.id < 0));
         return `<div class="hw-merchant${merchantDone ? " hw-merchant-done" : ""}" style="--hw-mc:${mc}">
           <div class="hw-merchant-head">
             ${faceHtml}
