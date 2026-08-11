@@ -2580,6 +2580,7 @@
     return pieces;
   };
   const hasObtainMethod = key => methodPieces(key).length > 0;
+  const hasObtainMethodOrBadge = key => hasObtainMethod(key) || !!hwGatherTypeOf(key);
   const methodDisplayHtml = key => {
     const pieces = methodPieces(key);
     return pieces.length ? `<div class="method-list">${pieces.join("")}</div>` : `<span class="muted">확인 필요</span>`;
@@ -3151,13 +3152,13 @@
     result.rawRows.forEach(row => {
       const key = producedKey(row.name);
       if(key === targetKey || rowsByKey.has(key)) return;
-      if(hasObtainMethod(key)){
+      if(hasObtainMethodOrBadge(key)){
         rowsByKey.set(key, {key, node:pickProducer(key), qty:row.qty, count:0, produced:row.qty});
       }
     });
     if(targetKey && !rowsByKey.has(targetKey)){
       const hasAltProducers = producers.has(targetKey) && producers.get(targetKey).length > 1;
-      if(hasAltProducers || hasObtainMethod(targetKey)){
+      if(hasAltProducers || hasObtainMethodOrBadge(targetKey)){
         rowsByKey.set(targetKey, {
           key:targetKey,
           node:result.tree.node || pickProducer(targetKey),
@@ -3167,7 +3168,7 @@
         });
       }
     }
-    const targetHighlighted = targetKey && hasObtainMethod(targetKey) && rowsByKey.has(targetKey);
+    const targetHighlighted = targetKey && hasObtainMethodOrBadge(targetKey) && rowsByKey.has(targetKey);
     return [...rowsByKey.values()].sort((a,b) => {
       const securedA = a.node ? state.direct.has(a.key) : isRawRowSecured({name:a.key, qty:a.qty, kind:"raw"});
       const securedB = b.node ? state.direct.has(b.key) : isRawRowSecured({name:b.key, qty:b.qty, kind:"raw"});
@@ -3188,7 +3189,7 @@
     rows.forEach(row => {
       const key = row.key;
       const tr = document.createElement("tr");
-      if(key === targetKey && hasObtainMethod(key)) tr.classList.add("alt-row-method");
+      if(key === targetKey && hasObtainMethodOrBadge(key)) tr.classList.add("alt-row-method");
       const list = producers.get(key) || [];
       const selected = pickProducer(key);
       const isRawKey = !list.length;
