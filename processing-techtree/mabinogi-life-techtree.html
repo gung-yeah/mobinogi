@@ -848,6 +848,17 @@
     text-align:center;
     white-space:nowrap;
   }
+  .hw-group-cell{
+    vertical-align:top;
+    background:rgba(255,255,255,.025);
+    border-right:1px solid var(--line);
+  }
+  tr.hw-group-start td{
+    border-top:1px solid var(--line-strong);
+  }
+  tr.hw-group-start:first-child td{
+    border-top:1px solid var(--line);
+  }
   .method-cell{
     min-width:320px;
     text-align:left;
@@ -1616,6 +1627,7 @@
           <table>
             <thead>
               <tr>
+                <th id="rawTableItemHeader" class="is-hidden">교환 아이템</th>
                 <th>재료</th>
                 <th class="num">필요 수량</th>
                 <th class="num">소유</th>
@@ -2119,22 +2131,25 @@
   function hwFoodNode(foodName){
     return NODES.find(n => n.name === foodName);
   }
-  function hwMaterialTotals(){
-    const totals = new Map();
+  function hwCraftGroups(){
+    const neededByFood = new Map();
     hwFilteredExchanges().forEach(ex => {
       const neededFood = ex.foodQty * hwCharCount(ex.id);
       if(neededFood <= 0) return;
-      const node = hwFoodNode(ex.food);
+      neededByFood.set(ex.food, (neededByFood.get(ex.food) || 0) + neededFood);
+    });
+    const groups = [...neededByFood.entries()].map(([food, neededFood]) => {
+      const node = hwFoodNode(food);
+      let materials;
       if(node && Array.isArray(node.materials) && node.materials.length){
         const batches = Math.ceil(neededFood / (node.yield || 1));
-        node.materials.forEach(mat => {
-          totals.set(mat.name, (totals.get(mat.name) || 0) + mat.qty * batches);
-        });
+        materials = node.materials.map(mat => ({name:mat.name, qty:mat.qty * batches}));
       } else {
-        totals.set(ex.food, (totals.get(ex.food) || 0) + neededFood);
+        materials = [{name:food, qty:neededFood}];
       }
+      return {food, materials};
     });
-    return totals;
+    return groups.sort((a, b) => a.food.localeCompare(b.food, "ko"));
   }
   function hwGetOwned(name){
     return state.hwOwned[name] ?? "";
@@ -2173,35 +2188,41 @@
   function renderHomeworkTotals(){
     const body = el("rawTable");
     if(!body) return;
-    const totals = hwMaterialTotals();
-    const rows = [...totals.entries()].sort((a, b) => {
-      const securedA = hwIsSecured(a[0]);
-      const securedB = hwIsSecured(b[0]);
-      if(securedA !== securedB) return securedA ? 1 : -1;
-      return b[1] - a[1];
+    const groups = hwCraftGroups();
+    const grandTotals = new Map();
+    groups.forEach(g => g.materials.forEach(m => grandTotals.set(m.name, (grandTotals.get(m.name) || 0) + m.qty)));
+    el("rawTotalBadge").textContent = groups.length + "종";
+    const rowsHtml = [];
+    groups.forEach(group => {
+      group.materials.forEach((mat, idx) => {
+        const owned = hwGetOwned(mat.name);
+        const ownedNumber = Math.max(0, Number(owned) || 0);
+        const secured = hwIsSecured(mat.name);
+        const shortage = secured ? 0 : Math.max(0, mat.qty - ownedNumber);
+        rowsHtml.push(`
+        <tr${idx === 0 ? ' class="hw-group-start"' : ""}>
+          ${idx === 0 ? `<td class="hw-group-cell" rowspan="${group.materials.length}">
+            <div class="material-cell">
+              <img src="${iconPath(group.food)}" alt="" onerror="this.remove()">
+              <span class="material-name">${escapeHtml(group.food)}</span>
+            </div>
+          </td>` : ""}
+          <td>
+            <div class="material-cell">
+              <img src="${iconPath(mat.name)}" alt="" onerror="this.remove()">
+              <span class="material-name">${escapeHtml(mat.name)}</span>
+            </div>
+          </td>
+          <td class="num">${formatNumber(mat.qty)}</td>
+          <td class="num"><input class="owned-input" data-hw-owned="${escapeHtml(mat.name)}" type="text" inputmode="numeric" pattern="[0-9]*" value="${owned}" aria-label="${escapeHtml(mat.name)} 소유 수량"></td>
+          <td class="num shortage-cell">${formatNumber(shortage)}</td>
+          <td class="state-cell"><button class="tag action hw-secure-btn ${secured ? "direct" : ""}" type="button" data-hw-material="${escapeHtml(mat.name)}">${secured ? "확보 완료" : "원재료 확보"}</button></td>
+          <td class="method-cell">${methodDisplayHtml(mat.name)}</td>
+        </tr>
+      `);
+      });
     });
-    el("rawTotalBadge").textContent = rows.length + "종";
-    body.innerHTML = rows.map(([name, qty]) => {
-      const owned = hwGetOwned(name);
-      const ownedNumber = Math.max(0, Number(owned) || 0);
-      const secured = hwIsSecured(name);
-      const shortage = secured ? 0 : Math.max(0, qty - ownedNumber);
-      return `
-      <tr>
-        <td>
-          <div class="material-cell">
-            <img src="${iconPath(name)}" alt="" onerror="this.remove()">
-            <span class="material-name">${escapeHtml(name)}</span>
-          </div>
-        </td>
-        <td class="num">${formatNumber(qty)}</td>
-        <td class="num"><input class="owned-input" data-hw-owned="${escapeHtml(name)}" type="text" inputmode="numeric" pattern="[0-9]*" value="${owned}" aria-label="${escapeHtml(name)} 소유 수량"></td>
-        <td class="num shortage-cell">${formatNumber(shortage)}</td>
-        <td class="state-cell"><button class="tag action hw-secure-btn ${secured ? "direct" : ""}" type="button" data-hw-material="${escapeHtml(name)}">${secured ? "확보 완료" : "원재료 확보"}</button></td>
-        <td class="method-cell">${hwFoodUsesHtml(name)}</td>
-      </tr>
-    `;
-    }).join("");
+    body.innerHTML = rowsHtml.join("") || `<tr><td colspan="7" class="empty">총 재료가 없습니다.</td></tr>`;
     body.querySelectorAll(".owned-input").forEach(input => {
       input.addEventListener("input", event => {
         const name = input.dataset.hwOwned;
@@ -2209,7 +2230,7 @@
         const selStart = event.target.selectionStart;
         hwSetOwned(name, digitsOnly === "" ? undefined : Math.max(0, parseInt(digitsOnly, 10) || 0));
         const ownedNumber = Math.max(0, Number(hwGetOwned(name)) || 0);
-        const total = totals.get(name) || 0;
+        const total = grandTotals.get(name) || 0;
         if(ownedNumber >= total && total > 0) state.hwSecured[name] = true;
         else delete state.hwSecured[name];
         savePersistedState();
@@ -2319,10 +2340,6 @@
       <img class="method-icon" src="${iconPath(ex.material)}" alt="">
       <span>${escapeHtml(ex.material)} ${ex.matQty}개 · ${cycleLabel}</span>
     </span>`;
-  }
-  function hwFoodUsesHtml(food){
-    const list = EXCHANGES.filter(ex => ex.food === food);
-    return `<div class="method-list">${list.map(ex => hwMethodChipHtml(ex)).join("")}</div>`;
   }
   function hwAltRowHtml(food, list){
     const secured = hwIsSecured(food);
@@ -3370,6 +3387,7 @@
     el("craftDetailSection").classList.toggle("hw-order", isHomework);
     el("stepPanel").classList.toggle("is-hidden", isHomework);
     el("resetAltBtn").classList.toggle("is-hidden", !isHomework);
+    el("rawTableItemHeader").classList.toggle("is-hidden", !isHomework);
     el("rawTableMethodHeader").classList.toggle("is-hidden", !isHomework);
     if(isHomework){
       renderHwVillageBadges();
