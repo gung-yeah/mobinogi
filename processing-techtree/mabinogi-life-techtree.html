@@ -566,11 +566,25 @@
   }
   .panel-head{
     display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:12px;
+    flex-direction:column;
+    align-items:stretch;
+    gap:10px;
     padding:14px 16px;
     border-bottom:1px solid var(--line);
+  }
+  .hw-day-badges{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+  }
+  .hw-day-chip{
+    min-height:28px;
+    padding:5px 9px;
+    font-size:11.5px;
+  }
+  .hw-day-chip[data-hw-day="weekly"],
+  .hw-day-chip[data-hw-day="alldaily"]{
+    font-weight:900;
   }
   .panel-actions{
     display:flex;
@@ -1744,6 +1758,17 @@
             <span class="badge" id="rawTotalBadge">0종</span>
             <button class="btn danger status-reset" id="resetRawBtn" type="button">상태 초기화</button>
           </div>
+          <div class="hw-day-badges is-hidden" id="hwDayBadges">
+            <button class="chip hw-day-chip" type="button" data-hw-day="weekly" aria-pressed="false">주간</button>
+            <button class="chip hw-day-chip" type="button" data-hw-day="alldaily" aria-pressed="false">일간</button>
+            <button class="chip hw-day-chip" type="button" data-hw-day="mon" aria-pressed="false">월</button>
+            <button class="chip hw-day-chip" type="button" data-hw-day="tue" aria-pressed="false">화</button>
+            <button class="chip hw-day-chip" type="button" data-hw-day="wed" aria-pressed="false">수</button>
+            <button class="chip hw-day-chip" type="button" data-hw-day="thu" aria-pressed="false">목</button>
+            <button class="chip hw-day-chip" type="button" data-hw-day="fri" aria-pressed="false">금</button>
+            <button class="chip hw-day-chip" type="button" data-hw-day="sat" aria-pressed="false">토</button>
+            <button class="chip hw-day-chip" type="button" data-hw-day="sun" aria-pressed="false">일</button>
+          </div>
         </div>
         <div class="panel-body table-wrap">
           <table>
@@ -1898,7 +1923,8 @@
     hwSelectedVillages:new Set(),
     hwCharNames:["","","","","",""],
     hwCustomExchanges:[],
-    hwCustomNextId:-1
+    hwCustomNextId:-1,
+    hwDaySel:new Set(["weekly","mon"])
   };
   const STORE_KEY = "mabinogi-life-techtree-v1";
   const isEmbedded = window.parent !== window;
@@ -1924,6 +1950,7 @@
     if(parsed.targetQtyById && typeof parsed.targetQtyById === "object") state.targetQtyById = parsed.targetQtyById;
     if(Array.isArray(parsed.hwCustomExchanges)) state.hwCustomExchanges = parsed.hwCustomExchanges;
     if(Number.isInteger(parsed.hwCustomNextId)) state.hwCustomNextId = parsed.hwCustomNextId;
+    if(Array.isArray(parsed.hwDaySel)) state.hwDaySel = new Set(parsed.hwDaySel);
   }
   (function loadPersistedState(){
     try {
@@ -1992,7 +2019,7 @@
     return map;
   }
   function savePersistedState(){
-    const payload = {owned:state.owned, direct:[...state.direct], favorites:[...state.favorites], rawOwned:state.rawOwned, rawDirect:serializeRawDirect(), homeworkChecks:state.homeworkChecks, hwOwned:state.hwOwned, hwOwnedPreSecure:state.hwOwnedPreSecure, hwSecured:state.hwSecured, hwCardDone:state.hwCardDone, targetQtyById:state.targetQtyById, hwCharNames:state.hwCharNames, hwCustomExchanges:state.hwCustomExchanges, hwCustomNextId:state.hwCustomNextId};
+    const payload = {owned:state.owned, direct:[...state.direct], favorites:[...state.favorites], rawOwned:state.rawOwned, rawDirect:serializeRawDirect(), homeworkChecks:state.homeworkChecks, hwOwned:state.hwOwned, hwOwnedPreSecure:state.hwOwnedPreSecure, hwSecured:state.hwSecured, hwCardDone:state.hwCardDone, targetQtyById:state.targetQtyById, hwCharNames:state.hwCharNames, hwCustomExchanges:state.hwCustomExchanges, hwCustomNextId:state.hwCustomNextId, hwDaySel:[...state.hwDaySel]};
     try {
       localStorage.setItem(STORE_KEY, JSON.stringify(payload));
     } catch(error) {}
@@ -2266,9 +2293,15 @@
     const aliasList = producers.get(producedKey(foodName));
     return aliasList && aliasList[0];
   }
+  const HW_DAY_KEYS = ["mon","tue","wed","thu","fri","sat","sun"];
+  function hwDayFactor(cycle){
+    if(cycle === "weekly") return state.hwDaySel.has("weekly") ? 1 : 0;
+    if(cycle === "daily") return HW_DAY_KEYS.filter(d => state.hwDaySel.has(d)).length;
+    return 1;
+  }
   function hwCraftGroups(){
     const groups = hwFilteredExchanges().map(ex => {
-      const neededFood = ex.foodQty * hwCharCount(ex.id);
+      const neededFood = ex.foodQty * hwCharCount(ex.id) * hwDayFactor(ex.cycle);
       if(neededFood <= 0) return null;
       const node = hwFoodNode(ex.food);
       let materials;
@@ -2359,44 +2392,14 @@
     if(node && Array.isArray(node.materials) && node.materials.length) return node.materials.map(m => m.name);
     return [food];
   }
-  function hwFoodsUsingMaterial(name){
-    const foods = new Set();
-    hwAllExchanges().forEach(ex => { if(hwCraftMaterialNamesFor(ex.food).includes(name)) foods.add(ex.food); });
-    return [...foods];
-  }
   function hwExchangesForFood(food){
     return hwAllExchanges().filter(ex => ex.food === food);
-  }
-  function hwCardsAutoDoneCheck(food){
-    const exchanges = hwExchangesForFood(food);
-    if(exchanges.length !== 1) return;
-    const names = hwCraftMaterialNamesFor(food);
-    if(!names.every(n => hwIsSecured(n))) return;
-    const ex = exchanges[0];
-    if(!hwIsCardDone(ex.id)){
-      state.hwCardDone[ex.id] = true;
-      hwSyncMaterialSecured(ex.material);
-      hwSyncFoodSecured(ex.food);
-    }
-  }
-  function hwCardsAutoUndoneCheck(food){
-    const exchanges = hwExchangesForFood(food);
-    if(exchanges.length !== 1) return;
-    const names = hwCraftMaterialNamesFor(food);
-    if(names.every(n => hwIsSecured(n))) return;
-    const ex = exchanges[0];
-    if(hwIsCardDone(ex.id)){
-      delete state.hwCardDone[ex.id];
-      hwSyncMaterialSecured(ex.material);
-      hwSyncFoodSecured(ex.food);
-    }
   }
   function hwSecureMaterial(name, qty){
     if(state.hwSecured[name]) return;
     state.hwOwnedPreSecure[name] = state.hwOwned[name];
     state.hwOwned[name] = qty;
     state.hwSecured[name] = true;
-    hwFoodsUsingMaterial(name).forEach(hwCardsAutoDoneCheck);
   }
   function hwUnsecureMaterial(name){
     if(!state.hwSecured[name]) return;
@@ -2409,7 +2412,6 @@
     } else {
       delete state.hwOwned[name];
     }
-    hwFoodsUsingMaterial(name).forEach(hwCardsAutoUndoneCheck);
   }
   function hwToggleMaterialSecured(name, qty){
     if(state.hwSecured[name]) hwUnsecureMaterial(name);
@@ -2493,10 +2495,8 @@
         const total = grandTotals.get(name) || 0;
         if(ownedNumber >= total && total > 0){
           state.hwSecured[name] = true;
-          hwFoodsUsingMaterial(name).forEach(hwCardsAutoDoneCheck);
         } else {
           delete state.hwSecured[name];
-          hwFoodsUsingMaterial(name).forEach(hwCardsAutoUndoneCheck);
         }
         savePersistedState();
         renderHomeworkTotals();
@@ -2513,6 +2513,30 @@
     body.querySelectorAll(".hw-secure-btn").forEach(btn => {
       btn.addEventListener("click", () => hwToggleMaterialSecured(btn.dataset.hwMaterial, grandTotals.get(btn.dataset.hwMaterial) || 0));
     });
+  }
+  function renderHwDayBadges(){
+    const box = el("hwDayBadges");
+    if(!box) return;
+    const allDaysSelected = HW_DAY_KEYS.every(d => state.hwDaySel.has(d));
+    box.querySelectorAll(".hw-day-chip").forEach(btn => {
+      const key = btn.dataset.hwDay;
+      const active = key === "alldaily" ? allDaysSelected : state.hwDaySel.has(key);
+      btn.setAttribute("aria-pressed", String(active));
+    });
+  }
+  function hwToggleDayBadge(key){
+    if(key === "alldaily"){
+      const allDaysSelected = HW_DAY_KEYS.every(d => state.hwDaySel.has(d));
+      if(allDaysSelected) HW_DAY_KEYS.forEach(d => state.hwDaySel.delete(d));
+      else HW_DAY_KEYS.forEach(d => state.hwDaySel.add(d));
+    } else if(state.hwDaySel.has(key)){
+      state.hwDaySel.delete(key);
+    } else {
+      state.hwDaySel.add(key);
+    }
+    renderHwDayBadges();
+    renderHomeworkTotals();
+    savePersistedState();
   }
   function renderHomeworkBoard(){
     const box = el("homeworkBoard");
@@ -3653,12 +3677,14 @@
     el("resetAltBtn").classList.toggle("is-hidden", !isHomework);
     el("rawTableItemHeader").classList.toggle("is-hidden", !isHomework);
     el("rawTableMethodHeader").classList.toggle("is-hidden", !isHomework);
+    el("hwDayBadges").classList.toggle("is-hidden", !isHomework);
     if(isHomework){
       renderHwVillageBadges();
       renderHwCharNames();
       renderHwBulkChars();
       renderHwAddVillageOptions();
       renderHwCustomList();
+      renderHwDayBadges();
       renderHomeworkSidebar();
       renderHomeworkBoard();
       renderHomeworkTotals();
@@ -3711,6 +3737,9 @@
     else resetSecuredState();
   });
   el("resetAltBtn").addEventListener("click", resetHomeworkChecks);
+  el("hwDayBadges").querySelectorAll(".hw-day-chip").forEach(btn => {
+    btn.addEventListener("click", () => hwToggleDayBadge(btn.dataset.hwDay));
+  });
   function renderHwCharNames(){
     const box = el("hwCharNames");
     if(!box) return;
