@@ -898,9 +898,10 @@
     color:var(--accent-2);
   }
   .hw-facility-chip{
-    border-color:rgba(143,180,217,.4);
-    background:rgba(143,180,217,.1);
-    color:#bcd7f5;
+    border-color:#5b9bd8;
+    background:rgba(91,155,216,.3);
+    color:#eef7ff;
+    font-weight:900;
   }
   .hw-gather-chip{
     border-color:rgba(122,196,140,.4);
@@ -1178,7 +1179,7 @@
     background:var(--panel);
     color:var(--muted);
     font-size:8.5px;
-    font-weight:900;
+    font-weight:600;
     line-height:1;
     cursor:pointer;
     opacity:.55;
@@ -2232,11 +2233,34 @@
   function hwIsSecured(name){
     return !!state.hwSecured[name];
   }
+  function hwCraftMaterialNamesFor(food){
+    const node = hwFoodNode(food);
+    if(node && Array.isArray(node.materials) && node.materials.length) return node.materials.map(m => m.name);
+    return [food];
+  }
+  function hwFoodsUsingMaterial(name){
+    const foods = new Set();
+    EXCHANGES.forEach(ex => { if(hwCraftMaterialNamesFor(ex.food).includes(name)) foods.add(ex.food); });
+    return [...foods];
+  }
+  function hwCardsAutoDoneCheck(food){
+    const names = hwCraftMaterialNamesFor(food);
+    if(!names.every(n => hwIsSecured(n))) return;
+    EXCHANGES.filter(ex => ex.food === food).forEach(ex => {
+      if(!hwIsCardDone(ex.id)){
+        state.hwCardDone[ex.id] = true;
+        hwSyncMaterialSecured(ex.material);
+        hwSyncFoodSecured(ex.food);
+      }
+    });
+  }
   function hwToggleSecured(name){
     if(state.hwSecured[name]) delete state.hwSecured[name];
     else state.hwSecured[name] = true;
+    if(state.hwSecured[name]) hwFoodsUsingMaterial(name).forEach(hwCardsAutoDoneCheck);
     renderHomeworkTotals();
     renderHomeworkAlt();
+    renderHomeworkBoard();
     savePersistedState();
   }
   function hwIsCardDone(id){
@@ -2302,11 +2326,16 @@
         hwSetOwned(name, digitsOnly === "" ? undefined : Math.max(0, parseInt(digitsOnly, 10) || 0));
         const ownedNumber = Math.max(0, Number(hwGetOwned(name)) || 0);
         const total = grandTotals.get(name) || 0;
-        if(ownedNumber >= total && total > 0) state.hwSecured[name] = true;
-        else delete state.hwSecured[name];
+        if(ownedNumber >= total && total > 0){
+          state.hwSecured[name] = true;
+          hwFoodsUsingMaterial(name).forEach(hwCardsAutoDoneCheck);
+        } else {
+          delete state.hwSecured[name];
+        }
         savePersistedState();
         renderHomeworkTotals();
         renderHomeworkAlt();
+        renderHomeworkBoard();
         const restored = document.querySelector(`.owned-input[data-hw-owned="${name.replace(/"/g, '\\"')}"]`);
         if(restored){
           restored.focus();
