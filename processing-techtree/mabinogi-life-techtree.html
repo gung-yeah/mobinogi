@@ -766,6 +766,10 @@
     letter-spacing:.02em;
     text-align:center;
   }
+  #rawPanel thead th,
+  #altPanel thead th{
+    text-align:center;
+  }
   td.num{
     text-align:right;
     font-variant-numeric:tabular-nums;
@@ -1785,6 +1789,7 @@
     choices:{},
     homeworkChecks:{},
     hwOwned:{},
+    hwOwnedPreSecure:{},
     hwSecured:{},
     hwCardDone:{},
     hwSelectedVillages:new Set(),
@@ -1807,6 +1812,7 @@
     }
     if(parsed.homeworkChecks && typeof parsed.homeworkChecks === "object") state.homeworkChecks = parsed.homeworkChecks;
     if(parsed.hwOwned && typeof parsed.hwOwned === "object") state.hwOwned = parsed.hwOwned;
+    if(parsed.hwOwnedPreSecure && typeof parsed.hwOwnedPreSecure === "object") state.hwOwnedPreSecure = parsed.hwOwnedPreSecure;
     if(parsed.hwSecured && typeof parsed.hwSecured === "object") state.hwSecured = parsed.hwSecured;
     if(parsed.hwCardDone && typeof parsed.hwCardDone === "object") state.hwCardDone = parsed.hwCardDone;
     if(Array.isArray(parsed.hwCharNames) && parsed.hwCharNames.length === 6) state.hwCharNames = parsed.hwCharNames;
@@ -1879,7 +1885,7 @@
     return map;
   }
   function savePersistedState(){
-    const payload = {owned:state.owned, direct:[...state.direct], favorites:[...state.favorites], rawOwned:state.rawOwned, rawDirect:serializeRawDirect(), homeworkChecks:state.homeworkChecks, hwOwned:state.hwOwned, hwSecured:state.hwSecured, hwCardDone:state.hwCardDone, targetQtyById:state.targetQtyById, hwCharNames:state.hwCharNames};
+    const payload = {owned:state.owned, direct:[...state.direct], favorites:[...state.favorites], rawOwned:state.rawOwned, rawDirect:serializeRawDirect(), homeworkChecks:state.homeworkChecks, hwOwned:state.hwOwned, hwOwnedPreSecure:state.hwOwnedPreSecure, hwSecured:state.hwSecured, hwCardDone:state.hwCardDone, targetQtyById:state.targetQtyById, hwCharNames:state.hwCharNames};
     try {
       localStorage.setItem(STORE_KEY, JSON.stringify(payload));
     } catch(error) {}
@@ -2144,7 +2150,10 @@
     });
   }
   function hwFoodNode(foodName){
-    return NODES.find(n => n.name === foodName);
+    const direct = NODES.find(n => n.name === foodName);
+    if(direct) return direct;
+    const aliasList = producers.get(producedKey(foodName));
+    return aliasList && aliasList[0];
   }
   function hwCraftGroups(){
     const neededByFood = new Map();
@@ -2254,10 +2263,44 @@
       }
     });
   }
+  function hwCardsAutoUndoneCheck(food){
+    const names = hwCraftMaterialNamesFor(food);
+    if(names.every(n => hwIsSecured(n))) return;
+    EXCHANGES.filter(ex => ex.food === food).forEach(ex => {
+      if(hwIsCardDone(ex.id)){
+        delete state.hwCardDone[ex.id];
+        hwSyncMaterialSecured(ex.material);
+        hwSyncFoodSecured(ex.food);
+      }
+    });
+  }
   function hwToggleSecured(name){
     if(state.hwSecured[name]) delete state.hwSecured[name];
     else state.hwSecured[name] = true;
     if(state.hwSecured[name]) hwFoodsUsingMaterial(name).forEach(hwCardsAutoDoneCheck);
+    renderHomeworkTotals();
+    renderHomeworkAlt();
+    renderHomeworkBoard();
+    savePersistedState();
+  }
+  function hwToggleMaterialSecured(name, qty){
+    if(state.hwSecured[name]){
+      delete state.hwSecured[name];
+      if(Object.prototype.hasOwnProperty.call(state.hwOwnedPreSecure, name)){
+        const restored = state.hwOwnedPreSecure[name];
+        if(restored === undefined || restored === "") delete state.hwOwned[name];
+        else state.hwOwned[name] = restored;
+        delete state.hwOwnedPreSecure[name];
+      } else {
+        delete state.hwOwned[name];
+      }
+      hwFoodsUsingMaterial(name).forEach(hwCardsAutoUndoneCheck);
+    } else {
+      state.hwOwnedPreSecure[name] = state.hwOwned[name];
+      state.hwOwned[name] = qty;
+      state.hwSecured[name] = true;
+      hwFoodsUsingMaterial(name).forEach(hwCardsAutoDoneCheck);
+    }
     renderHomeworkTotals();
     renderHomeworkAlt();
     renderHomeworkBoard();
@@ -2331,6 +2374,7 @@
           hwFoodsUsingMaterial(name).forEach(hwCardsAutoDoneCheck);
         } else {
           delete state.hwSecured[name];
+          hwFoodsUsingMaterial(name).forEach(hwCardsAutoUndoneCheck);
         }
         savePersistedState();
         renderHomeworkTotals();
@@ -2345,7 +2389,7 @@
       });
     });
     body.querySelectorAll(".hw-secure-btn").forEach(btn => {
-      btn.addEventListener("click", () => hwToggleSecured(btn.dataset.hwMaterial));
+      btn.addEventListener("click", () => hwToggleMaterialSecured(btn.dataset.hwMaterial, grandTotals.get(btn.dataset.hwMaterial) || 0));
     });
   }
   function renderHomeworkBoard(){
@@ -3162,7 +3206,7 @@
           ` : ""}
         </td>
         <td class="state-cell"><button class="tag action ${isDirect ? "direct" : ""}" type="button">${isDirect ? "확보 완료" : "원재료 확보"}</button></td>
-        <td class="method-cell">${methodDisplayHtml(key)}</td>
+        <td class="method-cell">${hwObtainMethodHtml(key)}</td>
       `;
       const choice = tr.querySelector(".alt-choice");
       if(choice){
