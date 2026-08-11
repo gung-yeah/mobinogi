@@ -2282,15 +2282,6 @@
       }
     });
   }
-  function hwToggleSecured(name){
-    if(state.hwSecured[name]) delete state.hwSecured[name];
-    else state.hwSecured[name] = true;
-    if(state.hwSecured[name]) hwFoodsUsingMaterial(name).forEach(hwCardsAutoDoneCheck);
-    renderHomeworkTotals();
-    renderHomeworkAlt();
-    renderHomeworkBoard();
-    savePersistedState();
-  }
   function hwSecureMaterial(name, qty){
     if(state.hwSecured[name]) return;
     state.hwOwnedPreSecure[name] = state.hwOwned[name];
@@ -2504,6 +2495,13 @@
       <span>${escapeHtml(ex.material)} ${ex.matQty}개 · ${cycleLabel}</span>
     </span>`;
   }
+  function hwToggleFoodSecured(food){
+    hwApplyMaterialsForCard(food, !hwIsSecured(food));
+    renderHomeworkTotals();
+    renderHomeworkAlt();
+    renderHomeworkBoard();
+    savePersistedState();
+  }
   function hwAltRowHtml(food, list){
     const secured = hwIsSecured(food);
     const chips = list.map(ex => hwMethodChipHtml(ex)).join("");
@@ -2538,7 +2536,7 @@
     bodyA.innerHTML = rows.map(([food, list]) => hwAltRowHtml(food, list)).join("");
     [bodyA].forEach(body => {
       body.querySelectorAll(".hw-secure-btn").forEach(btn => {
-        btn.addEventListener("click", () => hwToggleSecured(btn.dataset.hwMaterial));
+        btn.addEventListener("click", () => hwToggleFoodSecured(btn.dataset.hwMaterial));
       });
     });
   }
