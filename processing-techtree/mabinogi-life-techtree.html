@@ -3807,8 +3807,8 @@
     }
     box.innerHTML = state.hwCustomExchanges.map(ex => `
       <div class="hw-custom-item">
-        <span class="hw-custom-item-text"><b>${escapeHtml(ex.food)}</b> ${ex.foodQty}개 → <b>${escapeHtml(ex.material)}</b> ${ex.matQty}개 · ${escapeHtml(ex.npc)}(${escapeHtml(ex.village)}) · ${ex.cycle === "daily" ? "일일" : "주간"}</span>
         <button class="hw-custom-delete" type="button" data-hw-custom-id="${ex.id}">삭제</button>
+        <span class="hw-custom-item-text"><b>${escapeHtml(ex.food)}</b> ${ex.foodQty}개 → <b>${escapeHtml(ex.material)}</b> ${ex.matQty}개 · ${escapeHtml(ex.npc)}(${escapeHtml(ex.village)}) · ${ex.cycle === "daily" ? "일일" : "주간"}</span>
       </div>
     `).join("");
     box.querySelectorAll(".hw-custom-delete").forEach(btn => {
