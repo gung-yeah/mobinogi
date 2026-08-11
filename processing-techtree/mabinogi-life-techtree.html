@@ -1221,6 +1221,69 @@
   }
   .hw-cycle-daily{color:var(--accent-2)}
   .hw-cycle-weekly{color:var(--blue)}
+  .hw-add-form{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+  .hw-add-select,
+  .hw-add-input{
+    width:100%;
+    height:32px;
+    padding:0 8px;
+    border-radius:7px;
+    border:1px solid var(--line);
+    background:var(--panel);
+    color:var(--ink);
+    font-size:12px;
+    outline:none;
+  }
+  .hw-add-input::placeholder{color:var(--muted)}
+  .hw-add-row2{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) 76px;
+    gap:8px;
+  }
+  .hw-add-submit{
+    width:100%;
+  }
+  .hw-custom-list{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    margin-top:10px;
+  }
+  .hw-custom-item{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:6px 8px;
+    border-radius:8px;
+    border:1px solid var(--line);
+    background:var(--panel);
+    font-size:11.5px;
+  }
+  .hw-custom-item-text{
+    flex:1 1 auto;
+    min-width:0;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    color:var(--soft);
+  }
+  .hw-custom-item-text b{color:var(--ink)}
+  .hw-custom-delete{
+    flex:0 0 auto;
+    min-height:26px;
+    padding:2px 9px;
+    border-radius:999px;
+    border:1px solid rgba(242,124,124,.4);
+    background:rgba(242,124,124,.1);
+    color:var(--danger);
+    font-size:11px;
+    font-weight:800;
+    cursor:pointer;
+  }
   .homework-board{
     position:absolute;
     inset:0;
@@ -1584,6 +1647,30 @@
           <button class="btn danger hw-reset-btn" id="hwResetAllBtn" type="button">전체 초기화</button>
         </div>
       </div>
+      <div class="control-block">
+        <div class="label"><span>교환 추가</span></div>
+        <div class="hw-add-form">
+          <select class="hw-add-select" id="hwAddVillage"></select>
+          <div class="hw-add-row2">
+            <input class="hw-add-input" id="hwAddNpc" type="text" placeholder="상인 이름" maxlength="12">
+            <input class="hw-add-input" id="hwAddPlace" type="text" placeholder="장소" maxlength="12">
+          </div>
+          <div class="hw-add-row2">
+            <input class="hw-add-input" id="hwAddFood" type="text" placeholder="음식 이름" maxlength="14">
+            <input class="hw-add-input hw-add-qty" id="hwAddFoodQty" type="text" inputmode="numeric" pattern="[0-9]*" placeholder="수량">
+          </div>
+          <div class="hw-add-row2">
+            <input class="hw-add-input" id="hwAddMaterial" type="text" placeholder="재료 이름" maxlength="14">
+            <input class="hw-add-input hw-add-qty" id="hwAddMaterialQty" type="text" inputmode="numeric" pattern="[0-9]*" placeholder="수량">
+          </div>
+          <div class="segmented" id="hwAddCycle">
+            <button class="chip" data-cycle="daily" type="button" aria-pressed="true">일일</button>
+            <button class="chip" data-cycle="weekly" type="button" aria-pressed="false">주간</button>
+          </div>
+          <button class="btn hw-add-submit" id="hwAddSubmitBtn" type="button">교환 추가</button>
+        </div>
+        <div class="hw-custom-list" id="hwCustomList"></div>
+      </div>
       <div id="homeworkSidebarTable"></div>
     </div>
   </aside>
@@ -1796,7 +1883,9 @@
     hwSecured:{},
     hwCardDone:{},
     hwSelectedVillages:new Set(),
-    hwCharNames:["","","","","",""]
+    hwCharNames:["","","","","",""],
+    hwCustomExchanges:[],
+    hwCustomNextId:-1
   };
   const STORE_KEY = "mabinogi-life-techtree-v1";
   const isEmbedded = window.parent !== window;
@@ -1820,6 +1909,8 @@
     if(parsed.hwCardDone && typeof parsed.hwCardDone === "object") state.hwCardDone = parsed.hwCardDone;
     if(Array.isArray(parsed.hwCharNames) && parsed.hwCharNames.length === 6) state.hwCharNames = parsed.hwCharNames;
     if(parsed.targetQtyById && typeof parsed.targetQtyById === "object") state.targetQtyById = parsed.targetQtyById;
+    if(Array.isArray(parsed.hwCustomExchanges)) state.hwCustomExchanges = parsed.hwCustomExchanges;
+    if(Number.isInteger(parsed.hwCustomNextId)) state.hwCustomNextId = parsed.hwCustomNextId;
   }
   (function loadPersistedState(){
     try {
@@ -1888,7 +1979,7 @@
     return map;
   }
   function savePersistedState(){
-    const payload = {owned:state.owned, direct:[...state.direct], favorites:[...state.favorites], rawOwned:state.rawOwned, rawDirect:serializeRawDirect(), homeworkChecks:state.homeworkChecks, hwOwned:state.hwOwned, hwOwnedPreSecure:state.hwOwnedPreSecure, hwSecured:state.hwSecured, hwCardDone:state.hwCardDone, targetQtyById:state.targetQtyById, hwCharNames:state.hwCharNames};
+    const payload = {owned:state.owned, direct:[...state.direct], favorites:[...state.favorites], rawOwned:state.rawOwned, rawDirect:serializeRawDirect(), homeworkChecks:state.homeworkChecks, hwOwned:state.hwOwned, hwOwnedPreSecure:state.hwOwnedPreSecure, hwSecured:state.hwSecured, hwCardDone:state.hwCardDone, targetQtyById:state.targetQtyById, hwCharNames:state.hwCharNames, hwCustomExchanges:state.hwCustomExchanges, hwCustomNextId:state.hwCustomNextId};
     try {
       localStorage.setItem(STORE_KEY, JSON.stringify(payload));
     } catch(error) {}
@@ -2067,8 +2158,12 @@
     if(!url) return "";
     return String(url).startsWith("/assets/") ? "https://mabimobi.life" + url : String(url);
   };
+  function hwAllExchanges(){
+    return state.hwCustomExchanges.length ? EXCHANGES.concat(state.hwCustomExchanges) : EXCHANGES;
+  }
   function hwFilteredExchanges(){
-    return state.hwSelectedVillages.size ? EXCHANGES.filter(ex => state.hwSelectedVillages.has(ex.village)) : EXCHANGES;
+    const all = hwAllExchanges();
+    return state.hwSelectedVillages.size ? all.filter(ex => state.hwSelectedVillages.has(ex.village)) : all;
   }
   function renderHwVillageBadges(){
     const box = el("hwVillageBadges");
@@ -2257,13 +2352,13 @@
   }
   function hwFoodsUsingMaterial(name){
     const foods = new Set();
-    EXCHANGES.forEach(ex => { if(hwCraftMaterialNamesFor(ex.food).includes(name)) foods.add(ex.food); });
+    hwAllExchanges().forEach(ex => { if(hwCraftMaterialNamesFor(ex.food).includes(name)) foods.add(ex.food); });
     return [...foods];
   }
   function hwCardsAutoDoneCheck(food){
     const names = hwCraftMaterialNamesFor(food);
     if(!names.every(n => hwIsSecured(n))) return;
-    EXCHANGES.filter(ex => ex.food === food).forEach(ex => {
+    hwAllExchanges().filter(ex => ex.food === food).forEach(ex => {
       if(!hwIsCardDone(ex.id)){
         state.hwCardDone[ex.id] = true;
         hwSyncMaterialSecured(ex.material);
@@ -2274,7 +2369,7 @@
   function hwCardsAutoUndoneCheck(food){
     const names = hwCraftMaterialNamesFor(food);
     if(names.every(n => hwIsSecured(n))) return;
-    EXCHANGES.filter(ex => ex.food === food).forEach(ex => {
+    hwAllExchanges().filter(ex => ex.food === food).forEach(ex => {
       if(hwIsCardDone(ex.id)){
         delete state.hwCardDone[ex.id];
         hwSyncMaterialSecured(ex.material);
@@ -2324,12 +2419,12 @@
     else state.hwCardDone[id] = true;
   }
   function hwSyncMaterialSecured(material){
-    const anyDone = EXCHANGES.filter(ex => ex.material === material).some(ex => hwIsCardDone(ex.id));
+    const anyDone = hwAllExchanges().filter(ex => ex.material === material).some(ex => hwIsCardDone(ex.id));
     if(anyDone) state.hwSecured[material] = true;
     else delete state.hwSecured[material];
   }
   function hwSyncFoodSecured(food){
-    const anyDone = EXCHANGES.filter(ex => ex.food === food).some(ex => hwIsCardDone(ex.id));
+    const anyDone = hwAllExchanges().filter(ex => ex.food === food).some(ex => hwIsCardDone(ex.id));
     if(anyDone) state.hwSecured[food] = true;
     else delete state.hwSecured[food];
   }
@@ -2471,11 +2566,11 @@
       cardEl.addEventListener("click", () => {
         const id = Number(cardEl.dataset.hwCardId);
         hwToggleCardDone(id);
-        const ex = EXCHANGES.find(item => item.id === id);
+        const ex = hwAllExchanges().find(item => item.id === id);
         if(ex){
+          hwApplyMaterialsForCard(ex.food, hwIsCardDone(id));
           hwSyncMaterialSecured(ex.material);
           hwSyncFoodSecured(ex.food);
-          hwApplyMaterialsForCard(ex.food, hwIsCardDone(id));
         }
         renderHomeworkBoard();
         renderHomeworkTotals();
@@ -3555,6 +3650,8 @@
       renderHwVillageBadges();
       renderHwCharNames();
       renderHwBulkChars();
+      renderHwAddVillageOptions();
+      renderHwCustomList();
       renderHomeworkSidebar();
       renderHomeworkBoard();
       renderHomeworkTotals();
@@ -3587,7 +3684,7 @@
   function hwResetByCycle(cycle){
     const affectedFoods = new Set();
     const affectedMaterials = new Set();
-    EXCHANGES.forEach(ex => {
+    hwAllExchanges().forEach(ex => {
       if(ex.cycle === cycle && state.hwCardDone[ex.id]){
         delete state.hwCardDone[ex.id];
         affectedFoods.add(ex.food);
@@ -3648,6 +3745,83 @@
         renderHwBulkChars();
         savePersistedState();
       });
+    });
+  }
+  function renderHwAddVillageOptions(){
+    const select = el("hwAddVillage");
+    if(!select || select.options.length) return;
+    select.innerHTML = HW_VILLAGES.map(v => `<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join("");
+  }
+  let hwAddCycleValue = "daily";
+  const hwAddCycleBox = el("hwAddCycle");
+  if(hwAddCycleBox){
+    hwAddCycleBox.querySelectorAll("[data-cycle]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        hwAddCycleValue = btn.dataset.cycle;
+        hwAddCycleBox.querySelectorAll("[data-cycle]").forEach(b => b.setAttribute("aria-pressed", String(b === btn)));
+      });
+    });
+  }
+  function renderHwCustomList(){
+    const box = el("hwCustomList");
+    if(!box) return;
+    if(!state.hwCustomExchanges.length){
+      box.innerHTML = "";
+      return;
+    }
+    box.innerHTML = state.hwCustomExchanges.map(ex => `
+      <div class="hw-custom-item">
+        <span class="hw-custom-item-text"><b>${escapeHtml(ex.food)}</b> ${ex.foodQty}개 → <b>${escapeHtml(ex.material)}</b> ${ex.matQty}개 · ${escapeHtml(ex.npc)}(${escapeHtml(ex.village)}) · ${ex.cycle === "daily" ? "일일" : "주간"}</span>
+        <button class="hw-custom-delete" type="button" data-hw-custom-id="${ex.id}">삭제</button>
+      </div>
+    `).join("");
+    box.querySelectorAll(".hw-custom-delete").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const id = Number(btn.dataset.hwCustomId);
+        state.hwCustomExchanges = state.hwCustomExchanges.filter(ex => ex.id !== id);
+        delete state.homeworkChecks[id];
+        delete state.hwCardDone[id];
+        renderHwCustomList();
+        renderHomeworkSidebar();
+        renderHomeworkBoard();
+        renderHomeworkTotals();
+        renderHomeworkAlt();
+        renderHwBulkChars();
+        savePersistedState();
+      });
+    });
+  }
+  const hwAddSubmitBtn = el("hwAddSubmitBtn");
+  if(hwAddSubmitBtn){
+    hwAddSubmitBtn.addEventListener("click", () => {
+      const village = el("hwAddVillage").value;
+      const npc = el("hwAddNpc").value.trim();
+      const place = el("hwAddPlace").value.trim();
+      const food = el("hwAddFood").value.trim();
+      const material = el("hwAddMaterial").value.trim();
+      const foodQty = Math.max(1, parseInt(el("hwAddFoodQty").value, 10) || 0);
+      const matQty = Math.max(1, parseInt(el("hwAddMaterialQty").value, 10) || 0);
+      if(!npc || !place || !food || !material || !foodQty || !matQty){
+        toast("모든 항목을 입력해주세요.");
+        return;
+      }
+      const id = state.hwCustomNextId;
+      state.hwCustomNextId -= 1;
+      state.hwCustomExchanges.push({id, food, foodQty, material, matQty, cycle:hwAddCycleValue, npc, place, village});
+      el("hwAddNpc").value = "";
+      el("hwAddPlace").value = "";
+      el("hwAddFood").value = "";
+      el("hwAddMaterial").value = "";
+      el("hwAddFoodQty").value = "";
+      el("hwAddMaterialQty").value = "";
+      renderHwCustomList();
+      renderHomeworkSidebar();
+      renderHomeworkBoard();
+      renderHomeworkTotals();
+      renderHomeworkAlt();
+      renderHwBulkChars();
+      savePersistedState();
+      toast("교환을 추가했습니다.");
     });
   }
   el("hwResetDailyBtn").addEventListener("click", () => hwResetByCycle("daily"));
