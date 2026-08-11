@@ -2267,24 +2267,20 @@
     return aliasList && aliasList[0];
   }
   function hwCraftGroups(){
-    const neededByFood = new Map();
-    hwFilteredExchanges().forEach(ex => {
+    const groups = hwFilteredExchanges().map(ex => {
       const neededFood = ex.foodQty * hwCharCount(ex.id);
-      if(neededFood <= 0) return;
-      neededByFood.set(ex.food, (neededByFood.get(ex.food) || 0) + neededFood);
-    });
-    const groups = [...neededByFood.entries()].map(([food, neededFood]) => {
-      const node = hwFoodNode(food);
+      if(neededFood <= 0) return null;
+      const node = hwFoodNode(ex.food);
       let materials;
       if(node && Array.isArray(node.materials) && node.materials.length){
         const batches = Math.ceil(neededFood / (node.yield || 1));
         materials = node.materials.map(mat => ({name:mat.name, qty:mat.qty * batches}));
       } else {
-        materials = [{name:food, qty:neededFood}];
+        materials = [{name:ex.food, qty:neededFood}];
       }
-      return {food, materials};
-    });
-    return groups.sort((a, b) => a.food.localeCompare(b.food, "ko"));
+      return {exId:ex.id, food:ex.food, materials};
+    }).filter(Boolean);
+    return groups.sort((a, b) => a.food.localeCompare(b.food, "ko") || a.exId - b.exId);
   }
   function hwGrandTotals(){
     const totals = new Map();
@@ -2368,27 +2364,32 @@
     hwAllExchanges().forEach(ex => { if(hwCraftMaterialNamesFor(ex.food).includes(name)) foods.add(ex.food); });
     return [...foods];
   }
+  function hwExchangesForFood(food){
+    return hwAllExchanges().filter(ex => ex.food === food);
+  }
   function hwCardsAutoDoneCheck(food){
+    const exchanges = hwExchangesForFood(food);
+    if(exchanges.length !== 1) return;
     const names = hwCraftMaterialNamesFor(food);
     if(!names.every(n => hwIsSecured(n))) return;
-    hwAllExchanges().filter(ex => ex.food === food).forEach(ex => {
-      if(!hwIsCardDone(ex.id)){
-        state.hwCardDone[ex.id] = true;
-        hwSyncMaterialSecured(ex.material);
-        hwSyncFoodSecured(ex.food);
-      }
-    });
+    const ex = exchanges[0];
+    if(!hwIsCardDone(ex.id)){
+      state.hwCardDone[ex.id] = true;
+      hwSyncMaterialSecured(ex.material);
+      hwSyncFoodSecured(ex.food);
+    }
   }
   function hwCardsAutoUndoneCheck(food){
+    const exchanges = hwExchangesForFood(food);
+    if(exchanges.length !== 1) return;
     const names = hwCraftMaterialNamesFor(food);
     if(names.every(n => hwIsSecured(n))) return;
-    hwAllExchanges().filter(ex => ex.food === food).forEach(ex => {
-      if(hwIsCardDone(ex.id)){
-        delete state.hwCardDone[ex.id];
-        hwSyncMaterialSecured(ex.material);
-        hwSyncFoodSecured(ex.food);
-      }
-    });
+    const ex = exchanges[0];
+    if(hwIsCardDone(ex.id)){
+      delete state.hwCardDone[ex.id];
+      hwSyncMaterialSecured(ex.material);
+      hwSyncFoodSecured(ex.food);
+    }
   }
   function hwSecureMaterial(name, qty){
     if(state.hwSecured[name]) return;
@@ -2418,11 +2419,15 @@
     renderHomeworkBoard();
     savePersistedState();
   }
-  function hwApplyMaterialsForCard(food, done){
-    const totals = hwGrandTotals();
+  function hwApplyMaterialsForCard(food, done, excludeId){
     const names = hwCraftMaterialNamesFor(food);
-    if(done) names.forEach(name => hwSecureMaterial(name, totals.get(name) || 0));
-    else names.forEach(name => hwUnsecureMaterial(name));
+    if(done){
+      const totals = hwGrandTotals();
+      names.forEach(name => hwSecureMaterial(name, totals.get(name) || 0));
+    } else {
+      const siblingDone = hwExchangesForFood(food).some(o => o.id !== excludeId && hwIsCardDone(o.id));
+      if(!siblingDone) names.forEach(name => hwUnsecureMaterial(name));
+    }
   }
   function hwIsCardDone(id){
     return !!state.hwCardDone[id];
@@ -2578,18 +2583,7 @@
     }
     box.querySelectorAll(".hw-card").forEach(cardEl => {
       cardEl.addEventListener("click", () => {
-        const id = Number(cardEl.dataset.hwCardId);
-        hwToggleCardDone(id);
-        const ex = hwAllExchanges().find(item => item.id === id);
-        if(ex){
-          hwApplyMaterialsForCard(ex.food, hwIsCardDone(id));
-          hwSyncMaterialSecured(ex.material);
-          hwSyncFoodSecured(ex.food);
-        }
-        renderHomeworkBoard();
-        renderHomeworkTotals();
-        renderHomeworkAlt();
-        savePersistedState();
+        hwToggleExchangeDone(Number(cardEl.dataset.hwCardId));
       });
     });
   }
@@ -2604,49 +2598,48 @@
       <span>${escapeHtml(ex.material)} ${ex.matQty}개 · ${cycleLabel}</span>
     </span>`;
   }
-  function hwToggleFoodSecured(food){
-    hwApplyMaterialsForCard(food, !hwIsSecured(food));
+  function hwToggleExchangeDone(id){
+    hwToggleCardDone(id);
+    const ex = hwAllExchanges().find(item => item.id === id);
+    if(ex){
+      hwApplyMaterialsForCard(ex.food, hwIsCardDone(id), id);
+      hwSyncMaterialSecured(ex.material);
+      hwSyncFoodSecured(ex.food);
+    }
+    renderHomeworkBoard();
     renderHomeworkTotals();
     renderHomeworkAlt();
-    renderHomeworkBoard();
     savePersistedState();
   }
-  function hwAltRowHtml(food, list){
-    const secured = hwIsSecured(food);
-    const chips = list.map(ex => hwMethodChipHtml(ex)).join("");
+  function hwAltRowHtml(ex){
+    const done = hwIsCardDone(ex.id);
+    const chip = hwMethodChipHtml(ex);
     return `
       <tr>
         <td>
           <div class="material-cell">
-            <img src="${iconPath(food)}" alt="" onerror="this.remove()">
-            <span class="material-name">${escapeHtml(food)}</span>
+            <img src="${iconPath(ex.food)}" alt="" onerror="this.remove()">
+            <span class="material-name">${escapeHtml(ex.food)}</span>
           </div>
         </td>
-        <td class="state-cell"><button class="tag action hw-secure-btn ${secured ? "direct" : ""}" type="button" data-hw-material="${escapeHtml(food)}">${secured ? "확보 완료" : "원재료 확보"}</button></td>
-        <td class="method-cell"><div class="method-list">${chips}</div></td>
+        <td class="state-cell"><button class="tag action hw-secure-btn ${done ? "direct" : ""}" type="button" data-hw-exchange-id="${ex.id}">${done ? "확보 완료" : "원재료 확보"}</button></td>
+        <td class="method-cell"><div class="method-list">${chip}</div></td>
       </tr>
     `;
   }
   function renderHomeworkAlt(){
     const bodyA = el("altTable");
     if(!bodyA) return;
-    const byFood = new Map();
-    hwFilteredExchanges().forEach(ex => {
-      if(!byFood.has(ex.food)) byFood.set(ex.food, []);
-      byFood.get(ex.food).push(ex);
-    });
-    const rows = [...byFood.entries()].sort((a, b) => {
-      const securedA = hwIsSecured(a[0]);
-      const securedB = hwIsSecured(b[0]);
-      if(securedA !== securedB) return securedA ? 1 : -1;
-      return a[0].localeCompare(b[0], "ko");
+    const rows = [...hwFilteredExchanges()].sort((a, b) => {
+      const doneA = hwIsCardDone(a.id);
+      const doneB = hwIsCardDone(b.id);
+      if(doneA !== doneB) return doneA ? 1 : -1;
+      return a.food.localeCompare(b.food, "ko") || a.id - b.id;
     });
     el("altBadge").textContent = rows.length + "개";
-    bodyA.innerHTML = rows.map(([food, list]) => hwAltRowHtml(food, list)).join("");
-    [bodyA].forEach(body => {
-      body.querySelectorAll(".hw-secure-btn").forEach(btn => {
-        btn.addEventListener("click", () => hwToggleFoodSecured(btn.dataset.hwMaterial));
-      });
+    bodyA.innerHTML = rows.map(ex => hwAltRowHtml(ex)).join("");
+    bodyA.querySelectorAll(".hw-secure-btn").forEach(btn => {
+      btn.addEventListener("click", () => hwToggleExchangeDone(Number(btn.dataset.hwExchangeId)));
     });
   }
   const normalizedObtainText = (text, key) => {
