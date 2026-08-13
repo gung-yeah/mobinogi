@@ -1920,6 +1920,8 @@
     "셰이머스":"https://mabimobi.life/assets/image/npc/%EC%85%B0%EC%9D%B4%EB%A8%B8%EC%8A%A4.png",
     "메이븐":"icons/메이븐.webp",
     "엔델리온":"icons/엔델리온.webp",
+    "제니퍼":"icons/제니퍼.webp",
+    "어거스터":"icons/어거스터.png",
     "앨빈":"https://mabimobi.life/assets/image/npc/%EC%95%A8%EB%B9%88.png"
   };
   const state = {
@@ -2395,10 +2397,11 @@
     const label = produceSource ? produceSource.label : categoryLabel(node);
     return `<span class="method-chip hw-facility-chip">${escapeHtml(label)}</span>`;
   }
-  function hwBadgeChipHtml(label, cssClass, desc){
+  function hwBadgeChipHtml(label, cssClass, desc, iconSrc){
+    const icon = iconSrc ? `<img class="method-icon" src="${escapeHtml(iconSrc)}" alt="">` : "";
     const descHtml = desc ? `<span class="hw-badge-desc"> · ${escapeHtml(desc)}</span>` : "";
     const title = desc ? ` title="${escapeHtml(label + " · " + desc)}"` : "";
-    return `<span class="method-chip ${cssClass}"${title}>${escapeHtml(label)}${descHtml}</span>`;
+    return `<span class="method-chip ${cssClass}"${title}>${icon}${escapeHtml(label)}${descHtml}</span>`;
   }
   function hwManualShopChipHtml(d){
     const faceUrl = HW_NPC_FACES[d.npc];
@@ -2414,7 +2417,7 @@
   }
   function hwManualPartHtml(part){
     if(part.shop) return hwManualShopChipHtml(part.shop);
-    if(part.badge) return hwBadgeChipHtml(part.badge.label, part.badge.cssClass, part.badge.desc);
+    if(part.badge) return hwBadgeChipHtml(part.badge.label, part.badge.cssClass, part.badge.desc, part.badge.icon);
     if(part.plain) return `<span class="method-chip">${escapeHtml(part.plain)}</span>`;
     return "";
   }
@@ -2422,10 +2425,10 @@
     "세공된 가넷": ["티어 가넷 링","티어 가넷 네크리스"],
     "세공된 지르콘": ["샤인 지르콘 링","샤인 지르콘 네크리스"],
     "세공된 페리도트": ["페리도트 링","페리도트 네크리스"],
-    "세공된 블루 스피넬": ["블루 스피넬 링","블루 스피넬 펜던트"]
+    "세공된 블루 스피넬": ["블루 스피넬 링","블루 스피넬 네크리스"]
   };
   function hwDismantleParts(name){
-    const match = String(name).trim().match(/^(세공된 가넷|세공된 지르콘|세공된 페리도트|세공된 블루 스피넬)(?:\s+(S|SS|Z|ZZ))?$/);
+    const match = String(name).trim().match(/^(세공된 가넷|세공된 지르콘|세공된 페리도트|세공된 블루 스피넬)(S|SS|Z|ZZ)?$/);
     if(!match) return null;
     const [, base, suffix] = match;
     const gearNames = HW_DISMANTLE_GEAR[base].map(gear => suffix ? `${gear} ${suffix}` : gear);
@@ -2460,9 +2463,9 @@
       {badge:{label:"성수 정화", cssClass:"hw-purify-chip"}}
     ],
     "라벤더 꽃": [{badge:{label:"일상 채집", cssClass:"hw-gather-chip", desc:"티르코네일-전망대"}}],
-    "지배의 도안(장신구)": [{badge:{label:"지배의 도안 선택 상자", cssClass:"hw-designbox-chip"}}],
-    "지배의 도안(무기)": [{badge:{label:"지배의 도안 선택 상자", cssClass:"hw-designbox-chip"}}],
-    "지배의 도안(방어구)": [{badge:{label:"지배의 도안 선택 상자", cssClass:"hw-designbox-chip"}}],
+    "지배의 도안(장신구)": [{badge:{label:"지배의 도안 선택 상자", cssClass:"hw-designbox-chip", icon:"icons/지배의 도안 선택 상자.png"}}],
+    "지배의 도안(무기)": [{badge:{label:"지배의 도안 선택 상자", cssClass:"hw-designbox-chip", icon:"icons/지배의 도안 선택 상자.png"}}],
+    "지배의 도안(방어구)": [{badge:{label:"지배의 도안 선택 상자", cssClass:"hw-designbox-chip", icon:"icons/지배의 도안 선택 상자.png"}}],
     "지배의 도안 선택 상자": [
       {shop:{npc:"제니퍼", village:"반호르", place:"주점", cycle:"weekly", give:"", giveQty:"", get:"지배의 도안 선택 상자", getQty:1}},
       {shop:{npc:"어거스터", village:"이멘마하", place:"여관", cycle:"weekly", give:"", giveQty:"", get:"지배의 도안 선택 상자", getQty:1}}
