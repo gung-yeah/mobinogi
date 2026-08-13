@@ -929,6 +929,35 @@
     background:rgba(122,196,140,.1);
     color:#a9e0b8;
   }
+  .hw-dungeon-chip{
+    border-color:rgba(207,102,121,.45);
+    background:rgba(207,102,121,.14);
+    color:#f0b0bc;
+  }
+  .hw-dismantle-chip{
+    border-color:rgba(224,138,58,.45);
+    background:rgba(224,138,58,.14);
+    color:#f3c58f;
+  }
+  .hw-hunting-chip{
+    border-color:rgba(79,195,199,.45);
+    background:rgba(79,195,199,.14);
+    color:#a6e6e8;
+  }
+  .hw-purify-chip{
+    border-color:rgba(155,127,224,.45);
+    background:rgba(155,127,224,.14);
+    color:#cdbcf5;
+  }
+  .hw-designbox-chip{
+    border-color:rgba(212,201,74,.5);
+    background:rgba(212,201,74,.14);
+    color:#e9e29a;
+  }
+  .method-chip .hw-badge-desc{
+    color:var(--muted);
+    font-weight:600;
+  }
   .hw-use-empty{
     color:var(--muted);
     font-size:11px;
@@ -2323,9 +2352,12 @@
   }
   const HW_GATHER_CATEGORIES = [
     ["일상 채집", ["달걀","거미줄","물이 든 병","우유","사과","찻잎","최상급 거미줄","특급 거미줄","헤이즐넛"]],
-    ["약초 채집", ["허브","블러디 허브","화살꽃","마나 허브","새록 버섯","튼튼 버섯","끈기 풀","쑥쑥 버섯","숨숨꽃","깔끔 버섯","생채기꽃","증폭 버섯","진정초","끈적 풀","솔솔 버섯","산뜻 버섯"]],
-    ["추수", ["밀","옥수수","콩","쌀","귀리"]],
-    ["호미질", ["감자","양파","조개","파스닙","양배추","호박","개암 버섯"]]
+    ["약초 채집", ["허브","블러디 허브","화살꽃","마나 허브","새록 버섯","튼튼 버섯","끈기 풀","쑥쑥 버섯","숨숨꽃","깔끔 버섯","생채기꽃","증폭 버섯","진정초","끈적 풀","솔솔 버섯","산뜻 버섯","반짝이는 이끼","새초롱꽃"]],
+    ["추수", ["밀","옥수수","콩","쌀","귀리","긴 줄기"]],
+    ["호미질", ["감자","양파","조개","파스닙","양배추","호박","개암 버섯","점토"]],
+    ["나무 베기", ["나뭇가지","벼락 맞은 나뭇가지"]],
+    ["광석 캐기", ["마력 깃든 돌"]],
+    ["곤충 채집", ["석양나비","유령 반딧불이","황혼잠자리","흰얼음풍뎅이","달무늬 사슴벌레"]]
   ];
   function hwGatherTypeOf(name){
     for(const [type, list] of HW_GATHER_CATEGORIES){
@@ -2353,7 +2385,7 @@
       const face = source.npcFaceUrl ? `<img class="method-icon face" src="${assetUrl(source.npcFaceUrl)}" alt="">` : "";
       const currencyIcon = source.currencyIconUrl ? `<img class="method-icon" src="${assetUrl(source.currencyIconUrl)}" alt="">` : "";
       const priceText = price !== "" && price !== null ? `${formatNumber(price)}${currencyName ? " " : ""}` : "";
-      chips.push(`<span class="method-shop">${face}<span>${escapeHtml(place)}:</span><span class="exchange-mark">↔</span>${currencyIcon}<span>${priceText}${escapeHtml(currencyName)}${escapeHtml(limit)}</span></span>`);
+      chips.push(`<span class="method-shop">${face}<span>${escapeHtml(place)}</span><span class="exchange-mark">↔</span>${currencyIcon}<span>${priceText}${escapeHtml(currencyName)}${escapeHtml(limit)}</span></span>`);
     });
     return chips;
   }
@@ -2363,7 +2395,92 @@
     const label = produceSource ? produceSource.label : categoryLabel(node);
     return `<span class="method-chip hw-facility-chip">${escapeHtml(label)}</span>`;
   }
+  function hwBadgeChipHtml(label, cssClass, desc){
+    const descHtml = desc ? `<span class="hw-badge-desc"> · ${escapeHtml(desc)}</span>` : "";
+    const title = desc ? ` title="${escapeHtml(label + " · " + desc)}"` : "";
+    return `<span class="method-chip ${cssClass}"${title}>${escapeHtml(label)}${descHtml}</span>`;
+  }
+  function hwManualShopChipHtml(d){
+    const faceUrl = HW_NPC_FACES[d.npc];
+    const face = faceUrl ? `<img class="method-icon face" src="${assetUrl(faceUrl)}" alt="">` : "";
+    const cycleLabel = {daily:"일일", weekly:"주간", server:"서버"}[d.cycle] || d.cycle || "";
+    const placeText = [d.village, d.place].filter(Boolean).join(" ");
+    const npcLabel = `${escapeHtml(d.npc)}${placeText ? `(${escapeHtml(placeText)})` : ""}`;
+    if(!d.give){
+      return `<span class="method-shop">${face}<span>${npcLabel}</span>${cycleLabel ? `<span class="exchange-mark">·</span><span>${escapeHtml(cycleLabel)}</span>` : ""}</span>`;
+    }
+    const exchangeText = `${escapeHtml(d.give)} ${formatNumber(d.giveQty)}개 → ${escapeHtml(d.get)} ${formatNumber(d.getQty)}개${cycleLabel ? " · " + escapeHtml(cycleLabel) : ""}`;
+    return `<span class="method-shop">${face}<span>${npcLabel}</span><span class="exchange-mark">↔</span><span>${exchangeText}</span></span>`;
+  }
+  function hwManualPartHtml(part){
+    if(part.shop) return hwManualShopChipHtml(part.shop);
+    if(part.badge) return hwBadgeChipHtml(part.badge.label, part.badge.cssClass, part.badge.desc);
+    if(part.plain) return `<span class="method-chip">${escapeHtml(part.plain)}</span>`;
+    return "";
+  }
+  const HW_DISMANTLE_GEAR = {
+    "세공된 가넷": ["티어 가넷 링","티어 가넷 네크리스"],
+    "세공된 지르콘": ["샤인 지르콘 링","샤인 지르콘 네크리스"],
+    "세공된 페리도트": ["페리도트 링","페리도트 네크리스"],
+    "세공된 블루 스피넬": ["블루 스피넬 링","블루 스피넬 펜던트"]
+  };
+  function hwDismantleParts(name){
+    const match = String(name).trim().match(/^(세공된 가넷|세공된 지르콘|세공된 페리도트|세공된 블루 스피넬)(?:\s+(S|SS|Z|ZZ))?$/);
+    if(!match) return null;
+    const [, base, suffix] = match;
+    const gearNames = HW_DISMANTLE_GEAR[base].map(gear => suffix ? `${gear} ${suffix}` : gear);
+    return [{badge:{label:"장비 분해", cssClass:"hw-dismantle-chip", desc:gearNames.join(", ") + " 분해"}}];
+  }
+  const HW_CHANGE_CORE_GATHER_LABELS = ["일상 채집","나무 베기","광석 캐기","약초 채집","양털 깎기","추수","호미질","곤충 채집","낚시"];
+  const HW_MANUAL_METHODS = {
+    "공명의 도안(펫 장비)": [{badge:{label:"어비스 주간 보상", cssClass:"hw-dungeon-chip"}}],
+    "돌멩이": [
+      {badge:{label:"광석 캐기", cssClass:"hw-gather-chip"}},
+      {badge:{label:"호미질", cssClass:"hw-gather-chip"}}
+    ],
+    "레시피: 풍미 가득 스테이크+": [{badge:{label:"던전", cssClass:"hw-dungeon-chip"}}],
+    "레시피: 토마토 크림 생선 커넬+": [{badge:{label:"던전", cssClass:"hw-dungeon-chip"}}],
+    "레시피: 파이크퍼치 필레 리소토+": [{badge:{label:"던전", cssClass:"hw-dungeon-chip"}}],
+    "망각의 파편": [{badge:{label:"던전", cssClass:"hw-dungeon-chip"}}, {plain:"봉인된 망각의 파편"}],
+    "분노의 파편": [{badge:{label:"던전", cssClass:"hw-dungeon-chip"}}, {plain:"봉인된 분노의 파편"}],
+    "야성의 파편": [{badge:{label:"던전", cssClass:"hw-dungeon-chip"}}, {plain:"봉인된 야성의 파편"}],
+    "상급 항마석 가루": [{badge:{label:"던전", cssClass:"hw-dungeon-chip"}}],
+    "상급 항마석 가루+": [{badge:{label:"던전", cssClass:"hw-dungeon-chip"}}],
+    "항마석 가루": [{badge:{label:"던전", cssClass:"hw-dungeon-chip"}}],
+    "만찬 재료(꺼지지 않는 불)": [{badge:{label:"던전", cssClass:"hw-dungeon-chip"}}],
+    "만찬 재료(휘몰치는 바람)": [
+      {badge:{label:"던전", cssClass:"hw-dungeon-chip"}},
+      {shop:{npc:"프레이저", village:"이멘마하", place:"스위트 카페", cycle:"weekly", give:"만찬 재료(꺼지지 않는 불)", giveQty:3, get:"만찬 재료(휘몰치는 바람)", getQty:1}}
+    ],
+    "설비 개량 부품": [{badge:{label:"사냥터 보상(여신의 뜰)", cssClass:"hw-hunting-chip"}}],
+    "설비 개조 부품": [{badge:{label:"사냥터 보상(얼음 협곡)", cssClass:"hw-hunting-chip"}}],
+    "정령의 흔적": [
+      {shop:{npc:"아란웬", village:"던바튼", place:"엠블럼 상점", cycle:"", give:"클래스 마스터 메달", giveQty:1, get:"정령의 흔적", getQty:1}},
+      {badge:{label:"장비 분해", cssClass:"hw-dismantle-chip"}},
+      {badge:{label:"성수 정화", cssClass:"hw-purify-chip"}}
+    ],
+    "라벤더 꽃": [{badge:{label:"일상 채집", cssClass:"hw-gather-chip", desc:"티르코네일-전망대"}}],
+    "지배의 도안(장신구)": [{badge:{label:"지배의 도안 선택 상자", cssClass:"hw-designbox-chip"}}],
+    "지배의 도안(무기)": [{badge:{label:"지배의 도안 선택 상자", cssClass:"hw-designbox-chip"}}],
+    "지배의 도안(방어구)": [{badge:{label:"지배의 도안 선택 상자", cssClass:"hw-designbox-chip"}}],
+    "지배의 도안 선택 상자": [
+      {shop:{npc:"제니퍼", village:"반호르", place:"주점", cycle:"weekly", give:"", giveQty:"", get:"지배의 도안 선택 상자", getQty:1}},
+      {shop:{npc:"어거스터", village:"이멘마하", place:"여관", cycle:"weekly", give:"", giveQty:"", get:"지배의 도안 선택 상자", getQty:1}}
+    ],
+    "성수": [
+      {shop:{npc:"도나", village:"이멘마하", place:"성당", cycle:"weekly", give:"선물용 꽃다발", giveQty:1, get:"성수", getQty:1}},
+      {shop:{npc:"메이븐", village:"티르코네일", place:"교회", cycle:"daily", give:"케이틴 특제 통밀빵", giveQty:1, get:"성수", getQty:1}},
+      {shop:{npc:"엔델리온", village:"티르코네일", place:"교회", cycle:"daily", give:"케이틴 특제 통밀빵", giveQty:10, get:"성수", getQty:10}},
+      {shop:{npc:"도나", village:"이멘마하", place:"성당", cycle:"server", give:"골드", giveQty:7500, get:"성수", getQty:5}},
+      {shop:{npc:"크리스텔", village:"던바튼", place:"교회", cycle:"server", give:"골드", giveQty:7500, get:"성수", getQty:5}}
+    ],
+    "변화의 핵": HW_CHANGE_CORE_GATHER_LABELS.map(label => ({badge:{label, cssClass:"hw-gather-chip"}}))
+  };
+  function hwManualMethodParts(name){
+    return hwDismantleParts(name) || HW_MANUAL_METHODS[name] || [];
+  }
   function hwObtainMethodHtml(name){
+    const manualParts = hwManualMethodParts(name).map(hwManualPartHtml);
     const shopChips = hwShopChipsHtml(name);
     const node = hwFoodNode(name);
     let badge = "";
@@ -2373,7 +2490,7 @@
       const gatherType = hwGatherTypeOf(name);
       if(gatherType) badge = `<span class="method-chip hw-gather-chip">${escapeHtml(gatherType)}</span>`;
     }
-    const parts = [...shopChips];
+    const parts = [...manualParts, ...shopChips];
     if(badge) parts.push(badge);
     if(!parts.length) return `<span class="muted">확인 필요</span>`;
     return `<div class="method-list">${parts.join("")}</div>`;
@@ -2711,7 +2828,7 @@
       const face = source.npcFaceUrl ? `<img class="method-icon face" src="${assetUrl(source.npcFaceUrl)}" alt="">` : "";
       const currencyIcon = source.currencyIconUrl ? `<img class="method-icon" src="${assetUrl(source.currencyIconUrl)}" alt="">` : "";
       const priceText = price !== "" && price !== null ? `${formatNumber(price)}${currencyName ? " " : ""}` : "";
-      const label = `${escapeHtml(place)}:`;
+      const label = `${escapeHtml(place)}`;
       const payment = `${priceText}${escapeHtml(currencyName)}${escapeHtml(limit)}`;
       addPiece(signature, `<span class="method-shop">${face}<span>${label}</span><span class="exchange-mark">↔</span>${currencyIcon}<span>${payment}</span></span>`);
     });
@@ -2724,7 +2841,7 @@
     return pieces;
   };
   const hasObtainMethod = key => methodPieces(key).length > 0;
-  const hasObtainMethodOrBadge = key => hasObtainMethod(key) || !!hwGatherTypeOf(key);
+  const hasObtainMethodOrBadge = key => hasObtainMethod(key) || !!hwGatherTypeOf(key) || hwManualMethodParts(key).length > 0;
   const methodDisplayHtml = key => {
     const pieces = methodPieces(key);
     return pieces.length ? `<div class="method-list">${pieces.join("")}</div>` : `<span class="muted">확인 필요</span>`;
