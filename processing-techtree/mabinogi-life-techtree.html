@@ -2106,7 +2106,7 @@
   };
   const producedKey = name => {
     const value = String(name).trim();
-    const simpleAlias = value.match(/^(철괴)\(.+\)$/);
+    const simpleAlias = value.match(/^(철괴|은합금괴|최상급 목재|최상급 가죽|최상급 옷감)\(.+\)$/);
     if(simpleAlias) return simpleAlias[1];
     const crystalAlias = value.match(/^((?:광휘|불꽃|얼음|전기|봉인)의 결정)\(.+\)$/);
     if(crystalAlias) return crystalAlias[1];
