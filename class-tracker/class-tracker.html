@@ -371,7 +371,7 @@ var TRACE_ICON = CLASS_ICONS.__trace__;
 
     TITLES.forEach(function (t) {
       var done = total >= t.threshold;
-      html += summaryCard(t.name + " (누적 클래스 레벨 " + t.threshold + " 달성)", total, t.threshold, done);
+      html += summaryCard(t.name + " (누적 레벨 " + t.threshold + " 달성)", total, t.threshold, done);
     });
 
     byId("summary").innerHTML = html;
