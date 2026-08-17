@@ -1,0 +1,564 @@
+<!--
+  © 2026 bbunye. All rights reserved.
+  이 파일(HTML/CSS/JS 포함)의 무단 복제, 수정, 재배포를 금지합니다.
+  원본: https://bbunye.tistory.com/
+-->
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>마비노기 모바일 클래스 레벨 트래커</title>
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #f6f7f9;
+    --panel: #ffffff;
+    --panel-soft: #f0f4f7;
+    --ink: #17202a;
+    --muted: #66717d;
+    --line: #dce3e8;
+    --accent: #256fd2;
+    --accent-soft: #e5f0ff;
+    --green: #198a57;
+    --green-soft: #e0f6ea;
+    --amber: #b87a00;
+    --amber-soft: #fff2c9;
+    --red: #c94c4c;
+    --red-soft: #ffe9e8;
+    --shadow: 0 16px 40px rgba(35, 55, 77, 0.08);
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: Pretendard, "Noto Sans KR", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    line-height: 1.5;
+  }
+  button, input { font: inherit; }
+  button { border: 0; cursor: pointer; }
+  .shell { width: min(1320px, calc(100% - 32px)); margin: 0 auto; padding: 20px 0 40px; }
+
+  header.top {
+    padding: 18px 20px;
+    border-radius: var(--radius);
+    background: linear-gradient(180deg, #ffffff 0%, var(--bg) 100%);
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow);
+    margin-bottom: 16px;
+  }
+  h1 { margin: 0 0 4px; font-size: clamp(20px, 2.6vw, 28px); font-weight: 820; }
+  .subtitle { margin: 0; color: var(--muted); font-size: 13.5px; }
+
+  .summary {
+    margin-top: 14px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 12px;
+  }
+  .summary-card {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--panel-soft);
+    padding: 12px 14px;
+  }
+  .summary-card .label { font-size: 12.5px; color: var(--muted); display: flex; justify-content: space-between; align-items: center; }
+  .summary-card .badge { font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 999px; }
+  .badge.done { background: var(--green-soft); color: var(--green); }
+  .badge.pending { background: var(--panel); color: var(--muted); border: 1px solid var(--line); }
+  .summary-card .value { margin-top: 4px; font-size: 20px; font-weight: 800; }
+  .bar-track { margin-top: 8px; height: 8px; border-radius: 99px; background: var(--panel); overflow: hidden; border: 1px solid var(--line); }
+  .bar-fill { height: 100%; background: var(--accent); border-radius: 99px; transition: width .2s ease; }
+  .bar-fill.done { background: var(--green); }
+
+  .account-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .account-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 6px 6px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: var(--panel);
+    font-size: 13.5px;
+    font-weight: 700;
+  }
+  .account-chip.active { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+  .account-chip button.rename-btn {
+    background: transparent; color: inherit; opacity: .55; padding: 2px 4px; border-radius: 6px; font-size: 12px;
+  }
+  .account-chip button.rename-btn:hover { opacity: 1; background: rgba(0,0,0,.06); }
+  .account-chip button.del-btn {
+    background: transparent; color: var(--red); opacity: .55; padding: 2px 6px; border-radius: 6px; font-size: 12px;
+  }
+  .account-chip button.del-btn:hover { opacity: 1; background: var(--red-soft); }
+  .add-account-btn {
+    padding: 7px 14px;
+    border-radius: 999px;
+    border: 1px dashed var(--line);
+    background: var(--panel);
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .add-account-btn:hover { color: var(--accent); border-color: var(--accent); }
+
+  .panel {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--panel);
+    box-shadow: var(--shadow);
+    padding: 16px;
+    margin-bottom: 18px;
+  }
+  .panel-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+  .panel-head h2 { margin: 0; font-size: 16px; font-weight: 800; }
+  .char-controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .ghost-btn {
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    background: var(--panel);
+    color: var(--ink);
+    font-size: 12.5px;
+    font-weight: 700;
+  }
+  .ghost-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .ghost-btn:disabled { opacity: .4; cursor: not-allowed; }
+  .ghost-btn.danger:hover { border-color: var(--red); color: var(--red); }
+
+  .table-wrap { overflow-x: auto; }
+  table.tracker { border-collapse: collapse; width: 100%; min-width: 760px; font-size: 13px; }
+  table.tracker th, table.tracker td {
+    border: 1px solid var(--line);
+    padding: 6px 8px;
+    text-align: center;
+    white-space: nowrap;
+  }
+  table.tracker thead th { background: var(--panel-soft); font-weight: 800; font-size: 12.5px; }
+  table.tracker td.class-name { text-align: left; font-weight: 700; }
+  table.tracker td.group-name { text-align: left; color: var(--muted); font-size: 12px; }
+  table.tracker tr.group-first td { border-top: 2px solid var(--line); }
+  table.tracker input.level-input {
+    width: 52px;
+    padding: 4px 6px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    text-align: center;
+  }
+  table.tracker input.level-input:focus { outline: none; border-color: var(--accent); }
+  table.tracker input.char-name-input {
+    width: 100%;
+    min-width: 90px;
+    border: none;
+    background: transparent;
+    font-weight: 800;
+    text-align: center;
+    border-bottom: 1px dashed var(--line);
+    padding: 2px 4px;
+  }
+  table.tracker input.char-name-input:focus { outline: none; border-color: var(--accent); }
+  .need-cell { color: var(--muted); font-size: 12px; }
+  .level-cap { color: var(--red); font-weight: 800; }
+  .level-high { color: var(--accent); font-weight: 800; }
+  .col-remove { font-size: 11px; color: var(--red); opacity: .6; }
+  .col-remove:hover { opacity: 1; }
+  .recommend-name { font-weight: 800; color: var(--green); }
+  .recommend-need { font-size: 12px; color: var(--muted); }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--muted);
+    font-size: 13.5px;
+  }
+  .empty-state button { margin-top: 10px; }
+
+  footer.foot {
+    text-align: center;
+    color: var(--muted);
+    font-size: 11.5px;
+    margin-top: 24px;
+  }
+
+  @media (max-width: 640px) {
+    .shell { padding: 14px 0 30px; }
+    header.top { padding: 14px; }
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+  <header class="top">
+    <h1>마비노기 모바일 클래스 레벨 트래커</h1>
+    <p class="subtitle">계정·캐릭터별 클래스 레벨을 기록하고, 65레벨까지 필요한 정령의 흔적을 계산합니다. 모든 데이터는 이 브라우저에만 저장됩니다.</p>
+    <div class="summary" id="summary"></div>
+  </header>
+
+  <div class="account-bar" id="accountBar"></div>
+
+  <div id="accountPanel"></div>
+
+  <footer class="foot">© 2026 bbunye · 무단 복제·재배포 금지 · 원본: bbunye.tistory.com</footer>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var MAX_LEVEL = 65;
+  var MAX_CHARACTERS = 6;
+  var TITLES = [
+    { key: "richTalent", name: "재능 부자", threshold: 200 },
+    { key: "allRounder", name: "올라운더", threshold: 1205 }
+  ];
+
+  var CLASS_GROUPS = [
+    { group: "전사", classes: ["전사", "대검전사", "검술사", "기사"] },
+    { group: "궁수", classes: ["궁수", "석궁사수", "장궁병"] },
+    { group: "마법사", classes: ["마법사", "화염술사", "빙결술사", "전격술사"] },
+    { group: "도적", classes: ["도적", "격투가", "듀얼블레이드"] },
+    { group: "힐러", classes: ["힐러", "사제", "수도사", "암흑술사"] },
+    { group: "음유시인", classes: ["음유시인", "댄서", "악사"] }
+  ];
+  var ALL_CLASSES = CLASS_GROUPS.reduce(function (acc, g) { return acc.concat(g.classes); }, []);
+
+  // 레벨 1->2, 2->3, ... 64->65 순서. 마비노기 모바일 클래스레벨 시트(사용자 제공, 2026-08 기준)에서 추출.
+  var STEP_TRACE = [0,1,1,1,2,2,2,3,3,3,3,3,3,3,3,3,4,4,4,7,7,7,8,8,8,9,9,9,10,10,91,93,201,350,545,562,579,596,614,727,757,817,866,918,973,1138,1332,1558,1823,2133,2496,2920,3417,3998,4677,5473,6403,7491,8765,10255,11998,14038,16424,19217,22483];
+  var CUM_TRACE = [0];
+  for (var i = 1; i <= MAX_LEVEL; i++) CUM_TRACE[i] = CUM_TRACE[i - 1] + STEP_TRACE[i - 1];
+  var TOTAL_TRACE_TO_CAP = CUM_TRACE[MAX_LEVEL];
+
+  function traceToCap(level) {
+    level = Math.max(1, Math.min(MAX_LEVEL, level | 0));
+    return TOTAL_TRACE_TO_CAP - CUM_TRACE[level];
+  }
+
+  var STORAGE_KEY = "mabinogi-class-tracker-v1";
+
+  function uid() { return Math.random().toString(36).slice(2, 10) + Date.now().toString(36); }
+
+  function defaultLevels() {
+    var levels = {};
+    ALL_CLASSES.forEach(function (c) { levels[c] = 1; });
+    return levels;
+  }
+
+  function newCharacter(name) {
+    return { id: uid(), name: name || "새 캐릭터", levels: defaultLevels() };
+  }
+
+  function newAccount(name) {
+    return { id: uid(), name: name || "새 계정", characters: [newCharacter("캐릭터1")] };
+  }
+
+  function loadState() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return { accounts: [], activeAccountId: null };
+      var parsed = JSON.parse(raw);
+      if (!parsed || !Array.isArray(parsed.accounts)) return { accounts: [], activeAccountId: null };
+      parsed.accounts.forEach(function (acc) {
+        acc.characters.forEach(function (ch) {
+          var lv = ch.levels || {};
+          ALL_CLASSES.forEach(function (c) {
+            var v = parseInt(lv[c], 10);
+            lv[c] = (isFinite(v) && v >= 1 && v <= MAX_LEVEL) ? v : 1;
+          });
+          ch.levels = lv;
+        });
+      });
+      return parsed;
+    } catch (e) {
+      return { accounts: [], activeAccountId: null };
+    }
+  }
+
+  var state = loadState();
+
+  function save() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }
+
+  function getActiveAccount() {
+    return state.accounts.find(function (a) { return a.id === state.activeAccountId; }) || null;
+  }
+
+  function byId(id) { return document.getElementById(id); }
+
+  // ---- 전역 요약(칭호) 계산: 모든 계정·캐릭터를 통틀어 클래스별 최고 레벨만 반영 ----
+  function computeGlobalMaxLevels() {
+    var maxLv = {};
+    ALL_CLASSES.forEach(function (c) { maxLv[c] = 0; });
+    state.accounts.forEach(function (acc) {
+      acc.characters.forEach(function (ch) {
+        ALL_CLASSES.forEach(function (c) {
+          var v = ch.levels[c] || 1;
+          if (v > maxLv[c]) maxLv[c] = v;
+        });
+      });
+    });
+    return maxLv;
+  }
+
+  function renderSummary() {
+    var maxLv = computeGlobalMaxLevels();
+    var total = ALL_CLASSES.reduce(function (sum, c) { return sum + (maxLv[c] || 0); }, 0);
+    var maxPossible = ALL_CLASSES.length * MAX_LEVEL;
+
+    var html = "";
+    html += summaryCard("누적 클래스 레벨 (전 계정, 중복 클래스 제외)", total + " / " + maxPossible, Math.min(100, total / maxPossible * 100), null);
+
+    TITLES.forEach(function (t) {
+      var done = total >= t.threshold;
+      var pct = Math.min(100, total / t.threshold * 100);
+      html += summaryCard(t.name + " (누적 " + t.threshold + " 달성)", done ? "달성" : (t.threshold - total) + " 남음", pct, done);
+    });
+
+    byId("summary").innerHTML = html;
+  }
+
+  function summaryCard(label, value, pct, done) {
+    var badge = "";
+    if (done === true) badge = '<span class="badge done">달성</span>';
+    else if (done === false) badge = '<span class="badge pending">진행중</span>';
+    return (
+      '<div class="summary-card">' +
+        '<div class="label"><span>' + escapeHtml(label) + "</span>" + badge + "</div>" +
+        '<div class="value">' + escapeHtml(String(value)) + "</div>" +
+        '<div class="bar-track"><div class="bar-fill' + (done ? " done" : "") + '" style="width:' + pct.toFixed(1) + '%"></div></div>' +
+      "</div>"
+    );
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+
+  // ---- 계정 탭 ----
+  function renderAccountBar() {
+    var html = "";
+    state.accounts.forEach(function (acc) {
+      var active = acc.id === state.activeAccountId;
+      html +=
+        '<div class="account-chip' + (active ? " active" : "") + '" data-account="' + acc.id + '">' +
+          '<span class="account-label">' + escapeHtml(acc.name) + "</span>" +
+          '<button class="rename-btn" data-action="rename-account" data-id="' + acc.id + '" title="이름 변경">✎</button>' +
+          '<button class="del-btn" data-action="delete-account" data-id="' + acc.id + '" title="계정 삭제">✕</button>' +
+        "</div>";
+    });
+    html += '<button class="add-account-btn" id="addAccountBtn">+ 계정 추가</button>';
+    byId("accountBar").innerHTML = html;
+  }
+
+  // ---- 계정 패널(캐릭터 테이블) ----
+  function renderAccountPanel() {
+    var acc = getActiveAccount();
+    var root = byId("accountPanel");
+    if (!acc) {
+      root.innerHTML = '<div class="panel"><div class="empty-state">등록된 계정이 없습니다.<br><button class="ghost-btn" id="emptyAddAccount">+ 첫 계정 추가하기</button></div></div>';
+      var btn = byId("emptyAddAccount");
+      if (btn) btn.addEventListener("click", function () { addAccount(); });
+      return;
+    }
+
+    var chars = acc.characters;
+    var canAddChar = chars.length < MAX_CHARACTERS;
+
+    var html = '<div class="panel">';
+    html += '<div class="panel-head"><h2>' + escapeHtml(acc.name) + ' — 캐릭터 (' + chars.length + '/' + MAX_CHARACTERS + ')</h2>';
+    html += '<div class="char-controls"><button class="ghost-btn" id="addCharBtn"' + (canAddChar ? "" : " disabled") + '>+ 캐릭터 추가</button></div></div>';
+
+    html += '<div class="table-wrap"><table class="tracker"><thead><tr>';
+    html += "<th>계열</th><th>클래스</th><th>추천 캐릭터<br><span style='font-weight:400;color:var(--muted)'>(65까지 최소 필요)</span></th>";
+    chars.forEach(function (ch) {
+      html += '<th colspan="2"><input class="char-name-input" data-char="' + ch.id + '" value="' + escapeHtml(ch.name) + '" /><br>' +
+        '<button class="col-remove" data-action="delete-char" data-id="' + ch.id + '" title="캐릭터 삭제">캐릭터 삭제</button></th>';
+    });
+    html += "</tr><tr><th></th><th></th><th></th>";
+    chars.forEach(function () { html += "<th>레벨</th><th>필요 정흔</th>"; });
+    html += "</tr></thead><tbody>";
+
+    CLASS_GROUPS.forEach(function (grp) {
+      grp.classes.forEach(function (cls, idx) {
+        html += '<tr class="' + (idx === 0 ? "group-first" : "") + '">';
+        html += idx === 0
+          ? '<td class="group-name" rowspan="' + grp.classes.length + '">' + escapeHtml(grp.group) + "</td>"
+          : "";
+        html += '<td class="class-name">' + escapeHtml(cls) + "</td>";
+
+        var best = null;
+        chars.forEach(function (ch) {
+          var lv = ch.levels[cls] || 1;
+          var need = traceToCap(lv);
+          if (!best || need < best.need) best = { name: ch.name, need: need };
+        });
+        html += '<td>' + (best ? '<span class="recommend-name">' + escapeHtml(best.name) + '</span><br><span class="recommend-need">' + best.need.toLocaleString() + '</span>' : "-") + "</td>";
+
+        chars.forEach(function (ch) {
+          var lv = ch.levels[cls] || 1;
+          var need = traceToCap(lv);
+          var lvClass = lv >= MAX_LEVEL ? "level-cap" : (lv >= 60 ? "level-high" : "");
+          html += '<td><input type="number" class="level-input ' + lvClass + '" min="1" max="' + MAX_LEVEL + '" value="' + lv +
+            '" data-char="' + ch.id + '" data-class="' + escapeHtml(cls) + '" /></td>';
+          html += '<td class="need-cell">' + (need === 0 ? "-" : need.toLocaleString()) + "</td>";
+        });
+        html += "</tr>";
+      });
+    });
+
+    html += "</tbody></table></div></div>";
+    root.innerHTML = html;
+  }
+
+  function renderAll() {
+    renderSummary();
+    renderAccountBar();
+    renderAccountPanel();
+  }
+
+  // ---- 액션 ----
+  function addAccount() {
+    var acc = newAccount("계정" + (state.accounts.length + 1));
+    state.accounts.push(acc);
+    state.activeAccountId = acc.id;
+    save();
+    renderAll();
+  }
+
+  function renameAccount(id) {
+    var acc = state.accounts.find(function (a) { return a.id === id; });
+    if (!acc) return;
+    var name = prompt("계정 이름", acc.name);
+    if (name === null) return;
+    name = name.trim();
+    if (name) acc.name = name;
+    save();
+    renderAll();
+  }
+
+  function deleteAccount(id) {
+    var acc = state.accounts.find(function (a) { return a.id === id; });
+    if (!acc) return;
+    if (!confirm('"' + acc.name + '" 계정을 삭제할까요? 계정 내 모든 캐릭터 데이터가 사라집니다.')) return;
+    state.accounts = state.accounts.filter(function (a) { return a.id !== id; });
+    if (state.activeAccountId === id) {
+      state.activeAccountId = state.accounts.length ? state.accounts[0].id : null;
+    }
+    save();
+    renderAll();
+  }
+
+  function addCharacter() {
+    var acc = getActiveAccount();
+    if (!acc || acc.characters.length >= MAX_CHARACTERS) return;
+    acc.characters.push(newCharacter("캐릭터" + (acc.characters.length + 1)));
+    save();
+    renderAll();
+  }
+
+  function deleteCharacter(id) {
+    var acc = getActiveAccount();
+    if (!acc) return;
+    if (acc.characters.length <= 1) {
+      alert("계정에는 캐릭터가 최소 1개 있어야 합니다.");
+      return;
+    }
+    var ch = acc.characters.find(function (c) { return c.id === id; });
+    if (!ch) return;
+    if (!confirm('"' + ch.name + '" 캐릭터를 삭제할까요?')) return;
+    acc.characters = acc.characters.filter(function (c) { return c.id !== id; });
+    save();
+    renderAll();
+  }
+
+  function setCharacterName(id, name) {
+    var acc = getActiveAccount();
+    if (!acc) return;
+    var ch = acc.characters.find(function (c) { return c.id === id; });
+    if (!ch) return;
+    ch.name = name.trim() || ch.name;
+    save();
+  }
+
+  function setLevel(charId, cls, value) {
+    var acc = getActiveAccount();
+    if (!acc) return;
+    var ch = acc.characters.find(function (c) { return c.id === charId; });
+    if (!ch) return;
+    var v = parseInt(value, 10);
+    if (!isFinite(v)) v = 1;
+    v = Math.max(1, Math.min(MAX_LEVEL, v));
+    ch.levels[cls] = v;
+    save();
+    renderAll();
+  }
+
+  // ---- 이벤트 위임 ----
+  document.addEventListener("click", function (e) {
+    var t = e.target;
+    if (t.id === "addAccountBtn") return addAccount();
+    if (t.id === "addCharBtn") return addCharacter();
+
+    var chip = t.closest ? t.closest(".account-chip") : null;
+    var action = t.getAttribute && t.getAttribute("data-action");
+
+    if (action === "rename-account") { e.stopPropagation(); return renameAccount(t.getAttribute("data-id")); }
+    if (action === "delete-account") { e.stopPropagation(); return deleteAccount(t.getAttribute("data-id")); }
+    if (action === "delete-char") { return deleteCharacter(t.getAttribute("data-id")); }
+
+    if (chip && chip.getAttribute("data-account")) {
+      state.activeAccountId = chip.getAttribute("data-account");
+      save();
+      renderAll();
+    }
+  });
+
+  document.addEventListener("change", function (e) {
+    var t = e.target;
+    if (t.classList && t.classList.contains("level-input")) {
+      setLevel(t.getAttribute("data-char"), t.getAttribute("data-class"), t.value);
+    }
+  });
+
+  document.addEventListener("blur", function (e) {
+    var t = e.target;
+    if (t.classList && t.classList.contains("char-name-input")) {
+      setCharacterName(t.getAttribute("data-char"), t.value);
+      renderAll();
+    }
+  }, true);
+
+  // ---- 초기화 ----
+  if (!state.accounts.length) {
+    var acc = newAccount("계정1");
+    state.accounts.push(acc);
+    state.activeAccountId = acc.id;
+    save();
+  } else if (!state.activeAccountId || !getActiveAccount()) {
+    state.activeAccountId = state.accounts[0].id;
+    save();
+  }
+
+  renderAll();
+})();
+</script>
+</body>
+</html>
