@@ -160,34 +160,34 @@
   .ghost-btn:disabled { opacity: .4; cursor: not-allowed; }
 
   .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-  table.tracker { border-collapse: separate; border-spacing: 0; width: 100%; min-width: 640px; font-size: 12px; }
+  table.tracker { border-collapse: separate; border-spacing: 0; width: 100%; min-width: 560px; font-size: 11px; }
   table.tracker th, table.tracker td {
     border-right: 1px solid var(--line);
     border-bottom: 1px solid var(--line);
-    padding: 4px 4px;
+    padding: 3px 2px;
     text-align: center;
     white-space: nowrap;
   }
-  table.tracker thead th { background: var(--panel-soft); font-weight: 800; font-size: 11px; }
+  table.tracker thead th { background: var(--panel-soft); font-weight: 800; font-size: 10px; }
   table.tracker th:first-child, table.tracker td:first-child { border-left: 1px solid var(--line); }
   table.tracker thead tr:first-child th { border-top: 1px solid var(--line); }
   .sticky-1, .sticky-2 { position: sticky; z-index: 3; background: var(--panel); }
-  .sticky-1 { left: 0; width: 42px; min-width: 42px; max-width: 42px; }
-  .sticky-2 { left: 42px; width: 62px; min-width: 62px; max-width: 62px; box-shadow: 2px 0 4px rgba(0,0,0,0.06); }
+  .sticky-1 { left: 0; width: 36px; min-width: 36px; max-width: 36px; }
+  .sticky-2 { left: 36px; width: 52px; min-width: 52px; max-width: 52px; box-shadow: 2px 0 4px rgba(0,0,0,0.06); }
   table.tracker thead .sticky-1, table.tracker thead .sticky-2 { z-index: 4; background: var(--panel-soft); }
   table.tracker tbody tr.row-complete td.sticky-1, table.tracker tbody tr.row-complete td.sticky-2 { background: var(--complete-bg); }
   table.tracker thead th small { font-weight: 400; color: var(--muted); }
   table.tracker tr.group-first td { border-top: 2px solid var(--line); }
-  td.recommend { white-space: normal; max-width: 58px; }
-  .class-icon { width: 15px; height: 15px; object-fit: contain; display: block; margin: 0 auto 2px; }
-  .trace-icon { width: 12px; height: 12px; object-fit: contain; vertical-align: -2px; margin-right: 2px; }
+  td.recommend { white-space: normal; max-width: 46px; }
+  .class-icon { width: 12px; height: 12px; object-fit: contain; display: block; margin: 0 auto 1px; }
+  .trace-icon { width: 10px; height: 10px; object-fit: contain; vertical-align: -1px; margin-right: 1px; }
   table.tracker input.level-input {
-    width: 30px;
-    padding: 2px 1px;
+    width: 24px;
+    padding: 1px 0;
     border: 1px solid var(--line);
-    border-radius: 5px;
+    border-radius: 4px;
     text-align: center;
-    font-size: 12px;
+    font-size: 11px;
     -moz-appearance: textfield;
   }
   table.tracker input.level-input:focus { outline: none; border-color: var(--accent); }
@@ -196,21 +196,21 @@
     -webkit-appearance: none;
     margin: 0;
   }
-  .char-head-row { display: flex; align-items: center; justify-content: center; gap: 2px; }
-  .char-name-label { font-weight: 800; cursor: pointer; max-width: 40px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block; vertical-align: middle; }
+  .char-head-row { display: flex; align-items: center; justify-content: center; gap: 1px; }
+  .char-name-label { font-weight: 800; cursor: pointer; max-width: 32px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block; vertical-align: middle; }
   .char-head-row button.rename-btn,
   .char-head-row button.del-btn {
-    background: transparent; opacity: .55; padding: 1px 3px; border-radius: 5px; font-size: 10.5px; flex: none; cursor: pointer;
+    background: transparent; opacity: .55; padding: 1px 2px; border-radius: 4px; font-size: 9.5px; flex: none; cursor: pointer;
   }
   .char-head-row button.rename-btn { color: var(--muted); }
   .char-head-row button.rename-btn:hover { opacity: 1; background: rgba(0,0,0,.06); }
   .char-head-row button.del-btn { color: var(--red); }
   .char-head-row button.del-btn:hover { opacity: 1; background: var(--red-soft); }
-  .need-cell { color: var(--muted); font-size: 10.5px; }
+  .need-cell { color: var(--muted); font-size: 9.5px; }
   .level-cap { color: var(--red); font-weight: 800; }
   .level-high { color: var(--accent); font-weight: 800; }
-  .recommend-name { font-weight: 800; font-size: 11px; max-width: 44px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block; vertical-align: bottom; }
-  .recommend-need { font-size: 10.5px; color: var(--muted); }
+  .recommend-name { font-weight: 800; font-size: 10px; max-width: 40px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block; vertical-align: bottom; }
+  .recommend-need { font-size: 9.5px; color: var(--muted); }
 
   table.tracker tr.row-complete td {
     background-color: var(--complete-bg);
