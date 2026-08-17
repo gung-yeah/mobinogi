@@ -159,29 +159,43 @@
   .ghost-btn:hover { border-color: var(--accent); color: var(--accent); }
   .ghost-btn:disabled { opacity: .4; cursor: not-allowed; }
 
-  .table-wrap { overflow-x: auto; }
-  table.tracker { border-collapse: collapse; width: 100%; min-width: 760px; font-size: 13px; }
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  table.tracker { border-collapse: separate; border-spacing: 0; width: 100%; min-width: 760px; font-size: 13px; }
   table.tracker th, table.tracker td {
-    border: 1px solid var(--line);
+    border-right: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
     padding: 6px 8px;
     text-align: center;
     white-space: nowrap;
   }
   table.tracker thead th { background: var(--panel-soft); font-weight: 800; font-size: 12.5px; }
+  table.tracker th:first-child, table.tracker td:first-child { border-left: 1px solid var(--line); }
+  table.tracker thead tr:first-child th { border-top: 1px solid var(--line); }
+  .sticky-1, .sticky-2 { position: sticky; z-index: 3; background: var(--panel); }
+  .sticky-1 { left: 0; width: 56px; min-width: 56px; max-width: 56px; }
+  .sticky-2 { left: 56px; width: 86px; min-width: 86px; max-width: 86px; box-shadow: 2px 0 4px rgba(0,0,0,0.06); }
+  table.tracker thead .sticky-1, table.tracker thead .sticky-2 { z-index: 4; background: var(--panel-soft); }
+  table.tracker tbody tr.row-complete td.sticky-1, table.tracker tbody tr.row-complete td.sticky-2 { background: var(--complete-bg); }
   table.tracker thead th small { font-weight: 400; color: var(--muted); }
   table.tracker tr.group-first td { border-top: 2px solid var(--line); }
   .class-icon { width: 22px; height: 22px; object-fit: contain; display: block; margin: 0 auto 3px; }
   .trace-icon { width: 14px; height: 14px; object-fit: contain; vertical-align: -2px; margin-right: 3px; }
   table.tracker input.level-input {
     width: 52px;
-    padding: 4px 6px;
+    padding: 4px 2px;
     border: 1px solid var(--line);
     border-radius: 6px;
     text-align: center;
+    -moz-appearance: textfield;
   }
   table.tracker input.level-input:focus { outline: none; border-color: var(--accent); }
+  table.tracker input.level-input::-webkit-outer-spin-button,
+  table.tracker input.level-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
   .char-head-row { display: flex; align-items: center; justify-content: center; gap: 4px; }
-  .char-name-label { font-weight: 800; }
+  .char-name-label { font-weight: 800; cursor: pointer; }
   .char-head-row button.rename-btn,
   .char-head-row button.del-btn {
     background: transparent; opacity: .55; padding: 2px 5px; border-radius: 6px; font-size: 12px; flex: none; cursor: pointer;
@@ -218,6 +232,11 @@
   @media (max-width: 640px) {
     .shell { padding: 14px 0 30px; }
     header.top { padding: 14px; }
+    table.tracker input.level-input { font-size: 16px; width: 46px; padding: 6px 2px; }
+    table.tracker { font-size: 12px; }
+    .account-chip, .add-account-btn, .fold-toggle, .ghost-btn { padding-top: 8px; padding-bottom: 8px; }
+    .char-head-row button.rename-btn, .char-head-row button.del-btn,
+    .account-chip button.rename-btn, .account-chip button.del-btn { padding: 5px 8px; font-size: 13px; }
   }
 </style>
 </head>
@@ -413,10 +432,10 @@ var TRACE_ICON = CLASS_ICONS.__trace__;
     html += '<div class="char-controls"><button class="ghost-btn" id="addCharBtn"' + (canAddChar ? "" : " disabled") + '>+ 캐릭터 추가</button></div></div>';
 
     html += '<div class="table-wrap"><table class="tracker"><thead><tr>';
-    html += '<th rowspan="2">계열</th><th rowspan="2">클래스</th><th rowspan="2">캐릭터<br><small>(필요 정흔)</small></th>';
+    html += '<th class="sticky-1" rowspan="2">계열</th><th class="sticky-2" rowspan="2">클래스</th><th rowspan="2">캐릭터<br><small>(필요 정흔)</small></th>';
     chars.forEach(function (ch, idx) {
       html += '<th colspan="2"><div class="char-head-row">' +
-        '<span class="char-name-label">' + escapeHtml(ch.name) + '</span>' +
+        '<span class="char-name-label" data-action="rename-char" data-id="' + ch.id + '">' + escapeHtml(ch.name) + '</span>' +
         '<button class="rename-btn" data-action="rename-char" data-id="' + ch.id + '" title="이름 변경">✎</button>' +
         '<button class="del-btn" data-action="delete-char" data-id="' + ch.id + '" title="캐릭터 삭제">✕</button>' +
         '</div></th>';
@@ -437,10 +456,10 @@ var TRACE_ICON = CLASS_ICONS.__trace__;
 
         html += '<tr class="' + (idx === 0 ? "group-first " : "") + (complete ? "row-complete" : "") + '">';
         html += idx === 0
-          ? '<td class="group-name" rowspan="' + visibleClasses.length + '">' + escapeHtml(grp.group) + "</td>"
+          ? '<td class="group-name sticky-1" rowspan="' + visibleClasses.length + '">' + escapeHtml(grp.group) + "</td>"
           : "";
         var iconSrc = CLASS_ICONS[cls] || "";
-        html += '<td class="class-name">' + (iconSrc ? '<img class="class-icon" src="' + iconSrc + '" alt="">' : "") + escapeHtml(cls) + "</td>";
+        html += '<td class="class-name sticky-2">' + (iconSrc ? '<img class="class-icon" src="' + iconSrc + '" alt="">' : "") + escapeHtml(cls) + "</td>";
 
         var best = null;
         chars.forEach(function (ch, ci) {
