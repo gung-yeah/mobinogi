@@ -430,8 +430,8 @@ var TRACE_ICON = CLASS_ICONS.__trace__;
     var html = '<div class="panel">';
     html += '<div class="panel-head">';
     html += '<div class="panel-head-left"><h2>' + escapeHtml(acc.name) + '</h2>';
-    html += '<button class="fold-toggle' + (acc.foldCompleted ? " active" : "") + '" id="foldToggleBtn">완료 클래스 접기</button></div>';
-    html += '<div class="char-controls"><button class="ghost-btn" id="addCharBtn"' + (canAddChar ? "" : " disabled") + '>+ 캐릭터 추가</button></div></div>';
+    html += '<button class="ghost-btn" id="addCharBtn"' + (canAddChar ? "" : " disabled") + '>+ 캐릭터 추가</button>';
+    html += '<button class="fold-toggle' + (acc.foldCompleted ? " active" : "") + '" id="foldToggleBtn">완료 클래스 접기</button></div></div>';
 
     html += '<div class="table-wrap"><table class="tracker"><thead><tr>';
     html += '<th class="sticky-1" rowspan="2">계열</th><th class="sticky-2" rowspan="2">클래스</th><th rowspan="2">캐릭터<br><small>(필요 정흔)</small></th>';
