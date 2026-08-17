@@ -26,6 +26,8 @@
     --amber-soft: #fff2c9;
     --red: #c94c4c;
     --red-soft: #ffe9e8;
+    --complete-bg: #fff2b8;
+    --complete-border: #e0b400;
     --shadow: 0 16px 40px rgba(35, 55, 77, 0.08);
     --radius: 10px;
   }
@@ -179,21 +181,14 @@
   }
   table.tracker input.level-input:focus { outline: none; border-color: var(--accent); }
   .char-head-row { display: flex; align-items: center; justify-content: center; gap: 4px; }
-  table.tracker input.char-name-input {
-    width: 100%;
-    min-width: 70px;
-    border: none;
-    background: transparent;
-    font-weight: 800;
-    text-align: center;
-    color: var(--ink);
-    border-bottom: 1px dashed var(--line);
-    padding: 2px 4px;
-  }
-  table.tracker input.char-name-input:focus { outline: none; border-color: var(--accent); }
+  .char-name-label { font-weight: 800; }
+  .char-head-row button.rename-btn,
   .char-head-row button.del-btn {
-    background: transparent; color: var(--red); opacity: .55; padding: 2px 6px; border-radius: 6px; font-size: 12px; flex: none; cursor: pointer;
+    background: transparent; opacity: .55; padding: 2px 5px; border-radius: 6px; font-size: 12px; flex: none; cursor: pointer;
   }
+  .char-head-row button.rename-btn { color: var(--muted); }
+  .char-head-row button.rename-btn:hover { opacity: 1; background: rgba(0,0,0,.06); }
+  .char-head-row button.del-btn { color: var(--red); }
   .char-head-row button.del-btn:hover { opacity: 1; background: var(--red-soft); }
   .need-cell { color: var(--muted); font-size: 12px; }
   .level-cap { color: var(--red); font-weight: 800; }
@@ -201,14 +196,8 @@
   .recommend-name { font-weight: 800; }
   .recommend-need { font-size: 12px; color: var(--muted); }
 
-  table.tracker tr.row-complete td.class-name,
-  table.tracker tr.row-complete td.recommend,
-  table.tracker tr.row-complete td.level-cell,
-  table.tracker tr.row-complete td.need-cell {
-    background-image: linear-gradient(var(--red), var(--red));
-    background-repeat: no-repeat;
-    background-size: 100% 3px;
-    background-position: center;
+  table.tracker tr.row-complete td {
+    background-color: var(--complete-bg);
   }
 
   .empty-state {
@@ -243,7 +232,7 @@
 
   <div id="accountPanel"></div>
 
-  <footer class="foot">© 2026 bbunye · 무단 복제·재배포 금지 · 원본: bbunye.tistory.com</footer>
+  <footer class="foot">© 2026 bbunye. All rights reserved.<br>본 콘텐츠(코드 포함)의 무단 복제, 수정, 재배포를 금지합니다.</footer>
 </div>
 
 <script>
@@ -260,7 +249,7 @@ var TRACE_ICON = CLASS_ICONS.__trace__;
     { key: "richTalent", name: "재능 부자", threshold: 200 },
     { key: "allRounder", name: "올라운더", threshold: 1205 }
   ];
-  var CHAR_COLORS = ["#2f6fed", "#1f9e6c", "#c98a12", "#8452d5", "#d1477a", "#0891b2"];
+  var CHAR_COLORS = ["#e0483e", "#e08a2c", "#2f9e58", "#2f6fed", "#8452d5", "#14b8a6"]; // 빨강/주황/초록/파랑/보라/민트
 
   var CLASS_GROUPS = [
     { group: "전사", classes: ["전사", "대검전사", "검술사", "기사"] },
@@ -420,14 +409,15 @@ var TRACE_ICON = CLASS_ICONS.__trace__;
     var html = '<div class="panel">';
     html += '<div class="panel-head">';
     html += '<div class="panel-head-left"><h2>' + escapeHtml(acc.name) + '</h2>';
-    html += '<button class="fold-toggle' + (acc.foldCompleted ? " active" : "") + '" id="foldToggleBtn">65레벨 완료 클래스 접어두기' + (acc.foldCompleted ? " (숨김)" : "") + '</button></div>';
+    html += '<button class="fold-toggle' + (acc.foldCompleted ? " active" : "") + '" id="foldToggleBtn">완료 클래스 접어두기' + (acc.foldCompleted ? " (숨김)" : "") + '</button></div>';
     html += '<div class="char-controls"><button class="ghost-btn" id="addCharBtn"' + (canAddChar ? "" : " disabled") + '>+ 캐릭터 추가</button></div></div>';
 
     html += '<div class="table-wrap"><table class="tracker"><thead><tr>';
     html += '<th rowspan="2">계열</th><th rowspan="2">클래스</th><th rowspan="2">캐릭터<br><small>(필요 정흔)</small></th>';
     chars.forEach(function (ch, idx) {
       html += '<th colspan="2"><div class="char-head-row">' +
-        '<input class="char-name-input" data-char="' + ch.id + '" value="' + escapeHtml(ch.name) + '" />' +
+        '<span class="char-name-label">' + escapeHtml(ch.name) + '</span>' +
+        '<button class="rename-btn" data-action="rename-char" data-id="' + ch.id + '" title="이름 변경">✎</button>' +
         '<button class="del-btn" data-action="delete-char" data-id="' + ch.id + '" title="캐릭터 삭제">✕</button>' +
         '</div></th>';
     });
@@ -438,13 +428,16 @@ var TRACE_ICON = CLASS_ICONS.__trace__;
     html += "</tr></thead><tbody>";
 
     CLASS_GROUPS.forEach(function (grp) {
-      grp.classes.forEach(function (cls, idx) {
-        var complete = chars.some(function (ch) { return (ch.levels[cls] || 1) >= MAX_LEVEL; });
-        if (complete && acc.foldCompleted) return; // 접어두기: 숨김
+      var isComplete = function (cls) { return chars.some(function (ch) { return (ch.levels[cls] || 1) >= MAX_LEVEL; }); };
+      var visibleClasses = grp.classes.filter(function (cls) { return !(acc.foldCompleted && isComplete(cls)); });
+      if (!visibleClasses.length) return; // 그룹 전체가 접힘
+
+      visibleClasses.forEach(function (cls, idx) {
+        var complete = isComplete(cls);
 
         html += '<tr class="' + (idx === 0 ? "group-first " : "") + (complete ? "row-complete" : "") + '">';
         html += idx === 0
-          ? '<td class="group-name" rowspan="' + grp.classes.length + '">' + escapeHtml(grp.group) + "</td>"
+          ? '<td class="group-name" rowspan="' + visibleClasses.length + '">' + escapeHtml(grp.group) + "</td>"
           : "";
         var iconSrc = CLASS_ICONS[cls] || "";
         html += '<td class="class-name">' + (iconSrc ? '<img class="class-icon" src="' + iconSrc + '" alt="">' : "") + escapeHtml(cls) + "</td>";
@@ -534,13 +527,17 @@ var TRACE_ICON = CLASS_ICONS.__trace__;
     renderAll();
   }
 
-  function setCharacterName(id, name) {
+  function renameCharacter(id) {
     var acc = getActiveAccount();
     if (!acc) return;
     var ch = acc.characters.find(function (c) { return c.id === id; });
     if (!ch) return;
-    ch.name = name.trim() || ch.name;
+    var name = prompt("캐릭터 이름", ch.name);
+    if (name === null) return;
+    name = name.trim();
+    if (name) ch.name = name;
     save();
+    renderAll();
   }
 
   function setLevel(charId, cls, value) {
@@ -576,6 +573,7 @@ var TRACE_ICON = CLASS_ICONS.__trace__;
 
     if (action === "rename-account") { e.stopPropagation(); return renameAccount(t.getAttribute("data-id")); }
     if (action === "delete-account") { e.stopPropagation(); return deleteAccount(t.getAttribute("data-id")); }
+    if (action === "rename-char") { e.stopPropagation(); return renameCharacter(t.getAttribute("data-id")); }
     if (action === "delete-char") { e.stopPropagation(); return deleteCharacter(t.getAttribute("data-id")); }
 
     if (chip && chip.getAttribute("data-account")) {
@@ -591,14 +589,6 @@ var TRACE_ICON = CLASS_ICONS.__trace__;
       setLevel(t.getAttribute("data-char"), t.getAttribute("data-class"), t.value);
     }
   });
-
-  document.addEventListener("blur", function (e) {
-    var t = e.target;
-    if (t.classList && t.classList.contains("char-name-input")) {
-      setCharacterName(t.getAttribute("data-char"), t.value);
-      renderAll();
-    }
-  }, true);
 
   // ---- 초기화 ----
   if (!state.accounts.length) {
