@@ -623,5 +623,38 @@ var TRACE_ICON = CLASS_ICONS.__trace__;
   renderAll();
 })();
 </script>
+<script>
+(function () {
+  "use strict";
+  var lastSent = 0;
+  var raf = null;
+  function postHeight() {
+    var h = document.documentElement.scrollHeight;
+    if (h < 100 || h === lastSent) return;
+    lastSent = h;
+    window.parent.postMessage({ type: "mabinogi-class-tracker-resize", height: h }, "*");
+  }
+  function schedulePostHeight() {
+    if (raf) cancelAnimationFrame(raf);
+    raf = requestAnimationFrame(function () {
+      postHeight();
+      setTimeout(postHeight, 80);
+      setTimeout(postHeight, 220);
+    });
+  }
+  window.addEventListener("load", function () {
+    schedulePostHeight();
+    [100, 300, 800, 1500, 3000].forEach(function (delay) { setTimeout(schedulePostHeight, delay); });
+  });
+  window.addEventListener("resize", schedulePostHeight);
+  document.addEventListener("click", schedulePostHeight);
+  document.addEventListener("change", schedulePostHeight);
+  if (window.ResizeObserver) {
+    new ResizeObserver(schedulePostHeight).observe(document.body);
+  } else {
+    setInterval(schedulePostHeight, 500);
+  }
+})();
+</script>
 </body>
 </html>
