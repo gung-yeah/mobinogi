@@ -2,7 +2,7 @@
   © 2026 bbunye. All rights reserved.
   이 파일의 무단 복제, 수정, 재배포를 금지합니다.
   원본: https://bbunye.tistory.com/
-  버전: v1.2.0
+  버전: v1.2.1
 -->
 <!doctype html>
 <html lang="ko">
@@ -401,6 +401,38 @@
       min-width: 0;
     }
 
+    .gear-badge-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      min-width: 0;
+    }
+
+    .gear-qty-stepper {
+      display: flex;
+      gap: 4px;
+    }
+
+    .gear-qty-step {
+      flex: 1 1 auto;
+      min-width: 0;
+      height: 18px;
+      min-height: 18px;
+      border-radius: 4px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--muted);
+      font-size: 9px;
+      line-height: 1;
+      padding: 0;
+    }
+
+    .gear-qty-step:hover {
+      border-color: #bcd4ef;
+      background: var(--blue-2);
+      color: var(--blue);
+    }
+
     .gear-toggle {
       --item-color: var(--blue);
       --item-soft: var(--blue-2);
@@ -501,7 +533,7 @@
 
     .summary-grid {
       display: grid;
-      grid-template-columns: 1fr;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 10px;
       margin-bottom: 12px;
     }
@@ -1500,7 +1532,7 @@
           <span class="creator-name">By 알리사 르구댕뿐예</span>
         </div>
       </div>
-      <span class="version-badge" style="display:inline-block; font-size:11px; font-weight:500; padding:2px 8px; border-radius:6px; background:var(--blue-2); color:var(--blue); align-self:start;">v1.2.0</span>
+      <span class="version-badge" style="display:inline-block; font-size:11px; font-weight:500; padding:2px 8px; border-radius:6px; background:var(--blue-2); color:var(--blue); align-self:start;">v1.2.1</span>
     </div>
   </header>
 
@@ -1527,7 +1559,7 @@
       </aside>
 
       <section>
-        <div class="summary-grid">
+        <div class="summary-grid" id="summaryGrid">
           <div class="stat">
             <div class="stat-label">구매 예상 총 데카</div>
             <div class="stat-value" id="statCost">-</div>
@@ -1729,6 +1761,10 @@
       { id: "ring1", label: "반지 1", kind: "장신구", kindClass: "accessory", icon: "반", mats: { "허상의 마력석": 8, "원념의 영혼석": 55, "야생의 영혼석": 40, "공명의 영혼석": 60 } },
       { id: "ring2", label: "반지 2", kind: "장신구", kindClass: "accessory", icon: "반", mats: { "허상의 마력석": 8, "원념의 영혼석": 55, "야생의 영혼석": 40, "공명의 영혼석": 60 } }
     ];
+
+    const janyeongItems = items
+      .filter((item) => item.id !== "ring2")
+      .map((item) => (item.id === "ring1" ? { ...item, label: "반지" } : item));
 
     const gearGroups = [
       { label: "무기", kindClass: "weapon" },
@@ -2374,10 +2410,12 @@
         }
         return state.drakeinClassType;
       }
-      if (!classCatalog.some(({ id }) => id === state.classType)) {
-        state.classType = "warrior";
+      if (!state.classTypeBySet) state.classTypeBySet = { haeyeon: "warrior", janyeong: "warrior" };
+      const gearSet = state.gearSet;
+      if (!classCatalog.some(({ id }) => id === state.classTypeBySet[gearSet])) {
+        state.classTypeBySet[gearSet] = "warrior";
       }
-      return state.classType;
+      return state.classTypeBySet[gearSet];
     }
 
     function getActiveDrakeinJobType() {
@@ -2431,7 +2469,7 @@
         selected: items.map((item) => item.id),
         selectedBySet: {
           haeyeon: items.map((item) => item.id),
-          janyeong: items.map((item) => item.id),
+          janyeong: janyeongItems.map((item) => item.id),
           drakein: drakeinItems.map((item) => item.id)
         },
         owned: {},
@@ -2441,7 +2479,7 @@
         equipmentMarketNames: {},
         equipmentPriceStamp: "",
         priceStamp: "",
-        classType: "warrior",
+        classTypeBySet: { haeyeon: "warrior", janyeong: "warrior" },
         drakeinClassType: "warrior",
         drakeinJobType: "warrior",
         hideUnusedRecipes: true,
@@ -2456,14 +2494,23 @@
         if (!raw) return fallback;
         const parsed = JSON.parse(raw);
         const {
-          recipes, recipesByType, recipeType, classType, drakeinClassType, drakeinJobType,
+          recipes, recipesByType, recipeType, classType, classTypeBySet, drakeinClassType, drakeinJobType,
           weaponRecipesByClass, weaponRecipesByClassBySet, recipesByTypeBySet, drakeinRecipesByJob,
           recipeDataVersion,
           ...rest
         } = parsed;
         const recipeDataCurrent = Number(recipeDataVersion) === RECIPE_DATA_VERSION;
         const savedGearSet = gearSetTypes.some(({ id }) => id === parsed.gearSet) ? parsed.gearSet : fallback.gearSet;
-        const savedClassType = classCatalog.some(({ id }) => id === classType) ? classType : fallback.classType;
+        const legacyClassType = classCatalog.some(({ id }) => id === classType) ? classType : null;
+        const savedClassTypeBySet = classTypeBySet && typeof classTypeBySet === "object" ? classTypeBySet : {};
+        const resolvedClassTypeBySet = {
+          haeyeon: classCatalog.some(({ id }) => id === savedClassTypeBySet.haeyeon)
+            ? savedClassTypeBySet.haeyeon
+            : (legacyClassType || fallback.classTypeBySet.haeyeon),
+          janyeong: classCatalog.some(({ id }) => id === savedClassTypeBySet.janyeong)
+            ? savedClassTypeBySet.janyeong
+            : (legacyClassType || fallback.classTypeBySet.janyeong)
+        };
         const savedDrakeinClassType = drakeinClassTypes.some(({ id }) => id === drakeinClassType) ? drakeinClassType : fallback.drakeinClassType;
         const savedDrakeinJobs = drakeinJobsByClass[savedDrakeinClassType] || drakeinJobsByClass.warrior;
         const savedDrakeinJobType = savedDrakeinJobs.some(({ id }) => id === drakeinJobType) ? drakeinJobType : savedDrakeinJobs[0].id;
@@ -2489,7 +2536,7 @@
           equipmentPrices: parsed.equipmentPrices || {},
           equipmentMarketNames: parsed.equipmentMarketNames || {},
           equipmentPriceStamp: parsed.equipmentPriceStamp || "",
-          classType: savedClassType,
+          classTypeBySet: resolvedClassTypeBySet,
           drakeinClassType: savedDrakeinClassType,
           drakeinJobType: savedDrakeinJobType,
           hideUnusedRecipes: typeof parsed.hideUnusedRecipes === "boolean" ? parsed.hideUnusedRecipes : fallback.hideUnusedRecipes,
@@ -2518,7 +2565,9 @@
     }
 
     function getActiveItems() {
-      return isDrakein() ? drakeinItems : items;
+      if (isDrakein()) return drakeinItems;
+      if (state.gearSet === "janyeong") return janyeongItems;
+      return items;
     }
 
     function getActiveGearGroups() {
@@ -2554,7 +2603,7 @@
       if (!state.selectedBySet) {
         state.selectedBySet = {
           haeyeon: Array.isArray(state.selected) ? state.selected : items.map((item) => item.id),
-          janyeong: items.map((item) => item.id),
+          janyeong: janyeongItems.map((item) => item.id),
           drakein: drakeinItems.map((item) => item.id)
         };
       }
@@ -2576,6 +2625,21 @@
       state.selectedBySet[key] = nextSelected;
       getEmptySelectionFallbackMap()[key] = emptyFallback;
       if (key === "haeyeon") state.selected = nextSelected;
+    }
+
+    function getItemQty(itemId) {
+      if (state.gearSet !== "janyeong") return 1;
+      const key = getSelectionKey();
+      const qty = parseNumber(state.itemQtyBySet?.[key]?.[itemId]);
+      return qty > 0 ? qty : 1;
+    }
+
+    function setItemQty(itemId, qty) {
+      const key = getSelectionKey();
+      if (!state.itemQtyBySet) state.itemQtyBySet = {};
+      if (!state.itemQtyBySet[key]) state.itemQtyBySet[key] = {};
+      const normalized = Math.max(1, Math.floor(parseNumber(qty)) || 1);
+      state.itemQtyBySet[key][itemId] = normalized;
     }
 
     function formatNumber(value) {
@@ -2611,9 +2675,10 @@
       const selectedItems = getActiveItems().filter((item) => selected.includes(item.id));
 
       for (const item of selectedItems) {
+        const itemQty = getItemQty(item.id);
         for (const [name, qty] of Object.entries(getRecipe(item))) {
           if (!Object.prototype.hasOwnProperty.call(totals, name)) totals[name] = 0;
-          totals[name] += qty;
+          totals[name] += qty * itemQty;
         }
       }
 
@@ -2623,14 +2688,26 @@
     function renderGear() {
       const grid = document.getElementById("gearGrid");
       const selected = getActiveSelected();
+      const janyeongMode = state.gearSet === "janyeong";
       grid.innerHTML = getActiveGearGroups().map((group) => {
         const groupItems = getActiveItems().filter((item) => item.kindClass === group.kindClass);
         const buttons = groupItems.map((item) => {
           const active = selected.includes(item.id);
+          const qty = getItemQty(item.id);
+          const label = janyeongMode && active ? `${item.label} ${qty}` : item.label;
+          const stepper = janyeongMode ? `
+            <div class="gear-qty-stepper" ${active ? "" : "style=\"visibility:hidden;\""}>
+              <button class="gear-qty-step" type="button" data-qty-step="1" data-qty-target="${item.id}" aria-label="${item.label} 수량 증가">&#9650;</button>
+              <button class="gear-qty-step" type="button" data-qty-step="-1" data-qty-target="${item.id}" aria-label="${item.label} 수량 감소">&#9660;</button>
+            </div>
+          ` : "";
           return `
-            <button class="gear-toggle kind-${item.kindClass}" type="button" aria-pressed="${active}" data-id="${item.id}">
-              <span class="gear-name">${item.label}</span>
-            </button>
+            <div class="gear-badge-wrap">
+              <button class="gear-toggle kind-${item.kindClass}" type="button" aria-pressed="${active}" data-id="${item.id}">
+                <span class="gear-name">${label}</span>
+              </button>
+              ${stepper}
+            </div>
           `;
         }).join("");
         return `
@@ -2663,6 +2740,20 @@
           renderAll();
         });
       });
+
+      if (janyeongMode) {
+        grid.querySelectorAll("[data-qty-step]").forEach((button) => {
+          button.addEventListener("click", () => {
+            const id = button.dataset.qtyTarget;
+            const step = Number(button.dataset.qtyStep);
+            setItemQty(id, getItemQty(id) + step);
+            saveState();
+            renderGear();
+            renderMaterials();
+            renderPriority();
+          });
+        });
+      }
     }
 
     function renderMaterials() {
@@ -3217,7 +3308,7 @@
             setActiveSelected([`drakein-${firstJob.id}`]);
           } else {
             if (nextType === activeSeriesType) return;
-            state.classType = firstJob.id;
+            state.classTypeBySet[state.gearSet] = firstJob.id;
             getActiveWeaponRecipe();
             getActiveRecipes();
           }
@@ -3247,8 +3338,8 @@
             state.drakeinJobType = nextJob;
             setActiveSelected([`drakein-${nextJob}`]);
           } else {
-            if (state.classType === nextJob) return;
-            state.classType = nextJob;
+            if (state.classTypeBySet[state.gearSet] === nextJob) return;
+            state.classTypeBySet[state.gearSet] = nextJob;
             getActiveWeaponRecipe();
             getActiveRecipes();
           }
