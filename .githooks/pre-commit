@@ -1,0 +1,39 @@
+#!/bin/sh
+# 커밋할 때마다 스테이징된 파일의 버전을 v1.0.0부터 자릿수 받아올림 방식으로 자동 증가시킴.
+# 대상 파일과 카운트는 .version-state.json 에 저장.
+# 안전장치: 대상 파일에 "커밋에 포함되지 않는" unstaged 변경이 남아있으면
+# (부분 스테이징 등) 해당 파일은 건너뜀 - git add로 무관한 내용까지
+# 딸려 들어가는 것을 막기 위함.
+
+REPO_ROOT=$(git rev-parse --show-toplevel)
+STATE_FILE="$REPO_ROOT/.version-state.json"
+
+[ -f "$STATE_FILE" ] || exit 0
+
+STAGED=$(git diff --cached --name-only)
+UNSTAGED=$(git diff --name-only)
+
+for f in "crafting-planner/crafting-planner.html" "class-tracker/class-tracker.html" "processing-techtree/mabinogi-life-techtree.html"; do
+  echo "$STAGED" | grep -qx "$f" || continue
+
+  if echo "$UNSTAGED" | grep -qx "$f"; then
+    echo "[version-hook] $f 에 unstaged 변경이 남아있어 버전 갱신을 건너뜁니다." >&2
+    continue
+  fi
+
+  old=$(grep -o "\"$f\": *[0-9]*" "$STATE_FILE" | grep -o '[0-9]*$')
+  [ -n "$old" ] || old=0
+  new=$((old + 1))
+
+  sed -i "s#\"$f\": *$old#\"$f\": $new#" "$STATE_FILE"
+
+  total=$((100 + new))
+  major=$((total / 100))
+  tens=$(((total / 10) % 10))
+  ones=$((total % 10))
+  version="v${major}.${tens}.${ones}"
+
+  sed -i -E "s/v[0-9]\.[0-9]\.[0-9]/${version}/g" "$REPO_ROOT/$f"
+
+  git add "$REPO_ROOT/$f" "$STATE_FILE"
+done

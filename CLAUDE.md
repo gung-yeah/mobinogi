@@ -21,5 +21,12 @@
 - 커밋 전 로컬에서 html 파일 직접 열어서 동작 확인
 - 저작권 표기(카피라이트 노티스)는 블로그, 소스코드, 리포지토리 세 군데 모두에 유지할 것
 
+## 버전 표시
+- crafting-planner, class-tracker, processing-techtree 3개 서브 프로젝트 HTML에 `v1.0.0` 형식의 버전을 표시(소스 상단 주석 + 화면 하단 footer)
+- 자릿수는 각 0~9, 10 넘으면 윗자리로 받아올림 (odometer 방식). 시작값 v1.0.0
+- `.githooks/pre-commit` 훅이 커밋 시 스테이징된 대상 파일만 자동으로 버전을 올림 (파일별 커밋 수 기준, `.version-state.json`에 카운트 저장)
+- 이 저장소를 새로 clone한 환경에서는 훅이 자동 적용되지 않으므로 `git config core.hooksPath .githooks` 를 한 번 실행해야 함
+- 버전 문자열은 파일 내 `vX.Y.Z` 패턴을 전역 치환하는 방식이므로, 다른 용도로 `vX.Y.Z` 형태 텍스트를 파일에 넣지 말 것
+
 ## 코드 스타일
 - 
