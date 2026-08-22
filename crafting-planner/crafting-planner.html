@@ -2,7 +2,7 @@
   © 2026 bbunye. All rights reserved.
   이 파일의 무단 복제, 수정, 재배포를 금지합니다.
   원본: https://bbunye.tistory.com/
-  버전: v1.1.8
+  버전: v1.1.9
 -->
 <!doctype html>
 <html lang="ko">
@@ -549,9 +549,7 @@
       margin-bottom: 8px;
     }
 
-    .tabs,
-    .class-types,
-    .recipe-types {
+    .tabs {
       display: flex;
       align-items: center;
       gap: 6px;
@@ -561,9 +559,6 @@
       background: var(--surface);
       max-width: 100%;
       overflow-x: auto;
-    }
-
-    .tabs {
       width: fit-content;
       flex: 0 0 auto;
     }
@@ -583,7 +578,17 @@
       display: none;
     }
 
-    .class-types {
+    .class-types,
+    .recipe-types {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+      max-width: 100%;
+      overflow-x: auto;
       width: fit-content;
       min-width: 0;
       flex: 0 1 auto;
@@ -597,20 +602,19 @@
       text-align: center;
     }
 
-    .recipe-types {
-      width: fit-content;
-      min-width: 0;
-      flex: 0 1 auto;
-      align-self: flex-end;
-      justify-content: flex-end;
-    }
-
     .recipe-types.job-types {
       display: grid;
       grid-template-columns: auto repeat(4, 58px);
       width: fit-content;
       justify-content: stretch;
       overflow-x: visible;
+    }
+
+    .recipe-types.job-types .recipe-type {
+      width: 58px;
+      padding: 0 6px;
+      font-size: 13px;
+      text-align: center;
     }
 
     .tab,
@@ -625,13 +629,6 @@
       font-size: 13px;
       font-weight: 800;
       white-space: nowrap;
-    }
-
-    .recipe-types.job-types .recipe-type {
-      width: 58px;
-      padding: 0 6px;
-      font-size: 13px;
-      text-align: center;
     }
 
     .selector-label {
@@ -946,6 +943,14 @@
 
     .price-change.down {
       color: var(--blue);
+    }
+
+    .price-unavailable {
+      display: inline-block;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 780;
+      white-space: nowrap;
     }
 
     .source-cell {
@@ -1316,7 +1321,12 @@
       .recipe-types {
         width: fit-content;
         align-self: flex-end;
-        justify-content: flex-end;
+      }
+
+      .class-types.drakein-types .class-type {
+        width: 46px;
+        padding: 0 3px;
+        font-size: 12px;
       }
 
       .recipe-types.job-types {
@@ -1327,12 +1337,6 @@
       .recipe-types.job-types .recipe-type {
         width: 56px;
         padding: 0 4px;
-        font-size: 12px;
-      }
-
-      .class-types.drakein-types .class-type {
-        width: 46px;
-        padding: 0 3px;
         font-size: 12px;
       }
 
@@ -1496,7 +1500,7 @@
           <span class="creator-name">By 알리사 르구댕뿐예</span>
         </div>
       </div>
-      <span class="version-badge" style="display:inline-block; font-size:11px; font-weight:500; padding:2px 8px; border-radius:6px; background:var(--blue-2); color:var(--blue); align-self:start;">v1.1.8</span>
+      <span class="version-badge" style="display:inline-block; font-size:11px; font-weight:500; padding:2px 8px; border-radius:6px; background:var(--blue-2); color:var(--blue); align-self:start;">v1.1.9</span>
     </div>
   </header>
 
@@ -1507,8 +1511,9 @@
           <div class="target-head">
             <h2 class="panel-title">제작 목표</h2>
             <div class="gear-set-tabs" id="gearSetTabs" role="group" aria-label="장비 종류">
-              <button class="gear-set-tab active" type="button" data-gear-set="haeyeon">해연</button>
               <button class="gear-set-tab" type="button" data-gear-set="drakein">드래케인</button>
+              <button class="gear-set-tab active" type="button" data-gear-set="haeyeon">해연</button>
+              <button class="gear-set-tab" type="button" data-gear-set="janyeong">잔영</button>
             </div>
           </div>
         </div>
@@ -1539,7 +1544,7 @@
                 <div class="market-progress" id="marketProgress" aria-label="시세 갱신 진행률">
                   <div class="progress-meta">
                     <span id="marketProgressText">시세 갱신 대기</span>
-                    <span id="marketProgressCount">0/9</span>
+                    <span id="marketProgressCount">0/15</span>
                   </div>
                   <div class="progress-track" aria-hidden="true"><div class="progress-bar" id="marketProgressBar"></div></div>
                 </div>
@@ -1565,20 +1570,21 @@
                 <button class="tab" type="button" data-view="equipment">장비 시세</button>
               </div>
               <div class="build-types">
-                <div class="class-types" id="classTypes" role="group" aria-label="계열">
+                <div class="class-types drakein-types" id="classTypes" role="group" aria-label="계열">
                   <span class="selector-label">계열</span>
                   <button class="class-type active" type="button" data-class-type="warrior">전사</button>
                   <button class="class-type" type="button" data-class-type="archer">궁수</button>
-                  <button class="class-type" type="button" data-class-type="mage">법사</button>
+                  <button class="class-type" type="button" data-class-type="mage">마법사</button>
                   <button class="class-type" type="button" data-class-type="healer">힐러</button>
-                  <button class="class-type" type="button" data-class-type="bard">음유</button>
+                  <button class="class-type" type="button" data-class-type="bard">음유시인</button>
                   <button class="class-type" type="button" data-class-type="rogue">도적</button>
                 </div>
-                <div class="recipe-types" id="recipeTypes" role="group" aria-label="방어구">
-                  <span class="selector-label">방어구</span>
-                  <button class="recipe-type" type="button" data-recipe-type="light">경갑</button>
-                  <button class="recipe-type" type="button" data-recipe-type="heavy">중갑</button>
-                  <button class="recipe-type active" type="button" data-recipe-type="cloth">천옷</button>
+                <div class="recipe-types job-types" id="recipeTypes" role="group" aria-label="직업">
+                  <span class="selector-label">직업</span>
+                  <button class="recipe-type active" type="button" data-drakein-job-type="warrior">전사</button>
+                  <button class="recipe-type" type="button" data-drakein-job-type="greatsword">대검전사</button>
+                  <button class="recipe-type" type="button" data-drakein-job-type="swordsman">검술사</button>
+                  <button class="recipe-type" type="button" data-drakein-job-type="knight">기사</button>
                 </div>
               </div>
             </div>
@@ -1629,8 +1635,13 @@
   <script>
     const MARKET_URL = "https://mabimobi.life/market";
     const MARKET_API_URL = "https://mabimobi.life/d/api/v1/market/prices";
-    const MARKET_PROXY_URL = "https://corsproxy.io/?url=";
+    const MARKET_PROXY_BUILDERS = [
+      (apiUrl) => `https://proxy.cors.sh/${apiUrl}`,
+      (apiUrl) => `https://corsproxy.io/?url=${encodeURIComponent(apiUrl)}`
+    ];
+    const MARKET_FETCH_TIMEOUT_MS = 6000;
     const STORE_KEY = "mabinogi-season2-crafting-planner-v1";
+    const RECIPE_DATA_VERSION = 3;
 
     const materials = {
       "심해의 마력석": { type: "마력석", source: "흩어진 물길 매우 어려움", icon: "data:image/png;base64,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" },
@@ -1667,6 +1678,46 @@
       }
     });
 
+    Object.assign(materials, {
+      "특급 옷감": {
+        type: "제작 재료",
+        source: "거래소 및 제작 재료 수급처",
+        icon: "./premium-fabric.png"
+      },
+      "특급 실크": {
+        type: "제작 재료",
+        source: "거래소 및 제작 재료 수급처",
+        icon: "./premium-silk.png"
+      },
+      "최상급 목재+": {
+        type: "제작 재료",
+        source: "거래소 및 제작 재료 수급처",
+        icon: "./superior-wood-plus.png"
+      },
+      "최상급 가죽+": {
+        type: "제작 재료",
+        source: "거래소 및 제작 재료 수급처",
+        icon: "./superior-leather-plus.png"
+      },
+      "최상급 옷감+": {
+        type: "제작 재료",
+        source: "거래소 및 제작 재료 수급처",
+        icon: "./superior-fabric-plus.png"
+      },
+      "운철괴": {
+        type: "제작 재료",
+        source: "거래소 및 제작 재료 수급처",
+        icon: "./meteor-ingot.png"
+      },
+      "세공된 페리도트ZZ": {
+        type: "제작 재료",
+        source: "가공 재료 (거래소 판매 불가)",
+        icon: "./carved-peridot-zz.png"
+      }
+    });
+
+    const NO_MARKET_MATERIALS = new Set(["세공된 페리도트ZZ"]);
+
     const items = [
       { id: "weapon", label: "무기", kind: "무기", kindClass: "weapon", icon: "무", mats: { "심해의 마력석": 15, "망령의 영혼석": 80, "삼림의 영혼석": 75, "공명의 영혼석": 90 } },
       { id: "helmet", label: "투구", kind: "방어구", kindClass: "armor", icon: "투", mats: { "허상의 마력석": 8, "망령의 영혼석": 40, "야생의 영혼석": 35, "공명의 영혼석": 55 } },
@@ -1685,36 +1736,36 @@
       { label: "장신구", kindClass: "accessory" }
     ];
 
-    const materialOrder = [
-      "심해의 마력석",
-      "허상의 마력석",
-      "포식의 마력석",
-      "망령의 영혼석",
-      "원념의 영혼석",
-      "야생의 영혼석",
-      "삼림의 영혼석",
-      "공명의 영혼석",
-      "파동의 영혼석"
-    ];
-
-    const recipeTypes = [
-      { id: "light", label: "경갑" },
-      { id: "heavy", label: "중갑" },
-      { id: "cloth", label: "천옷" }
-    ];
-
-    const classTypes = [
-      { id: "warrior", label: "전사" },
-      { id: "archer", label: "궁수" },
-      { id: "mage", label: "법사" },
-      { id: "healer", label: "힐러" },
-      { id: "bard", label: "음유" },
-      { id: "rogue", label: "도적" }
-    ];
-
     const gearSetTypes = [
+      { id: "drakein", label: "드래케인" },
       { id: "haeyeon", label: "해연" },
-      { id: "drakein", label: "드래케인" }
+      { id: "janyeong", label: "잔영" }
+    ];
+
+    const recipeTypeIds = ["heavy", "light", "cloth"];
+
+    const classCatalog = [
+      { id: "warrior", label: "전사", armorType: "heavy" },
+      { id: "greatsword", label: "대검전사", armorType: "heavy" },
+      { id: "swordsman", label: "검술사", armorType: "heavy" },
+      { id: "knight", label: "기사", armorType: "heavy" },
+      { id: "archer", label: "궁수", armorType: "light" },
+      { id: "crossbow", label: "석궁사수", armorType: "light" },
+      { id: "longbow", label: "장궁병", armorType: "light" },
+      { id: "mage", label: "마법사", armorType: "cloth" },
+      { id: "cryomancer", label: "빙결술사", armorType: "cloth" },
+      { id: "pyromancer", label: "화염술사", armorType: "cloth" },
+      { id: "electromancer", label: "전격술사", armorType: "cloth" },
+      { id: "healer", label: "힐러", armorType: "cloth" },
+      { id: "priest", label: "사제", armorType: "cloth" },
+      { id: "monk", label: "수도사", armorType: "cloth" },
+      { id: "darkmage", label: "암흑술사", armorType: "cloth" },
+      { id: "bard", label: "음유시인", armorType: "light" },
+      { id: "dancer", label: "댄서", armorType: "light" },
+      { id: "musician", label: "악사", armorType: "light" },
+      { id: "rogue", label: "도적", armorType: "light" },
+      { id: "fighter", label: "격투가", armorType: "light" },
+      { id: "dualblade", label: "듀얼블레이드", armorType: "light" }
     ];
 
     const drakeinClassTypes = [
@@ -1725,21 +1776,6 @@
       { id: "bard", label: "음유시인" },
       { id: "rogue", label: "도적" }
     ];
-
-    const haeyeonRecipeTypeByClass = {
-      warrior: "heavy",
-      archer: "light",
-      mage: "cloth",
-      healer: "cloth",
-      bard: "light",
-      rogue: "light"
-    };
-
-    const haeyeonClassTypeByRecipe = {
-      light: "archer",
-      heavy: "warrior",
-      cloth: "mage"
-    };
 
     const drakeinJobsByClass = {
       warrior: [
@@ -1808,7 +1844,50 @@
       "특급 가죽"
     ];
 
-    const allMaterialOrder = [...new Set([...materialOrder, ...drakeinMaterialOrder])];
+    const haeyeonMaterialOrder = [
+      "심해의 마력석",
+      "허상의 마력석",
+      "포식의 마력석",
+      "망령의 영혼석",
+      "원념의 영혼석",
+      "야생의 영혼석",
+      "삼림의 영혼석",
+      "공명의 영혼석",
+      "파동의 영혼석",
+      "백금강괴",
+      "특급 목재",
+      "특급 가죽",
+      "특급 옷감",
+      "특급 실크",
+      "세공된 페리도트ZZ"
+    ];
+
+    const janyeongMaterialOrder = [
+      "망령의 영혼석",
+      "원념의 영혼석",
+      "야생의 영혼석",
+      "삼림의 영혼석",
+      "공명의 영혼석",
+      "파동의 영혼석",
+      "백금강괴",
+      "특급 목재",
+      "특급 가죽",
+      "특급 옷감",
+      "특급 실크",
+      "최상급 목재+",
+      "최상급 가죽+",
+      "최상급 옷감+",
+      "운철괴",
+      "세공된 페리도트ZZ"
+    ];
+
+    const MATERIAL_ORDER_BY_SET = {
+      drakein: drakeinMaterialOrder,
+      haeyeon: haeyeonMaterialOrder,
+      janyeong: janyeongMaterialOrder
+    };
+
+    const allMaterialOrder = [...new Set([...drakeinMaterialOrder, ...haeyeonMaterialOrder, ...janyeongMaterialOrder])];
 
     const materialAliases = {
       "백금 강괴": "백금강괴"
@@ -1858,99 +1937,154 @@
       shoes: "신발"
     };
 
-    const equipmentArmorExactNames = {
-      light: {
-        helmet: "해연의 가죽 갑옷 투구ZZ",
-        armor: "해연의 가죽 갑옷 상의ZZ",
-        pants: "해연의 가죽 갑옷 하의ZZ",
-        gloves: "해연의 가죽 갑옷 장갑ZZ",
-        shoes: "해연의 가죽 갑옷 신발ZZ"
+    function buildEquipmentArmorExactNames(prefix) {
+      return {
+        light: {
+          helmet: `${prefix} 가죽 갑옷 투구ZZ`,
+          armor: `${prefix} 가죽 갑옷 상의ZZ`,
+          pants: `${prefix} 가죽 갑옷 하의ZZ`,
+          gloves: `${prefix} 가죽 갑옷 장갑ZZ`,
+          shoes: `${prefix} 가죽 갑옷 신발ZZ`
+        },
+        heavy: {
+          helmet: `${prefix} 비늘 갑옷 투구ZZ`,
+          armor: `${prefix} 비늘 갑옷 상의ZZ`,
+          pants: `${prefix} 비늘 갑옷 하의ZZ`,
+          gloves: `${prefix} 비늘 갑옷 장갑ZZ`,
+          shoes: `${prefix} 비늘 갑옷 신발ZZ`
+        },
+        cloth: {
+          helmet: `${prefix} 전투복 투구ZZ`,
+          armor: `${prefix} 전투복 상의ZZ`,
+          pants: `${prefix} 전투복 하의ZZ`,
+          gloves: `${prefix} 전투복 장갑ZZ`,
+          shoes: `${prefix} 전투복 신발ZZ`
+        }
+      };
+    }
+
+    const equipmentWeaponSpecsBySet = {
+      haeyeon: {
+        warrior: { label: "해연의 숏소드ZZ", queries: ["해연의 숏소드ZZ", "해연의 쇼소드ZZ"] },
+        swordsman: { label: "해연의 론 엣지소드ZZ", queries: ["해연의 론 엣지소드ZZ"] },
+        greatsword: { label: "해연의 그레이트 소드ZZ", queries: ["해연의 그레이트 소드ZZ"] },
+        knight: { label: "해연의 라이트 핼버드ZZ", queries: ["해연의 라이트 핼버드ZZ"] },
+        archer: { label: "해연의 숏보우ZZ", queries: ["해연의 숏보우ZZ"] },
+        crossbow: { label: "해연의 라이트 크로스보우ZZ", queries: ["해연의 라이트 크로스보우ZZ"] },
+        longbow: { label: "해연의 라이트 롱보우ZZ", queries: ["해연의 라이트 롱보우ZZ"] },
+        mage: { label: "해연의 우드 완드ZZ", queries: ["해연의 우드 완드ZZ"] },
+        cryomancer: { label: "해연의 스노우 오브ZZ", queries: ["해연의 스노우 오브ZZ"] },
+        pyromancer: { label: "해연의 라운드헤드 케인ZZ", queries: ["해연의 라운드헤드 케인ZZ"] },
+        electromancer: { label: "해연의 라운드 코일ZZ", queries: ["해연의 라운드 코일ZZ"] },
+        healer: { label: "해연의 마블 힐링 완드ZZ", queries: ["해연의 마블 힐링 완드ZZ"] },
+        priest: { label: "해연의 크리스탈 스태프ZZ", queries: ["해연의 크리스탈 스태프ZZ"] },
+        monk: { label: "해연의 블런트 쿼터스태프ZZ", queries: ["해연의 블런트 쿼터스태프ZZ"] },
+        darkmage: { label: "해연의 서펜트 의식용 단검ZZ", queries: ["해연의 서펜트 의식용 단검ZZ"] },
+        bard: { label: "해연의 켈틱 류트ZZ", queries: ["해연의 켈틱 류트ZZ"] },
+        musician: { label: "해연의 커브드 하프ZZ", queries: ["해연의 커브드 하프ZZ"] },
+        dancer: { label: "꽃잎 접부채ZZ", queries: ["꽃잎 접부채ZZ"] },
+        rogue: { label: "해연의 플랫 대거ZZ", queries: ["해연의 플랫 대거ZZ"] },
+        dualblade: { label: "해연의 샤프 듀얼소드ZZ", queries: ["해연의 샤프 듀얼소드ZZ", "해연의 샤프 듀얼소트ZZ"] },
+        fighter: { label: "해연의 라이트 너클ZZ", queries: ["해연의 라이트 너클ZZ"] }
       },
-      heavy: {
-        helmet: "해연의 비늘 갑옷 투구ZZ",
-        armor: "해연의 비늘 갑옷 상의ZZ",
-        pants: "해연의 비늘 갑옷 하의ZZ",
-        gloves: "해연의 비늘 갑옷 장갑ZZ",
-        shoes: "해연의 비늘 갑옷 신발ZZ"
-      },
-      cloth: {
-        helmet: "해연의 전투복 투구ZZ",
-        armor: "해연의 전투복 상의ZZ",
-        pants: "해연의 전투복 하의ZZ",
-        gloves: "해연의 전투복 장갑ZZ",
-        shoes: "해연의 전투복 신발ZZ"
+      janyeong: {
+        warrior: { label: "잔영의 숏소드ZZ", queries: ["잔영의 숏소드ZZ"] },
+        swordsman: { label: "잔영의 론 엣지소드ZZ", queries: ["잔영의 론 엣지소드ZZ"] },
+        greatsword: { label: "잔영의 그레이트 소드ZZ", queries: ["잔영의 그레이트 소드ZZ"] },
+        knight: { label: "잔영의 라이트 핼버드ZZ", queries: ["잔영의 라이트 핼버드ZZ"] },
+        archer: { label: "잔영의 숏보우ZZ", queries: ["잔영의 숏보우ZZ"] },
+        crossbow: { label: "잔영의 라이트 크로스보우ZZ", queries: ["잔영의 라이트 크로스보우ZZ"] },
+        longbow: { label: "잔영의 라이트 롱보우ZZ", queries: ["잔영의 라이트 롱보우ZZ"] },
+        mage: { label: "잔영의 우드 완드ZZ", queries: ["잔영의 우드 완드ZZ"] },
+        cryomancer: { label: "잔영의 스노우 오브ZZ", queries: ["잔영의 스노우 오브ZZ"] },
+        pyromancer: { label: "잔영의 라운드헤드 케인ZZ", queries: ["잔영의 라운드헤드 케인ZZ"] },
+        electromancer: { label: "잔영의 라운드 코일ZZ", queries: ["잔영의 라운드 코일ZZ"] },
+        healer: { label: "잔영의 마블 힐링 완드ZZ", queries: ["잔영의 마블 힐링 완드ZZ"] },
+        priest: { label: "잔영의 크리스탈 스태프ZZ", queries: ["잔영의 크리스탈 스태프ZZ"] },
+        monk: { label: "잔영의 블런트 쿼터스태프ZZ", queries: ["잔영의 블런트 쿼터스태프ZZ"] },
+        darkmage: { label: "잔영의 서펜트 의식용 단검ZZ", queries: ["잔영의 서펜트 의식용 단검ZZ"] },
+        bard: { label: "잔영의 켈틱 류트ZZ", queries: ["잔영의 켈틱 류트ZZ"] },
+        musician: { label: "잔영의 커브드 하프ZZ", queries: ["잔영의 커브드 하프ZZ"] },
+        dancer: { label: "잔영의 꽃잎 접부채ZZ", queries: ["잔영의 꽃잎 접부채ZZ"] },
+        rogue: { label: "잔영의 플랫 대거ZZ", queries: ["잔영의 플랫 대거ZZ"] },
+        dualblade: { label: "잔영의 샤프 듀얼소드ZZ", queries: ["잔영의 샤프 듀얼소드ZZ"] },
+        fighter: { label: "잔영의 라이트 너클ZZ", queries: ["잔영의 라이트 너클ZZ"] }
       }
     };
 
-    const equipmentWeaponSpecs = {
-      warrior: { label: "해연의 숏소드ZZ", queries: ["해연의 숏소드ZZ", "해연의 쇼소드ZZ"], icon: "./equipment-icons/weapon-warrior.png" },
-      swordsman: { label: "해연의 론 엣지소드ZZ", queries: ["해연의 론 엣지소드ZZ"], icon: "./equipment-icons/weapon-swordsman.png" },
-      greatsword: { label: "해연의 그레이트 소드ZZ", queries: ["해연의 그레이트 소드ZZ"], icon: "./equipment-icons/weapon-greatsword.png" },
-      knight: { label: "해연의 라이트 핼버드ZZ", queries: ["해연의 라이트 핼버드ZZ"], icon: "./equipment-icons/weapon-knight.png" },
-      archer: { label: "해연의 숏보우ZZ", queries: ["해연의 숏보우ZZ"], icon: "./equipment-icons/weapon-archer.png" },
-      crossbow: { label: "해연의 라이트 크로스보우ZZ", queries: ["해연의 라이트 크로스보우ZZ"], icon: "./equipment-icons/weapon-crossbow.png" },
-      longbow: { label: "해연의 라이트 롱보우ZZ", queries: ["해연의 라이트 롱보우ZZ"], icon: "./equipment-icons/weapon-longbow.png" },
-      mage: { label: "해연의 우드 완드ZZ", queries: ["해연의 우드 완드ZZ"], icon: "./equipment-icons/weapon-mage.png" },
-      cryomancer: { label: "해연의 스노우 오브ZZ", queries: ["해연의 스노우 오브ZZ"], icon: "./equipment-icons/weapon-cryomancer.png" },
-      pyromancer: { label: "해연의 라운드헤드 케인ZZ", queries: ["해연의 라운드헤드 케인ZZ"], icon: "./equipment-icons/weapon-pyromancer.png" },
-      electromancer: { label: "해연의 라운드 코일ZZ", queries: ["해연의 라운드 코일ZZ"], icon: "./equipment-icons/weapon-electromancer.png" },
-      healer: { label: "해연의 마블 힐링 완드ZZ", queries: ["해연의 마블 힐링 완드ZZ"], icon: "./equipment-icons/weapon-healer.png" },
-      priest: { label: "해연의 크리스탈 스태프ZZ", queries: ["해연의 크리스탈 스태프ZZ"], icon: "./equipment-icons/weapon-priest.png" },
-      monk: { label: "해연의 블런트 쿼터스태프ZZ", queries: ["해연의 블런트 쿼터스태프ZZ"], icon: "./equipment-icons/weapon-monk.png" },
-      darkmage: { label: "해연의 서펜트 의식용 단검ZZ", queries: ["해연의 서펜트 의식용 단검ZZ"], icon: "./equipment-icons/weapon-darkmage.png" },
-      bard: { label: "해연의 켈틱 류트ZZ", queries: ["해연의 켈틱 류트ZZ"], icon: "./equipment-icons/weapon-bard.png" },
-      musician: { label: "해연의 커브드 하프ZZ", queries: ["해연의 커브드 하프ZZ"], icon: "./equipment-icons/weapon-musician.png" },
-      dancer: { label: "꽃잎 접부채ZZ", queries: ["꽃잎 접부채ZZ"], icon: "./equipment-icons/weapon-dancer.png" },
-      rogue: { label: "해연의 플랫 대거ZZ", queries: ["해연의 플랫 대거ZZ"], icon: "./equipment-icons/weapon-rogue.png" },
-      dualblade: { label: "해연의 샤프 듀얼소드ZZ", queries: ["해연의 샤프 듀얼소드ZZ", "해연의 샤프 듀얼소트ZZ"], icon: "./equipment-icons/weapon-dualblade.png" },
-      fighter: { label: "해연의 라이트 너클ZZ", queries: ["해연의 라이트 너클ZZ"], icon: "./equipment-icons/weapon-fighter.png" }
-    };
+    function buildEquipmentCatalog(gearSet, prefix, idPrefix, iconDir) {
+      const catalog = {};
+      const weaponSpecs = equipmentWeaponSpecsBySet[gearSet];
+      const armorExactNames = buildEquipmentArmorExactNames(prefix);
 
-    const equipmentCatalog = {};
-
-    Object.entries(equipmentWeaponSpecs).forEach(([jobId, spec]) => {
-      equipmentCatalog[`weapon-${jobId}`] = {
-        id: `weapon-${jobId}`,
-        slot: "weapon",
-        label: spec.label,
-        queries: spec.queries,
-        icon: spec.icon
-      };
-    });
-
-    Object.entries(equipmentArmorKeywords).forEach(([armorType, armorKeyword]) => {
-      Object.entries(equipmentPartKeywords).forEach(([partId, partKeyword]) => {
-        const exactName = equipmentArmorExactNames[armorType][partId];
-        equipmentCatalog[`armor-${armorType}-${partId}`] = {
-          id: `armor-${armorType}-${partId}`,
-          slot: partId,
-          label: exactName,
-          queries: partId === "armor" && armorType === "cloth" ? [exactName, "해연의 전투복상의ZZ"] : [exactName],
-          keywords: ["해연", ...armorKeyword.split(" "), partKeyword],
-          icon: `./equipment-icons/armor-${armorType}-${partId}.png`
+      Object.entries(weaponSpecs).forEach(([jobId, spec]) => {
+        const id = `${idPrefix}weapon-${jobId}`;
+        catalog[id] = {
+          id,
+          slot: "weapon",
+          label: spec.label,
+          queries: spec.queries,
+          icon: `./${iconDir}/weapon-${jobId}.png`
         };
       });
-    });
 
-    equipmentCatalog["accessory-necklace"] = {
-      id: "accessory-necklace",
-      slot: "necklace",
-      label: "해연의 페리도트 네크리스ZZ",
-      queries: ["해연의 페리도트 네크리스ZZ"],
-      keywords: ["해연", "페리도트", "네크리스"],
-      icon: "./equipment-icons/accessory-necklace.png"
+      Object.entries(equipmentArmorKeywords).forEach(([armorType, armorKeyword]) => {
+        Object.entries(equipmentPartKeywords).forEach(([partId, partKeyword]) => {
+          const exactName = armorExactNames[armorType][partId];
+          const id = `${idPrefix}armor-${armorType}-${partId}`;
+          catalog[id] = {
+            id,
+            slot: partId,
+            label: exactName,
+            queries: partId === "armor" && armorType === "cloth" ? [exactName, `${prefix} 전투복상의ZZ`] : [exactName],
+            keywords: [prefix, ...armorKeyword.split(" "), partKeyword],
+            icon: `./${iconDir}/armor-${armorType}-${partId}.png`
+          };
+        });
+      });
+
+      catalog[`${idPrefix}accessory-necklace`] = {
+        id: `${idPrefix}accessory-necklace`,
+        slot: "necklace",
+        label: `${prefix} 페리도트 네크리스ZZ`,
+        queries: [`${prefix} 페리도트 네크리스ZZ`],
+        keywords: [prefix, "페리도트", "네크리스"],
+        icon: `./${iconDir}/accessory-necklace.png`
+      };
+
+      catalog[`${idPrefix}accessory-ring`] = {
+        id: `${idPrefix}accessory-ring`,
+        slot: "ring",
+        label: `${prefix} 페리도트 링ZZ`,
+        queries: [`${prefix} 페리도트 링ZZ`],
+        keywords: [prefix, "페리도트", "링"],
+        icon: `./${iconDir}/accessory-ring.png`
+      };
+
+      return catalog;
+    }
+
+    const equipmentCatalogBySet = {
+      haeyeon: buildEquipmentCatalog("haeyeon", "해연의", "", "equipment-icons"),
+      janyeong: buildEquipmentCatalog("janyeong", "잔영의", "janyeong-", "equipment-icons-janyeong")
     };
 
-    equipmentCatalog["accessory-ring"] = {
-      id: "accessory-ring",
-      slot: "ring",
-      label: "해연의 페리도트 링ZZ",
-      queries: ["해연의 페리도트 링ZZ"],
-      keywords: ["해연", "페리도트", "링"],
-      icon: "./equipment-icons/accessory-ring.png"
+    const equipmentSearchKeywordBySet = {
+      haeyeon: "해연",
+      janyeong: "잔영"
     };
 
-    const equipmentMarketItems = Object.values(equipmentCatalog);
+    function getActiveEquipmentGearSet() {
+      return equipmentCatalogBySet[state.gearSet] ? state.gearSet : "haeyeon";
+    }
+
+    function getActiveEquipmentCatalog() {
+      return equipmentCatalogBySet[getActiveEquipmentGearSet()];
+    }
+
+    function getActiveEquipmentMarketItems() {
+      return Object.values(getActiveEquipmentCatalog());
+    }
 
     const drakeinCommonRecipe = { "마력 깃든 용비늘": 3 };
     const drakeinRecipe = (mats) => ({ ...drakeinCommonRecipe, ...mats });
@@ -1978,49 +2112,133 @@
       dualblade: drakeinRecipe({ "백금강괴": 30, "특급 가죽": 30, "허상의 마력석": 50, "포식의 마력석": 50, "망령의 영혼석": 250, "원념의 영혼석": 250, "삼림의 영혼석": 1500, "공명의 영혼석": 1500 })
     };
 
-    const weaponRecipePresets = {
-      warrior: { "포식의 마력석": 15, "망령의 영혼석": 80, "야생의 영혼석": 75, "파동의 영혼석": 90 },
-      archer: { "포식의 마력석": 15, "망령의 영혼석": 80, "삼림의 영혼석": 75, "공명의 영혼석": 90 },
-      mage: { "심해의 마력석": 15, "망령의 영혼석": 80, "야생의 영혼석": 75, "파동의 영혼석": 90 },
-      healer: { "심해의 마력석": 15, "망령의 영혼석": 80, "삼림의 영혼석": 75, "공명의 영혼석": 90 },
-      bard: { "허상의 마력석": 15, "망령의 영혼석": 80, "야생의 영혼석": 75, "파동의 영혼석": 90 },
-      rogue: { "허상의 마력석": 15, "망령의 영혼석": 80, "삼림의 영혼석": 75, "공명의 영혼석": 90 }
+    const haeyeonWeaponRecipePresets = {
+      warrior: { "백금강괴": 5, "특급 목재": 5, "포식의 마력석": 15, "망령의 영혼석": 80, "야생의 영혼석": 75, "파동의 영혼석": 90 },
+      greatsword: { "백금강괴": 5, "특급 목재": 5, "포식의 마력석": 15, "망령의 영혼석": 80, "야생의 영혼석": 75, "파동의 영혼석": 90 },
+      swordsman: { "백금강괴": 5, "특급 가죽": 5, "포식의 마력석": 15, "망령의 영혼석": 80, "야생의 영혼석": 75, "파동의 영혼석": 90 },
+      knight: { "백금강괴": 5, "특급 목재": 5, "포식의 마력석": 15, "망령의 영혼석": 80, "야생의 영혼석": 75, "파동의 영혼석": 90 },
+      archer: { "특급 목재": 5, "특급 가죽": 5, "포식의 마력석": 15, "망령의 영혼석": 80, "삼림의 영혼석": 75, "공명의 영혼석": 90 },
+      crossbow: { "특급 목재": 5, "특급 가죽": 5, "포식의 마력석": 15, "망령의 영혼석": 80, "삼림의 영혼석": 75, "공명의 영혼석": 90 },
+      longbow: { "특급 목재": 5, "백금강괴": 5, "포식의 마력석": 15, "망령의 영혼석": 80, "삼림의 영혼석": 75, "공명의 영혼석": 90 },
+      mage: { "특급 목재": 5, "특급 가죽": 5, "심해의 마력석": 15, "망령의 영혼석": 80, "야생의 영혼석": 75, "파동의 영혼석": 90 },
+      pyromancer: { "백금강괴": 5, "특급 목재": 5, "심해의 마력석": 15, "망령의 영혼석": 80, "야생의 영혼석": 75, "파동의 영혼석": 90 },
+      cryomancer: { "특급 목재": 5, "백금강괴": 5, "심해의 마력석": 15, "망령의 영혼석": 80, "야생의 영혼석": 75, "파동의 영혼석": 90 },
+      electromancer: { "백금강괴": 5, "특급 가죽": 5, "심해의 마력석": 15, "망령의 영혼석": 80, "야생의 영혼석": 75, "파동의 영혼석": 90 },
+      healer: { "특급 목재": 5, "백금강괴": 5, "심해의 마력석": 15, "망령의 영혼석": 80, "삼림의 영혼석": 75, "공명의 영혼석": 90 },
+      priest: { "특급 목재": 5, "백금강괴": 5, "심해의 마력석": 15, "망령의 영혼석": 80, "삼림의 영혼석": 75, "공명의 영혼석": 90 },
+      monk: { "백금강괴": 5, "특급 목재": 5, "심해의 마력석": 15, "망령의 영혼석": 80, "삼림의 영혼석": 75, "공명의 영혼석": 90 },
+      darkmage: { "백금강괴": 5, "특급 가죽": 5, "심해의 마력석": 15, "망령의 영혼석": 80, "삼림의 영혼석": 75, "공명의 영혼석": 90 },
+      bard: { "특급 목재": 5, "백금강괴": 5, "허상의 마력석": 15, "망령의 영혼석": 80, "야생의 영혼석": 75, "파동의 영혼석": 90 },
+      dancer: { "특급 목재": 5, "백금강괴": 5, "허상의 마력석": 15, "망령의 영혼석": 80, "야생의 영혼석": 75, "파동의 영혼석": 90 },
+      musician: { "특급 목재": 5, "백금강괴": 5, "허상의 마력석": 15, "망령의 영혼석": 80, "야생의 영혼석": 75, "파동의 영혼석": 90 },
+      rogue: { "백금강괴": 5, "특급 가죽": 5, "허상의 마력석": 15, "망령의 영혼석": 80, "삼림의 영혼석": 75, "공명의 영혼석": 90 },
+      fighter: { "백금강괴": 5, "특급 가죽": 5, "허상의 마력석": 15, "망령의 영혼석": 80, "삼림의 영혼석": 75, "공명의 영혼석": 90 },
+      dualblade: { "백금강괴": 5, "특급 가죽": 5, "허상의 마력석": 15, "망령의 영혼석": 80, "삼림의 영혼석": 75, "공명의 영혼석": 90 }
     };
 
-    const accessoryRecipes = {
-      necklace: { "포식의 마력석": 5, "심해의 마력석": 5, "망령의 영혼석": 30, "원념의 영혼석": 30, "삼림의 영혼석": 50, "파동의 영혼석": 75 },
-      ring1: { "허상의 마력석": 8, "원념의 영혼석": 55, "야생의 영혼석": 40, "공명의 영혼석": 60 },
-      ring2: { "허상의 마력석": 8, "원념의 영혼석": 55, "야생의 영혼석": 40, "공명의 영혼석": 60 }
+    const janyeongWeaponRecipePresets = {
+      warrior: { "백금강괴": 3, "최상급 목재+": 3, "망령의 영혼석": 9, "야생의 영혼석": 15, "공명의 영혼석": 16 },
+      greatsword: { "백금강괴": 3, "최상급 목재+": 3, "망령의 영혼석": 9, "야생의 영혼석": 15, "공명의 영혼석": 16 },
+      swordsman: { "백금강괴": 3, "최상급 가죽+": 3, "망령의 영혼석": 9, "야생의 영혼석": 15, "공명의 영혼석": 16 },
+      knight: { "백금강괴": 3, "최상급 목재+": 3, "망령의 영혼석": 9, "야생의 영혼석": 15, "공명의 영혼석": 16 },
+      archer: { "특급 목재": 3, "최상급 가죽+": 3, "망령의 영혼석": 9, "삼림의 영혼석": 15, "파동의 영혼석": 16 },
+      crossbow: { "특급 목재": 3, "최상급 가죽+": 3, "망령의 영혼석": 9, "삼림의 영혼석": 15, "파동의 영혼석": 16 },
+      longbow: { "특급 목재": 3, "운철괴": 3, "망령의 영혼석": 9, "삼림의 영혼석": 15, "파동의 영혼석": 16 },
+      mage: { "특급 목재": 3, "최상급 가죽+": 3, "망령의 영혼석": 9, "야생의 영혼석": 15, "공명의 영혼석": 16 },
+      pyromancer: { "백금강괴": 3, "최상급 목재+": 3, "망령의 영혼석": 9, "야생의 영혼석": 15, "공명의 영혼석": 16 },
+      cryomancer: { "특급 목재": 3, "운철괴": 3, "망령의 영혼석": 9, "야생의 영혼석": 15, "공명의 영혼석": 16 },
+      electromancer: { "백금강괴": 3, "최상급 가죽+": 30, "망령의 영혼석": 9, "야생의 영혼석": 15, "공명의 영혼석": 16 },
+      healer: { "특급 목재": 3, "운철괴": 3, "망령의 영혼석": 9, "삼림의 영혼석": 15, "파동의 영혼석": 16 },
+      priest: { "특급 목재": 3, "운철괴": 3, "망령의 영혼석": 9, "삼림의 영혼석": 15, "파동의 영혼석": 16 },
+      monk: { "백금강괴": 3, "최상급 목재+": 3, "망령의 영혼석": 9, "삼림의 영혼석": 15, "파동의 영혼석": 16 },
+      darkmage: { "백금강괴": 3, "최상급 가죽+": 3, "망령의 영혼석": 9, "삼림의 영혼석": 15, "파동의 영혼석": 16 },
+      bard: { "특급 목재": 3, "운철괴": 3, "망령의 영혼석": 9, "야생의 영혼석": 15, "공명의 영혼석": 16 },
+      dancer: { "특급 목재": 3, "운철괴": 3, "망령의 영혼석": 9, "야생의 영혼석": 15, "공명의 영혼석": 16 },
+      musician: { "특급 목재": 3, "운철괴": 3, "망령의 영혼석": 9, "야생의 영혼석": 15, "공명의 영혼석": 16 },
+      rogue: { "백금강괴": 3, "최상급 가죽+": 3, "망령의 영혼석": 9, "삼림의 영혼석": 15, "공명의 영혼석": 16 },
+      fighter: { "백금강괴": 3, "최상급 가죽+": 3, "망령의 영혼석": 9, "삼림의 영혼석": 15, "공명의 영혼석": 16 },
+      dualblade: { "백금강괴": 3, "최상급 가죽+": 3, "망령의 영혼석": 9, "삼림의 영혼석": 15, "공명의 영혼석": 16 }
     };
 
-    const recipePresets = {
-      cloth: {
-        weapon: { "심해의 마력석": 15, "망령의 영혼석": 80, "삼림의 영혼석": 75, "공명의 영혼석": 90 },
-        helmet: { "허상의 마력석": 8, "망령의 영혼석": 40, "야생의 영혼석": 35, "공명의 영혼석": 55 },
-        armor: { "포식의 마력석": 8, "원념의 영혼석": 40, "야생의 영혼석": 35, "공명의 영혼석": 55 },
-        pants: { "심해의 마력석": 8, "원념의 영혼석": 40, "삼림의 영혼석": 35, "파동의 영혼석": 55 },
-        gloves: { "심해의 마력석": 8, "망령의 영혼석": 40, "야생의 영혼석": 35, "삼림의 영혼석": 35 },
-        shoes: { "심해의 마력석": 8, "망령의 영혼석": 40, "야생의 영혼석": 35, "삼림의 영혼석": 35 },
-        ...accessoryRecipes
+    const weaponRecipePresetsBySet = {
+      haeyeon: haeyeonWeaponRecipePresets,
+      janyeong: janyeongWeaponRecipePresets
+    };
+
+    const haeyeonAccessoryRecipes = {
+      necklace: { "세공된 페리도트ZZ": 1, "백금강괴": 4, "포식의 마력석": 5, "심해의 마력석": 5, "망령의 영혼석": 30, "원념의 영혼석": 30, "삼림의 영혼석": 50, "파동의 영혼석": 75 },
+      ring1: { "세공된 페리도트ZZ": 1, "백금강괴": 4, "허상의 마력석": 8, "원념의 영혼석": 55, "야생의 영혼석": 40, "공명의 영혼석": 60 },
+      ring2: { "세공된 페리도트ZZ": 1, "백금강괴": 4, "허상의 마력석": 8, "원념의 영혼석": 55, "야생의 영혼석": 40, "공명의 영혼석": 60 }
+    };
+
+    const janyeongAccessoryRecipes = {
+      necklace: { "세공된 페리도트ZZ": 1, "백금강괴": 2, "망령의 영혼석": 4, "원념의 영혼석": 4, "삼림의 영혼석": 10, "파동의 영혼석": 14 },
+      ring1: { "세공된 페리도트ZZ": 1, "백금강괴": 2, "원념의 영혼석": 6, "야생의 영혼석": 8, "공명의 영혼석": 12 },
+      ring2: { "세공된 페리도트ZZ": 1, "백금강괴": 2, "원념의 영혼석": 6, "야생의 영혼석": 8, "공명의 영혼석": 12 }
+    };
+
+    const accessoryRecipesBySet = {
+      haeyeon: haeyeonAccessoryRecipes,
+      janyeong: janyeongAccessoryRecipes
+    };
+
+    const haeyeonRecipePresets = {
+      heavy: {
+        helmet: { "백금강괴": 4, "특급 가죽": 4, "허상의 마력석": 8, "망령의 영혼석": 40, "삼림의 영혼석": 35, "파동의 영혼석": 55 },
+        armor: { "백금강괴": 5, "특급 옷감": 5, "포식의 마력석": 8, "원념의 영혼석": 40, "삼림의 영혼석": 35, "파동의 영혼석": 55 },
+        pants: { "백금강괴": 5, "특급 옷감": 5, "심해의 마력석": 8, "원념의 영혼석": 40, "삼림의 영혼석": 35, "공명의 영혼석": 55 },
+        gloves: { "백금강괴": 4, "특급 실크": 4, "허상의 마력석": 8, "망령의 영혼석": 40, "야생의 영혼석": 35, "삼림의 영혼석": 35 },
+        shoes: { "백금강괴": 4, "특급 가죽": 4, "허상의 마력석": 8, "망령의 영혼석": 40, "야생의 영혼석": 35, "삼림의 영혼석": 35 },
+        ...haeyeonAccessoryRecipes
       },
       light: {
-        weapon: { "허상의 마력석": 15, "망령의 영혼석": 80, "야생의 영혼석": 75, "파동의 영혼석": 90 },
-        helmet: { "허상의 마력석": 8, "망령의 영혼석": 40, "삼림의 영혼석": 35, "공명의 영혼석": 55 },
-        armor: { "포식의 마력석": 8, "원념의 영혼석": 40, "삼림의 영혼석": 35, "파동의 영혼석": 55 },
-        pants: { "심해의 마력석": 8, "원념의 영혼석": 40, "야생의 영혼석": 35, "파동의 영혼석": 55 },
-        gloves: { "포식의 마력석": 8, "망령의 영혼석": 40, "야생의 영혼석": 35, "삼림의 영혼석": 35 },
-        shoes: { "포식의 마력석": 8, "망령의 영혼석": 40, "야생의 영혼석": 35, "삼림의 영혼석": 35 },
-        ...accessoryRecipes
+        helmet: { "특급 가죽": 4, "백금강괴": 4, "허상의 마력석": 8, "망령의 영혼석": 40, "삼림의 영혼석": 35, "공명의 영혼석": 55 },
+        armor: { "특급 가죽": 5, "특급 옷감": 5, "포식의 마력석": 8, "원념의 영혼석": 40, "삼림의 영혼석": 35, "파동의 영혼석": 55 },
+        pants: { "특급 가죽": 5, "특급 옷감": 5, "심해의 마력석": 8, "원념의 영혼석": 40, "야생의 영혼석": 35, "파동의 영혼석": 55 },
+        gloves: { "특급 가죽": 4, "특급 실크": 4, "포식의 마력석": 8, "망령의 영혼석": 40, "야생의 영혼석": 35, "삼림의 영혼석": 35 },
+        shoes: { "특급 가죽": 4, "백금강괴": 4, "포식의 마력석": 8, "망령의 영혼석": 40, "야생의 영혼석": 35, "삼림의 영혼석": 35 },
+        ...haeyeonAccessoryRecipes
       },
-      heavy: {
-        weapon: { "포식의 마력석": 15, "망령의 영혼석": 80, "야생의 영혼석": 75, "파동의 영혼석": 90 },
-        helmet: { "허상의 마력석": 8, "망령의 영혼석": 40, "삼림의 영혼석": 35, "파동의 영혼석": 55 },
-        armor: { "포식의 마력석": 8, "원념의 영혼석": 40, "삼림의 영혼석": 35, "파동의 영혼석": 55 },
-        pants: { "심해의 마력석": 8, "원념의 영혼석": 40, "삼림의 영혼석": 35, "공명의 영혼석": 55 },
-        gloves: { "허상의 마력석": 8, "망령의 영혼석": 40, "야생의 영혼석": 35, "삼림의 영혼석": 35 },
-        shoes: { "허상의 마력석": 8, "망령의 영혼석": 40, "야생의 영혼석": 35, "삼림의 영혼석": 35 },
-        ...accessoryRecipes
+      cloth: {
+        helmet: { "특급 옷감": 4, "특급 가죽": 4, "허상의 마력석": 8, "망령의 영혼석": 40, "야생의 영혼석": 35, "공명의 영혼석": 55 },
+        armor: { "특급 옷감": 5, "백금강괴": 5, "포식의 마력석": 8, "원념의 영혼석": 40, "야생의 영혼석": 35, "공명의 영혼석": 55 },
+        pants: { "특급 옷감": 5, "특급 가죽": 5, "심해의 마력석": 8, "원념의 영혼석": 40, "삼림의 영혼석": 35, "파동의 영혼석": 55 },
+        gloves: { "특급 옷감": 4, "특급 실크": 4, "심해의 마력석": 8, "망령의 영혼석": 40, "야생의 영혼석": 35, "삼림의 영혼석": 35 },
+        shoes: { "특급 옷감": 4, "백금강괴": 4, "심해의 마력석": 8, "망령의 영혼석": 40, "야생의 영혼석": 35, "삼림의 영혼석": 35 },
+        ...haeyeonAccessoryRecipes
       }
+    };
+
+    const janyeongRecipePresets = {
+      heavy: {
+        helmet: { "백금강괴": 2, "최상급 가죽+": 2, "망령의 영혼석": 5, "삼림의 영혼석": 7, "파동의 영혼석": 12 },
+        armor: { "백금강괴": 3, "최상급 옷감+": 3, "원념의 영혼석": 5, "삼림의 영혼석": 7, "파동의 영혼석": 12 },
+        pants: { "백금강괴": 3, "최상급 옷감+": 3, "원념의 영혼석": 5, "삼림의 영혼석": 7, "공명의 영혼석": 12 },
+        gloves: { "백금강괴": 2, "특급 실크": 2, "망령의 영혼석": 5, "야생의 영혼석": 7, "삼림의 영혼석": 7 },
+        shoes: { "백금강괴": 2, "최상급 가죽+": 2, "망령의 영혼석": 5, "야생의 영혼석": 7, "삼림의 영혼석": 7 },
+        ...janyeongAccessoryRecipes
+      },
+      light: {
+        helmet: { "특급 가죽": 2, "운철괴": 2, "망령의 영혼석": 5, "삼림의 영혼석": 7, "공명의 영혼석": 12 },
+        armor: { "특급 가죽": 3, "최상급 옷감+": 3, "원념의 영혼석": 5, "삼림의 영혼석": 7, "파동의 영혼석": 12 },
+        pants: { "특급 가죽": 3, "최상급 옷감+": 3, "원념의 영혼석": 5, "야생의 영혼석": 7, "파동의 영혼석": 12 },
+        gloves: { "특급 가죽": 2, "특급 실크": 2, "망령의 영혼석": 5, "야생의 영혼석": 7, "삼림의 영혼석": 7 },
+        shoes: { "특급 가죽": 2, "운철괴": 2, "망령의 영혼석": 5, "야생의 영혼석": 7, "삼림의 영혼석": 7 },
+        ...janyeongAccessoryRecipes
+      },
+      cloth: {
+        helmet: { "특급 옷감": 2, "최상급 가죽+": 2, "망령의 영혼석": 5, "야생의 영혼석": 7, "공명의 영혼석": 12 },
+        armor: { "특급 옷감": 2, "운철괴": 3, "망령의 영혼석": 5, "야생의 영혼석": 7, "공명의 영혼석": 12 },
+        pants: { "특급 옷감": 3, "최상급 가죽+": 3, "원념의 영혼석": 5, "삼림의 영혼석": 7, "파동의 영혼석": 12 },
+        gloves: { "특급 옷감": 2, "특급 실크": 2, "망령의 영혼석": 5, "야생의 영혼석": 7, "삼림의 영혼석": 7 },
+        shoes: { "특급 옷감": 2, "운철괴": 2, "망령의 영혼석": 5, "야생의 영혼석": 7, "삼림의 영혼석": 7 },
+        ...janyeongAccessoryRecipes
+      }
+    };
+
+    const recipePresetsBySet = {
+      haeyeon: haeyeonRecipePresets,
+      janyeong: janyeongRecipePresets
     };
 
     const state = loadState();
@@ -2050,30 +2268,54 @@
       return normalized;
     }
 
-    function getWeaponPreset(classType = "warrior") {
-      return normalizeRecipe(weaponRecipePresets[classType] || weaponRecipePresets.warrior);
+    function getWeaponPreset(gearSet, classType = "warrior") {
+      const presets = weaponRecipePresetsBySet[gearSet] || weaponRecipePresetsBySet.haeyeon;
+      return normalizeRecipe(presets[classType] || presets.warrior);
     }
 
-    function getDefaultWeaponRecipesByClass() {
-      return Object.fromEntries(classTypes.map(({ id }) => [id, getWeaponPreset(id)]));
+    function getDefaultWeaponRecipesByClass(gearSet) {
+      return Object.fromEntries(classCatalog.map(({ id }) => [id, getWeaponPreset(gearSet, id)]));
     }
 
-    function migrateWeaponRecipesByClass(parsed = {}) {
-      const savedByClass = parsed.weaponRecipesByClass && typeof parsed.weaponRecipesByClass === "object" ? parsed.weaponRecipesByClass : {};
-      return Object.fromEntries(classTypes.map(({ id }) => [id, normalizeRecipe(savedByClass[id] || getWeaponPreset(id))]));
+    function getDefaultWeaponRecipesByClassBySet() {
+      return {
+        haeyeon: getDefaultWeaponRecipesByClass("haeyeon"),
+        janyeong: getDefaultWeaponRecipesByClass("janyeong")
+      };
     }
 
-    function getPresetRecipes(type = "cloth") {
-      const preset = recipePresets[type] || recipePresets.cloth;
-      return Object.fromEntries(items.filter((item) => item.id !== "weapon").map((item) => [item.id, normalizeRecipe(preset[item.id] || item.mats)]));
+    function migrateWeaponRecipesByClass(gearSet, savedByClass = {}) {
+      return Object.fromEntries(classCatalog.map(({ id }) => [id, normalizeRecipe(savedByClass[id] || getWeaponPreset(gearSet, id))]));
     }
 
-    function getDefaultRecipes(type = "cloth") {
-      return getPresetRecipes(type);
+    function migrateWeaponRecipesByClassBySet(parsed = {}) {
+      const savedBySet = parsed.weaponRecipesByClassBySet && typeof parsed.weaponRecipesByClassBySet === "object" ? parsed.weaponRecipesByClassBySet : {};
+      return {
+        haeyeon: migrateWeaponRecipesByClass("haeyeon", savedBySet.haeyeon || parsed.weaponRecipesByClass || {}),
+        janyeong: migrateWeaponRecipesByClass("janyeong", savedBySet.janyeong || {})
+      };
     }
 
-    function getDefaultRecipesByType() {
-      return Object.fromEntries(recipeTypes.map(({ id }) => [id, getPresetRecipes(id)]));
+    function getArmorTypeById(classId) {
+      return classCatalog.find(({ id }) => id === classId)?.armorType || "cloth";
+    }
+
+    function getPresetRecipes(gearSet, armorType = "cloth") {
+      const bySet = recipePresetsBySet[gearSet] || recipePresetsBySet.haeyeon;
+      const preset = bySet[armorType] || bySet.cloth;
+      const accessories = accessoryRecipesBySet[gearSet] || accessoryRecipesBySet.haeyeon;
+      return Object.fromEntries(items.filter((item) => item.id !== "weapon").map((item) => [item.id, normalizeRecipe(preset[item.id] || accessories[item.id] || item.mats)]));
+    }
+
+    function getDefaultRecipesByType(gearSet) {
+      return Object.fromEntries(recipeTypeIds.map((id) => [id, getPresetRecipes(gearSet, id)]));
+    }
+
+    function getDefaultRecipesByTypeBySet() {
+      return {
+        haeyeon: getDefaultRecipesByType("haeyeon"),
+        janyeong: getDefaultRecipesByType("janyeong")
+      };
     }
 
     function getDefaultDrakeinRecipe(item) {
@@ -2095,8 +2337,8 @@
       return Object.fromEntries(drakeinItems.map((item) => [item.id, getDefaultDrakeinRecipe(item)]));
     }
 
-    function migrateRecipeSet(recipes = {}, type = "cloth") {
-      const preset = getPresetRecipes(type);
+    function migrateRecipeSet(gearSet, recipes = {}, armorType = "cloth") {
+      const preset = getPresetRecipes(gearSet, armorType);
       const migrated = {};
       for (const item of items.filter((entry) => entry.id !== "weapon")) {
         const hasSavedRecipe = Object.prototype.hasOwnProperty.call(recipes, item.id);
@@ -2105,9 +2347,16 @@
       return migrated;
     }
 
-    function migrateRecipesByType(parsed = {}) {
-      const savedByType = parsed.recipesByType && typeof parsed.recipesByType === "object" ? parsed.recipesByType : {};
-      return Object.fromEntries(recipeTypes.map(({ id }) => [id, migrateRecipeSet(savedByType[id] || {}, id)]));
+    function migrateRecipesByType(gearSet, savedByType = {}) {
+      return Object.fromEntries(recipeTypeIds.map((id) => [id, migrateRecipeSet(gearSet, savedByType[id] || {}, id)]));
+    }
+
+    function migrateRecipesByTypeBySet(parsed = {}) {
+      const savedBySet = parsed.recipesByTypeBySet && typeof parsed.recipesByTypeBySet === "object" ? parsed.recipesByTypeBySet : {};
+      return {
+        haeyeon: migrateRecipesByType("haeyeon", savedBySet.haeyeon || parsed.recipesByType || {}),
+        janyeong: migrateRecipesByType("janyeong", savedBySet.janyeong || {})
+      };
     }
 
     function migrateDrakeinRecipesByJob(parsed = {}) {
@@ -2118,13 +2367,6 @@
       }));
     }
 
-    function getActiveRecipeType() {
-      if (!recipeTypes.some(({ id }) => id === state.recipeType)) {
-        state.recipeType = "cloth";
-      }
-      return state.recipeType;
-    }
-
     function getActiveClassType() {
       if (isDrakein()) {
         if (!drakeinClassTypes.some(({ id }) => id === state.drakeinClassType)) {
@@ -2132,7 +2374,7 @@
         }
         return state.drakeinClassType;
       }
-      if (!classTypes.some(({ id }) => id === state.classType)) {
+      if (!classCatalog.some(({ id }) => id === state.classType)) {
         state.classType = "warrior";
       }
       return state.classType;
@@ -2147,18 +2389,26 @@
       return state.drakeinJobType;
     }
 
+    function getActiveArmorType() {
+      return getArmorTypeById(getActiveClassType());
+    }
+
     function getActiveRecipes() {
-      const type = getActiveRecipeType();
-      if (!state.recipesByType) state.recipesByType = getDefaultRecipesByType();
-      if (!state.recipesByType[type]) state.recipesByType[type] = getPresetRecipes(type);
-      return state.recipesByType[type];
+      const gearSet = state.gearSet;
+      const armorType = getActiveArmorType();
+      if (!state.recipesByTypeBySet) state.recipesByTypeBySet = getDefaultRecipesByTypeBySet();
+      if (!state.recipesByTypeBySet[gearSet]) state.recipesByTypeBySet[gearSet] = getDefaultRecipesByType(gearSet);
+      if (!state.recipesByTypeBySet[gearSet][armorType]) state.recipesByTypeBySet[gearSet][armorType] = getPresetRecipes(gearSet, armorType);
+      return state.recipesByTypeBySet[gearSet][armorType];
     }
 
     function getActiveWeaponRecipe() {
+      const gearSet = state.gearSet;
       const classType = getActiveClassType();
-      if (!state.weaponRecipesByClass) state.weaponRecipesByClass = getDefaultWeaponRecipesByClass();
-      if (!state.weaponRecipesByClass[classType]) state.weaponRecipesByClass[classType] = getWeaponPreset(classType);
-      return state.weaponRecipesByClass[classType];
+      if (!state.weaponRecipesByClassBySet) state.weaponRecipesByClassBySet = getDefaultWeaponRecipesByClassBySet();
+      if (!state.weaponRecipesByClassBySet[gearSet]) state.weaponRecipesByClassBySet[gearSet] = getDefaultWeaponRecipesByClass(gearSet);
+      if (!state.weaponRecipesByClassBySet[gearSet][classType]) state.weaponRecipesByClassBySet[gearSet][classType] = getWeaponPreset(gearSet, classType);
+      return state.weaponRecipesByClassBySet[gearSet][classType];
     }
 
     function getRecipe(item) {
@@ -2181,6 +2431,7 @@
         selected: items.map((item) => item.id),
         selectedBySet: {
           haeyeon: items.map((item) => item.id),
+          janyeong: items.map((item) => item.id),
           drakein: drakeinItems.map((item) => item.id)
         },
         owned: {},
@@ -2193,28 +2444,34 @@
         classType: "warrior",
         drakeinClassType: "warrior",
         drakeinJobType: "warrior",
-        recipeType: "cloth",
         hideUnusedRecipes: true,
-        weaponRecipesByClass: getDefaultWeaponRecipesByClass(),
-        recipesByType: getDefaultRecipesByType(),
-        drakeinRecipesByJob: getDefaultDrakeinRecipesByJob()
+        weaponRecipesByClassBySet: getDefaultWeaponRecipesByClassBySet(),
+        recipesByTypeBySet: getDefaultRecipesByTypeBySet(),
+        drakeinRecipesByJob: getDefaultDrakeinRecipesByJob(),
+        recipeDataVersion: RECIPE_DATA_VERSION
       };
 
       try {
         const raw = localStorage.getItem(STORE_KEY);
         if (!raw) return fallback;
         const parsed = JSON.parse(raw);
-        const { recipes, recipesByType, recipeType, classType, weaponRecipesByClass, drakeinRecipesByJob, ...rest } = parsed;
+        const {
+          recipes, recipesByType, recipeType, classType, drakeinClassType, drakeinJobType,
+          weaponRecipesByClass, weaponRecipesByClassBySet, recipesByTypeBySet, drakeinRecipesByJob,
+          recipeDataVersion,
+          ...rest
+        } = parsed;
+        const recipeDataCurrent = Number(recipeDataVersion) === RECIPE_DATA_VERSION;
         const savedGearSet = gearSetTypes.some(({ id }) => id === parsed.gearSet) ? parsed.gearSet : fallback.gearSet;
-        const savedType = recipeTypes.some(({ id }) => id === recipeType) ? recipeType : fallback.recipeType;
-        const savedClassType = classTypes.some(({ id }) => id === classType) ? classType : fallback.classType;
-        const savedDrakeinClassType = drakeinClassTypes.some(({ id }) => id === parsed.drakeinClassType) ? parsed.drakeinClassType : fallback.drakeinClassType;
+        const savedClassType = classCatalog.some(({ id }) => id === classType) ? classType : fallback.classType;
+        const savedDrakeinClassType = drakeinClassTypes.some(({ id }) => id === drakeinClassType) ? drakeinClassType : fallback.drakeinClassType;
         const savedDrakeinJobs = drakeinJobsByClass[savedDrakeinClassType] || drakeinJobsByClass.warrior;
-        const savedDrakeinJobType = savedDrakeinJobs.some(({ id }) => id === parsed.drakeinJobType) ? parsed.drakeinJobType : savedDrakeinJobs[0].id;
+        const savedDrakeinJobType = savedDrakeinJobs.some(({ id }) => id === drakeinJobType) ? drakeinJobType : savedDrakeinJobs[0].id;
         const savedSelectedBySet = parsed.selectedBySet && typeof parsed.selectedBySet === "object" ? parsed.selectedBySet : {};
         const haeyeonSelected = Array.isArray(savedSelectedBySet.haeyeon)
           ? savedSelectedBySet.haeyeon
           : (Array.isArray(parsed.selected) ? parsed.selected : fallback.selectedBySet.haeyeon);
+        const janyeongSelected = Array.isArray(savedSelectedBySet.janyeong) ? savedSelectedBySet.janyeong : fallback.selectedBySet.janyeong;
         const drakeinSelected = Array.isArray(savedSelectedBySet.drakein) ? savedSelectedBySet.drakein : fallback.selectedBySet.drakein;
         return {
           ...fallback,
@@ -2223,6 +2480,7 @@
           selected: haeyeonSelected,
           selectedBySet: {
             haeyeon: haeyeonSelected,
+            janyeong: janyeongSelected,
             drakein: drakeinSelected
           },
           owned: parsed.owned || {},
@@ -2234,11 +2492,17 @@
           classType: savedClassType,
           drakeinClassType: savedDrakeinClassType,
           drakeinJobType: savedDrakeinJobType,
-          recipeType: savedType,
           hideUnusedRecipes: typeof parsed.hideUnusedRecipes === "boolean" ? parsed.hideUnusedRecipes : fallback.hideUnusedRecipes,
-          weaponRecipesByClass: weaponRecipesByClass ? migrateWeaponRecipesByClass({ weaponRecipesByClass }) : getDefaultWeaponRecipesByClass(),
-          recipesByType: recipesByType ? migrateRecipesByType({ recipesByType }) : getDefaultRecipesByType(),
-          drakeinRecipesByJob: drakeinRecipesByJob ? migrateDrakeinRecipesByJob({ drakeinRecipesByJob }) : getDefaultDrakeinRecipesByJob()
+          weaponRecipesByClassBySet: recipeDataCurrent
+            ? migrateWeaponRecipesByClassBySet({ weaponRecipesByClassBySet, weaponRecipesByClass })
+            : getDefaultWeaponRecipesByClassBySet(),
+          recipesByTypeBySet: recipeDataCurrent
+            ? migrateRecipesByTypeBySet({ recipesByTypeBySet, recipesByType })
+            : getDefaultRecipesByTypeBySet(),
+          drakeinRecipesByJob: recipeDataCurrent && drakeinRecipesByJob
+            ? migrateDrakeinRecipesByJob({ drakeinRecipesByJob })
+            : getDefaultDrakeinRecipesByJob(),
+          recipeDataVersion: RECIPE_DATA_VERSION
         };
       } catch (error) {
         return fallback;
@@ -2262,11 +2526,11 @@
     }
 
     function getActiveMaterialOrder() {
-      return isDrakein() ? drakeinMaterialOrder : materialOrder;
+      return MATERIAL_ORDER_BY_SET[state.gearSet] || haeyeonMaterialOrder;
     }
 
     function getRecipeMaterialOrder() {
-      if (!isDrakein()) return materialOrder;
+      if (!isDrakein()) return getActiveMaterialOrder();
       return ["마력 깃든 용비늘", ...drakeinMaterialOrder.filter((name) => name !== "마력 깃든 용비늘")];
     }
 
@@ -2275,7 +2539,7 @@
     }
 
     function getSelectionKey() {
-      return isDrakein() ? "drakein" : "haeyeon";
+      return state.gearSet;
     }
 
     function getEmptySelectionFallbackMap() {
@@ -2290,6 +2554,7 @@
       if (!state.selectedBySet) {
         state.selectedBySet = {
           haeyeon: Array.isArray(state.selected) ? state.selected : items.map((item) => item.id),
+          janyeong: items.map((item) => item.id),
           drakein: drakeinItems.map((item) => item.id)
         };
       }
@@ -2411,7 +2676,8 @@
         const required = totals[name] || 0;
         const owned = parseNumber(state.owned[name]);
         const shortage = Math.max(0, required - owned);
-        const price = parseNumber(state.prices[name]);
+        const noMarket = NO_MARKET_MATERIALS.has(name);
+        const price = noMarket ? 0 : parseNumber(state.prices[name]);
         const cost = shortage * price;
         const meta = materials[name];
         const priceChange = getPriceChangeView(name);
@@ -2420,6 +2686,13 @@
           totalCost += cost;
           pricedShortage += shortage;
         }
+
+        const priceCell = noMarket
+          ? `<span class="price-unavailable">재고 없음</span>`
+          : `<input class="price-input" type="text" inputmode="numeric" pattern="[0-9]*" value="${price || ""}" data-price="${name}" aria-label="${name} 시세">`;
+        const changeCell = noMarket
+          ? `<span class="price-change flat">-</span>`
+          : `<span class="price-change ${priceChange.className}" title="이전 저장 시세 대비">${priceChange.text}</span>`;
 
         return `
           <tr>
@@ -2436,9 +2709,9 @@
               </div>
             </td>
             <td class="num" data-label="부족">${formatNumber(shortage)}</td>
-            <td class="num" data-label="시세"><input class="price-input" type="text" inputmode="numeric" pattern="[0-9]*" value="${price || ""}" data-price="${name}" aria-label="${name} 시세"></td>
-            <td class="num" data-label="변동"><span class="price-change ${priceChange.className}" title="이전 저장 시세 대비">${priceChange.text}</span></td>
-            <td class="num" data-label="구매 데카">${price > 0 ? formatNumber(cost) : "-"}</td>
+            <td class="num" data-label="시세">${priceCell}</td>
+            <td class="num" data-label="변동">${changeCell}</td>
+            <td class="num" data-label="구매 데카">${!noMarket && price > 0 ? formatNumber(cost) : "-"}</td>
             <td class="source-cell" data-label="수급처">${meta.source}</td>
           </tr>
         `;
@@ -2632,8 +2905,8 @@
       const presetRecipes = isDrakein()
         ? getDefaultDrakeinRecipesByJob()
         : {
-          ...getPresetRecipes(getActiveRecipeType()),
-          weapon: getWeaponPreset(getActiveClassType())
+          ...getPresetRecipes(state.gearSet, getActiveArmorType()),
+          weapon: getWeaponPreset(state.gearSet, getActiveClassType())
         };
       grid.innerHTML = activeItems.map((item) => {
         const selected = activeSelected.includes(item.id);
@@ -2695,12 +2968,18 @@
       });
     }
 
+    function getActiveEquipmentIdPrefix() {
+      return getActiveEquipmentGearSet() === "janyeong" ? "janyeong-" : "";
+    }
+
     function getEquipmentSpecForJobSlot(job, slotId) {
-      if (slotId === "weapon") return equipmentCatalog[`weapon-${job.id}`];
-      if (slotId === "necklace") return equipmentCatalog["accessory-necklace"];
-      if (slotId === "ring") return equipmentCatalog["accessory-ring"];
+      const catalog = getActiveEquipmentCatalog();
+      const idPrefix = getActiveEquipmentIdPrefix();
+      if (slotId === "weapon") return catalog[`${idPrefix}weapon-${job.id}`];
+      if (slotId === "necklace") return catalog[`${idPrefix}accessory-necklace`];
+      if (slotId === "ring") return catalog[`${idPrefix}accessory-ring`];
       const armorType = equipmentArmorTypeByClass[job.classId];
-      return equipmentCatalog[`armor-${armorType}-${slotId}`];
+      return catalog[`${idPrefix}armor-${armorType}-${slotId}`];
     }
 
     function getEquipmentPrice(spec) {
@@ -2714,12 +2993,14 @@
     }
 
     function getEquipmentCandidates(slotId) {
+      const catalog = getActiveEquipmentCatalog();
+      const idPrefix = getActiveEquipmentIdPrefix();
       if (slotId === "weapon") {
         return equipmentJobs.map((job) => getEquipmentSpecForJobSlot(job, slotId));
       }
-      if (slotId === "necklace") return [equipmentCatalog["accessory-necklace"]];
-      if (slotId === "ring") return [equipmentCatalog["accessory-ring"]];
-      return Object.keys(equipmentArmorKeywords).map((armorType) => equipmentCatalog[`armor-${armorType}-${slotId}`]);
+      if (slotId === "necklace") return [catalog[`${idPrefix}accessory-necklace`]];
+      if (slotId === "ring") return [catalog[`${idPrefix}accessory-ring`]];
+      return Object.keys(equipmentArmorKeywords).map((armorType) => catalog[`${idPrefix}armor-${armorType}-${slotId}`]);
     }
 
     function getLowestEquipment(slotId) {
@@ -2736,7 +3017,8 @@
         return job?.label || "";
       }
       if (["helmet", "armor", "pants", "gloves", "shoes"].includes(slotId)) {
-        const armorType = spec.id.split("-")[1];
+        const segments = spec.id.split("-");
+        const armorType = segments[segments.indexOf("armor") + 1];
         return equipmentArmorLabels[armorType] || "";
       }
       return "";
@@ -2809,10 +3091,11 @@
         </div>
       `;
 
+      const activeEquipmentTotal = getActiveEquipmentMarketItems().length;
       if (state.equipmentPriceStamp) {
-        setEquipmentMarketProgress(equipmentMarketItems.length, equipmentMarketItems.length, formatMarketTimestamp(state.equipmentPriceStamp), "ok");
+        setEquipmentMarketProgress(activeEquipmentTotal, activeEquipmentTotal, formatMarketTimestamp(state.equipmentPriceStamp), "ok");
       } else {
-        setEquipmentMarketProgress(0, equipmentMarketItems.length, "장비 시세 갱신 대기");
+        setEquipmentMarketProgress(0, activeEquipmentTotal, "장비 시세 갱신 대기");
       }
     }
 
@@ -2849,7 +3132,7 @@
       });
     }
 
-    function setEquipmentMarketProgress(current, total = equipmentMarketItems.length, message = "장비 시세 갱신 대기", kind = "") {
+    function setEquipmentMarketProgress(current, total = getActiveEquipmentMarketItems().length, message = "장비 시세 갱신 대기", kind = "") {
       setProgress(current, total, message, kind, {
         progress: "equipmentMarketProgress",
         text: "equipmentMarketProgressText",
@@ -2903,90 +3186,78 @@
       });
     }
 
+    function getSeriesForClass(classId) {
+      const entry = Object.entries(drakeinJobsByClass).find(([, jobs]) => jobs.some(({ id }) => id === classId));
+      return entry ? entry[0] : "warrior";
+    }
+
     function renderBuildControls() {
       const classBox = document.getElementById("classTypes");
       const recipeBox = document.getElementById("recipeTypes");
-      const activeClassTypes = drakeinClassTypes;
       const activeClassType = getActiveClassType();
-      classBox.classList.add("drakein-types");
+      const activeSeriesType = isDrakein() ? activeClassType : getSeriesForClass(activeClassType);
 
+      classBox.classList.add("drakein-types");
       classBox.innerHTML = `
         <span class="selector-label">계열</span>
-        ${activeClassTypes.map(({ id, label }) => `
-          <button class="class-type ${id === activeClassType ? "active" : ""}" type="button" data-class-type="${id}" aria-pressed="${id === activeClassType}">${label}</button>
+        ${drakeinClassTypes.map(({ id, label }) => `
+          <button class="class-type ${id === activeSeriesType ? "active" : ""}" type="button" data-class-type="${id}" aria-pressed="${id === activeSeriesType}">${label}</button>
         `).join("")}
       `;
 
       classBox.querySelectorAll("[data-class-type]").forEach((button) => {
         button.addEventListener("click", () => {
           const nextType = button.dataset.classType;
-          if (!activeClassTypes.some(({ id }) => id === nextType)) return;
+          if (!drakeinClassTypes.some(({ id }) => id === nextType)) return;
+          const firstJob = drakeinJobsByClass[nextType][0];
           if (isDrakein()) {
             if (nextType === getActiveClassType() && getActiveSelected({ useEmptyFallback: false }).length > 0) return;
             state.drakeinClassType = nextType;
-            const firstJob = drakeinJobsByClass[nextType][0];
             state.drakeinJobType = firstJob.id;
             setActiveSelected([`drakein-${firstJob.id}`]);
           } else {
-            state.classType = nextType;
-            state.recipeType = haeyeonRecipeTypeByClass[nextType] || state.recipeType;
+            if (nextType === activeSeriesType) return;
+            state.classType = firstJob.id;
             getActiveWeaponRecipe();
             getActiveRecipes();
           }
           saveState();
           renderAll();
-          const label = activeClassTypes.find(({ id }) => id === nextType)?.label || "계열";
+          const label = drakeinClassTypes.find(({ id }) => id === nextType)?.label || "계열";
           setStatus("ok", `${label} 계열 제작식으로 계산했습니다.`);
         });
       });
 
-      if (isDrakein()) {
-        const activeJobType = getActiveDrakeinJobType();
-        const jobs = drakeinJobsByClass[activeClassType] || drakeinJobsByClass.warrior;
-        recipeBox.classList.add("job-types");
-        recipeBox.setAttribute("aria-label", "직업");
-        recipeBox.innerHTML = `
-          <span class="selector-label">직업</span>
-          ${jobs.map(({ id, label }) => `
-            <button class="recipe-type ${id === activeJobType ? "active" : ""}" type="button" data-drakein-job-type="${id}" aria-pressed="${id === activeJobType}">${label}</button>
-          `).join("")}
-        `;
-        recipeBox.querySelectorAll("[data-drakein-job-type]").forEach((button) => {
-          button.addEventListener("click", () => {
-            const nextJob = button.dataset.drakeinJobType;
-            if (!jobs.some(({ id }) => id === nextJob) || state.drakeinJobType === nextJob) return;
+      const activeJobType = isDrakein() ? getActiveDrakeinJobType() : activeClassType;
+      const jobs = drakeinJobsByClass[activeSeriesType] || drakeinJobsByClass.warrior;
+      recipeBox.classList.add("job-types");
+      recipeBox.setAttribute("aria-label", "직업");
+      recipeBox.innerHTML = `
+        <span class="selector-label">직업</span>
+        ${jobs.map(({ id, label }) => `
+          <button class="recipe-type ${id === activeJobType ? "active" : ""}" type="button" data-drakein-job-type="${id}" aria-pressed="${id === activeJobType}">${label}</button>
+        `).join("")}
+      `;
+      recipeBox.querySelectorAll("[data-drakein-job-type]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const nextJob = button.dataset.drakeinJobType;
+          if (!jobs.some(({ id }) => id === nextJob)) return;
+          if (isDrakein()) {
+            if (state.drakeinJobType === nextJob) return;
             state.drakeinJobType = nextJob;
             setActiveSelected([`drakein-${nextJob}`]);
-            saveState();
-            renderAll();
-            const label = jobs.find(({ id }) => id === nextJob)?.label || "직업";
-            setStatus("ok", `${label} 제작 목표로 계산했습니다.`);
-          });
-        });
-      } else {
-        recipeBox.classList.remove("job-types");
-        recipeBox.setAttribute("aria-label", "방어구");
-        recipeBox.innerHTML = `
-          <span class="selector-label">방어구</span>
-          ${recipeTypes.map(({ id, label }) => `
-            <button class="recipe-type ${id === getActiveRecipeType() ? "active" : ""}" type="button" data-recipe-type="${id}" aria-pressed="${id === getActiveRecipeType()}">${label}</button>
-          `).join("")}
-        `;
-        recipeBox.querySelectorAll("[data-recipe-type]").forEach((button) => {
-          button.addEventListener("click", () => {
-            const nextType = button.dataset.recipeType;
-            if (!recipeTypes.some(({ id }) => id === nextType)) return;
-            state.recipeType = nextType;
-            state.classType = haeyeonClassTypeByRecipe[nextType] || state.classType;
+          } else {
+            if (state.classType === nextJob) return;
+            state.classType = nextJob;
             getActiveWeaponRecipe();
             getActiveRecipes();
-            saveState();
-            renderAll({ keepGear: true });
-            const label = recipeTypes.find(({ id }) => id === nextType)?.label || "제작식";
-            setStatus("ok", `${label} 제작식으로 계산했습니다.`);
-          });
+          }
+          saveState();
+          renderAll();
+          const label = jobs.find(({ id }) => id === nextJob)?.label || "직업";
+          setStatus("ok", `${label} 제작 목표로 계산했습니다.`);
         });
-      }
+      });
     }
 
     function renderAll(options = {}) {
@@ -3012,9 +3283,27 @@
     }
 
     async function fetchJson(url) {
-      const response = await fetch(url, { cache: "no-store", credentials: "omit" });
-      if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
-      return response.json();
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), MARKET_FETCH_TIMEOUT_MS);
+      try {
+        const response = await fetch(url, { cache: "no-store", credentials: "omit", signal: controller.signal });
+        if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
+        return await response.json();
+      } finally {
+        clearTimeout(timer);
+      }
+    }
+
+    async function fetchJsonViaProxy(apiUrl) {
+      let lastError;
+      for (const buildProxyUrl of MARKET_PROXY_BUILDERS) {
+        try {
+          return await fetchJson(buildProxyUrl(apiUrl));
+        } catch (error) {
+          lastError = error;
+        }
+      }
+      throw lastError || new Error("모든 프록시 요청 실패");
     }
 
     function getMarketQueries(itemSpec) {
@@ -3045,7 +3334,7 @@
       for (const query of getMarketQueries(itemSpec)) {
         const apiUrl = buildMarketApiUrl(query, { parentCategory: getMarketParentCategory(itemSpec) });
         const data = mode === "proxy"
-          ? await fetchJson(`${MARKET_PROXY_URL}${encodeURIComponent(apiUrl)}`)
+          ? await fetchJsonViaProxy(apiUrl)
           : await fetchJson(apiUrl);
         const item = pickMarketItem(data, itemSpec);
         if (item && Number.isFinite(Number(item.min_price))) return item;
@@ -3059,7 +3348,7 @@
         limit: options.limit || 120
       });
       const data = mode === "proxy"
-        ? await fetchJson(`${MARKET_PROXY_URL}${encodeURIComponent(apiUrl)}`)
+        ? await fetchJsonViaProxy(apiUrl)
         : await fetchJson(apiUrl);
       return Array.isArray(data?.items) ? data.items : [];
     }
@@ -3070,6 +3359,10 @@
       const activeMaterialOrder = getActiveMaterialOrder();
 
       for (const [index, name] of activeMaterialOrder.entries()) {
+        if (NO_MARKET_MATERIALS.has(name)) {
+          setMarketProgress(offset + index + 1, total, `건너뜀: ${name}`);
+          continue;
+        }
         setMarketProgress(offset + index, total, `확인 중: ${name}`);
         try {
           const item = await fetchMarketItem(name, mode);
@@ -3089,12 +3382,14 @@
       return { found, missing };
     }
 
-    async function fetchEquipmentPrices(mode, offset = 0, total = equipmentMarketItems.length) {
+    async function fetchEquipmentPrices(mode, offset = 0, total = getActiveEquipmentMarketItems().length) {
       const found = {};
       const names = {};
       const missing = [];
       const marketItems = [];
       const seenIds = new Set();
+      const activeGearSet = getActiveEquipmentGearSet();
+      const activeEquipmentMarketItems = getActiveEquipmentMarketItems();
 
       const addMarketItems = (items) => {
         items.forEach((item) => {
@@ -3107,14 +3402,16 @@
 
       setEquipmentMarketProgress(offset, total, "장비 목록 확인 중");
 
-      addMarketItems(await fetchMarketList("해연", mode, { parentCategory: null, limit: 120 }));
-      try {
-        addMarketItems(await fetchMarketList("꽃잎 접부채", mode, { parentCategory: null, limit: 20 }));
-      } catch (error) {
-        if (mode === "direct") throw error;
+      addMarketItems(await fetchMarketList(equipmentSearchKeywordBySet[activeGearSet], mode, { parentCategory: null, limit: 120 }));
+      if (activeGearSet === "haeyeon") {
+        try {
+          addMarketItems(await fetchMarketList("꽃잎 접부채", mode, { parentCategory: null, limit: 20 }));
+        } catch (error) {
+          if (mode === "direct") throw error;
+        }
       }
 
-      for (const [index, spec] of equipmentMarketItems.entries()) {
+      for (const [index, spec] of activeEquipmentMarketItems.entries()) {
         setEquipmentMarketProgress(offset + index, total, `장비 확인 중: ${spec.label}`);
         try {
           const item = pickMarketItem({ items: marketItems }, spec) || await fetchMarketItem(spec, mode);
@@ -3191,7 +3488,7 @@
 
     async function refreshEquipmentMarketPrices() {
       const button = document.getElementById("refreshEquipmentMarket");
-      const refreshTotal = equipmentMarketItems.length;
+      const refreshTotal = getActiveEquipmentMarketItems().length;
       if (button) button.disabled = true;
       setEquipmentMarketProgress(0, refreshTotal, "장비 시세 갱신 시작");
 
@@ -3320,8 +3617,7 @@
   </script>
   <footer style="text-align:center; font-size:12px; color:#888; margin-top:20px; padding:12px 0;">
     © 2026 bbunye. All rights reserved.<br>
-    본 콘텐츠의 무단 복제, 수정, 재배포를 금지합니다.<br>
-    v1.0.0
+    본 콘텐츠의 무단 복제, 수정, 재배포를 금지합니다.
   </footer>
 </body>
 </html>
