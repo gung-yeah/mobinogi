@@ -2118,17 +2118,22 @@
       materials:[]
     }));
   const existingNodeNames = new Set(NODES.map(node => String(node.name).trim()));
+  const existingNormalizedNodeNames = new Set(NODES.map(node => normalizedLookupName(node.name)));
+  const isExistingNodeName = name => {
+    const trimmed = String(name).trim();
+    return existingNodeNames.has(trimmed) || existingNormalizedNodeNames.has(normalizedLookupName(trimmed));
+  };
   const HIDDEN_ITEM_NAMES = new Set([
     "공격력 비약","골드 획득 비약","방어력 비약","브레이크 비약","라이프부스터 전설 비약",
     "던전버스터 전설 비약","상급 브레이크 비약","상급 콤보 강화 비약","콤보 강화 비약","호플리테스 전설 비약"
   ]);
   const extractedDisplayNodes = extractedNodes.filter(infoNode => {
     const info = infoNode.extractedInfo;
-    if(existingNodeNames.has(String(infoNode.name).trim())) return false;
+    if(isExistingNodeName(infoNode.name)) return false;
     if(HIDDEN_ITEM_NAMES.has(String(infoNode.name).trim())) return false;
     return info?.itemType === "equipment" || info?.itemType === "tool";
   });
-  const allSearchNodes = [...NODES, ...extractedNodes.filter(infoNode => !existingNodeNames.has(String(infoNode.name).trim()) && !HIDDEN_ITEM_NAMES.has(String(infoNode.name).trim()))];
+  const allSearchNodes = [...NODES, ...extractedNodes.filter(infoNode => !isExistingNodeName(infoNode.name) && !HIDDEN_ITEM_NAMES.has(String(infoNode.name).trim()))];
   const getNodeById = id => nodeById.get(id) || extractedNodes.find(node => node.id === id) || null;
   const categoryById = new Map(CATEGORIES.map(category => [category.id, category]));
   const PRIMARY_CATEGORIES = [
