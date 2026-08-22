@@ -2,7 +2,7 @@
   © 2026 bbunye. All rights reserved.
   이 파일의 무단 복제, 수정, 재배포를 금지합니다.
   원본: https://bbunye.tistory.com/
-  버전: v1.8.7
+  버전: v1.8.8
 -->
 <!doctype html>
 <html lang="ko">
@@ -1647,7 +1647,7 @@
           <div class="creator-credit"><span class="creator-name">By 알리사 르구댕뿐예</span></div>
         </div>
       </div>
-      <span class="version-badge" style="display:inline-block; font-size:11px; font-weight:500; padding:2px 8px; border-radius:6px; background:#e5f0ff; color:#256fd2; align-self:flex-start;">v1.8.7</span>
+      <span class="version-badge" style="display:inline-block; font-size:11px; font-weight:500; padding:2px 8px; border-radius:6px; background:#e5f0ff; color:#256fd2; align-self:flex-start;">v1.8.8</span>
     </div>
 
     <div class="segmented" id="sidebarModeSwitch">
@@ -4205,21 +4205,28 @@
   (function(){
     if(window.parent === window) return;
     let pending = false;
-    function reportHeight(){
+    let lastSentHeight = null;
+    function reportHeight(force){
       if(pending) return;
       pending = true;
       setTimeout(() => {
         pending = false;
-        window.parent.postMessage({type:"mabinogi-techtree-height", height:document.documentElement.scrollHeight}, "*");
+        const height = document.documentElement.scrollHeight;
+        if(!force && height === lastSentHeight) return;
+        lastSentHeight = height;
+        window.parent.postMessage({type:"mabinogi-techtree-height", height}, "*");
       }, 0);
     }
-    window.addEventListener("load", reportHeight);
-    window.addEventListener("resize", reportHeight);
-    new MutationObserver(reportHeight).observe(document.body, {childList:true, subtree:true, attributes:true, characterData:true});
+    window.addEventListener("load", () => reportHeight(true));
+    window.addEventListener("resize", () => reportHeight(true));
+    new MutationObserver(() => reportHeight()).observe(document.body, {childList:true, subtree:true, attributes:true, characterData:true});
     if(window.ResizeObserver){
-      new ResizeObserver(reportHeight).observe(document.body);
+      new ResizeObserver(() => reportHeight()).observe(document.body);
     }
-    reportHeight();
+    // MutationObserver/ResizeObserver can silently miss a height change in some
+    // browser/extension environments; poll as a guaranteed fallback.
+    setInterval(() => reportHeight(), 500);
+    reportHeight(true);
   })();
 </script>
 <footer style="text-align:center; font-size:12px; color:#95a4ba; margin-top:20px; padding:12px 0;">
