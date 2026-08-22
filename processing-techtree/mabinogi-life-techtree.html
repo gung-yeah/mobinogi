@@ -2,7 +2,7 @@
   © 2026 bbunye. All rights reserved.
   이 파일의 무단 복제, 수정, 재배포를 금지합니다.
   원본: https://bbunye.tistory.com/
-  버전: v1.8.5
+  버전: v1.8.6
 -->
 <!doctype html>
 <html lang="ko">
@@ -1647,7 +1647,7 @@
           <div class="creator-credit"><span class="creator-name">By 알리사 르구댕뿐예</span></div>
         </div>
       </div>
-      <span class="version-badge" style="display:inline-block; font-size:11px; font-weight:500; padding:2px 8px; border-radius:6px; background:#e5f0ff; color:#256fd2; align-self:flex-start;">v1.8.5</span>
+      <span class="version-badge" style="display:inline-block; font-size:11px; font-weight:500; padding:2px 8px; border-radius:6px; background:#e5f0ff; color:#256fd2; align-self:flex-start;">v1.8.6</span>
     </div>
 
     <div class="segmented" id="sidebarModeSwitch">
@@ -4208,10 +4208,10 @@
     function reportHeight(){
       if(pending) return;
       pending = true;
-      requestAnimationFrame(() => {
+      setTimeout(() => {
         pending = false;
         window.parent.postMessage({type:"mabinogi-techtree-height", height:document.documentElement.scrollHeight}, "*");
-      });
+      }, 0);
     }
     window.addEventListener("load", reportHeight);
     window.addEventListener("resize", reportHeight);
