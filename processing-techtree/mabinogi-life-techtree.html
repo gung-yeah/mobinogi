@@ -2,7 +2,7 @@
   © 2026 bbunye. All rights reserved.
   이 파일의 무단 복제, 수정, 재배포를 금지합니다.
   원본: https://bbunye.tistory.com/
-  버전: v1.8.8
+  버전: v1.8.9
 -->
 <!doctype html>
 <html lang="ko">
@@ -62,6 +62,16 @@
     border-right:1px solid var(--line);
     background:rgba(12,17,27,.86);
     backdrop-filter:blur(10px);
+  }
+  /* Embedded (iframe auto-height): a sticky sidebar has no normal page scroll
+     to hide behind, so its own tall content would set a floor on the whole
+     grid row and stop the page shrinking when a short item is selected.
+     Cap it and let it scroll internally instead. */
+  body.is-embedded .sidebar{
+    position:static;
+    top:auto;
+    max-height:760px;
+    overflow-y:auto;
   }
   .brand{
     display:flex;
@@ -1647,7 +1657,7 @@
           <div class="creator-credit"><span class="creator-name">By 알리사 르구댕뿐예</span></div>
         </div>
       </div>
-      <span class="version-badge" style="display:inline-block; font-size:11px; font-weight:500; padding:2px 8px; border-radius:6px; background:#e5f0ff; color:#256fd2; align-self:flex-start;">v1.8.8</span>
+      <span class="version-badge" style="display:inline-block; font-size:11px; font-weight:500; padding:2px 8px; border-radius:6px; background:#e5f0ff; color:#256fd2; align-self:flex-start;">v1.8.9</span>
     </div>
 
     <div class="segmented" id="sidebarModeSwitch">
@@ -1976,6 +1986,7 @@
   };
   const STORE_KEY = "mabinogi-life-techtree-v1";
   const isEmbedded = window.parent !== window;
+  if(isEmbedded) document.body.classList.add("is-embedded");
   function applyPersistedPayload(parsed){
     if(!parsed) return;
     if(typeof parsed.owned === "object") state.owned = parsed.owned;
@@ -4206,27 +4217,38 @@
     if(window.parent === window) return;
     let pending = false;
     let lastSentHeight = null;
-    function reportHeight(force){
+    function reportHeight(){
       if(pending) return;
       pending = true;
       setTimeout(() => {
         pending = false;
-        const height = document.documentElement.scrollHeight;
-        if(!force && height === lastSentHeight) return;
+        // documentElement.scrollHeight is clamped to at least the current
+        // viewport height for the root element, so once the parent applies a
+        // tall value back onto this iframe, that reading can never shrink
+        // again even after the content gets shorter. body.scrollHeight isn't
+        // viewport-clamped and reflects the real content height.
+        const height = document.body.scrollHeight;
+        if(height === lastSentHeight) return;
         lastSentHeight = height;
         window.parent.postMessage({type:"mabinogi-techtree-height", height}, "*");
       }, 0);
     }
-    window.addEventListener("load", () => reportHeight(true));
-    window.addEventListener("resize", () => reportHeight(true));
-    new MutationObserver(() => reportHeight()).observe(document.body, {childList:true, subtree:true, attributes:true, characterData:true});
+    // NOTE: do NOT force-report on the "resize" event. The parent applies our
+    // reported height to the iframe's own style.height, which changes this
+    // iframe's viewport and fires "resize" again — forcing a report here would
+    // turn that into an infinite postMessage/resize loop that hangs the tab.
+    // Relying on the lastSentHeight cache lets a genuine size change through
+    // exactly once and breaks the loop as soon as the height stabilizes.
+    window.addEventListener("load", reportHeight);
+    window.addEventListener("resize", reportHeight);
+    new MutationObserver(reportHeight).observe(document.body, {childList:true, subtree:true, attributes:true, characterData:true});
     if(window.ResizeObserver){
-      new ResizeObserver(() => reportHeight()).observe(document.body);
+      new ResizeObserver(reportHeight).observe(document.body);
     }
     // MutationObserver/ResizeObserver can silently miss a height change in some
     // browser/extension environments; poll as a guaranteed fallback.
-    setInterval(() => reportHeight(), 500);
-    reportHeight(true);
+    setInterval(reportHeight, 500);
+    reportHeight();
   })();
 </script>
 <footer style="text-align:center; font-size:12px; color:#95a4ba; margin-top:20px; padding:12px 0;">
