@@ -2,7 +2,7 @@
   © 2026 bbunye. All rights reserved.
   이 파일의 무단 복제, 수정, 재배포를 금지합니다.
   원본: https://bbunye.tistory.com/
-  버전: v1.8.9
+  버전: v1.9.0
 -->
 <!doctype html>
 <html lang="ko">
@@ -62,16 +62,6 @@
     border-right:1px solid var(--line);
     background:rgba(12,17,27,.86);
     backdrop-filter:blur(10px);
-  }
-  /* Embedded (iframe auto-height): a sticky sidebar has no normal page scroll
-     to hide behind, so its own tall content would set a floor on the whole
-     grid row and stop the page shrinking when a short item is selected.
-     Cap it and let it scroll internally instead. */
-  body.is-embedded .sidebar{
-    position:static;
-    top:auto;
-    max-height:760px;
-    overflow-y:auto;
   }
   .brand{
     display:flex;
@@ -1657,7 +1647,7 @@
           <div class="creator-credit"><span class="creator-name">By 알리사 르구댕뿐예</span></div>
         </div>
       </div>
-      <span class="version-badge" style="display:inline-block; font-size:11px; font-weight:500; padding:2px 8px; border-radius:6px; background:#e5f0ff; color:#256fd2; align-self:flex-start;">v1.8.9</span>
+      <span class="version-badge" style="display:inline-block; font-size:11px; font-weight:500; padding:2px 8px; border-radius:6px; background:#e5f0ff; color:#256fd2; align-self:flex-start;">v1.9.0</span>
     </div>
 
     <div class="segmented" id="sidebarModeSwitch">
@@ -1986,7 +1976,6 @@
   };
   const STORE_KEY = "mabinogi-life-techtree-v1";
   const isEmbedded = window.parent !== window;
-  if(isEmbedded) document.body.classList.add("is-embedded");
   function applyPersistedPayload(parsed){
     if(!parsed) return;
     if(typeof parsed.owned === "object") state.owned = parsed.owned;
