@@ -2,7 +2,7 @@
   © 2026 bbunye. All rights reserved.
   이 파일의 무단 복제, 수정, 재배포를 금지합니다.
   원본: https://bbunye.tistory.com/
-  버전: v1.9.1
+  버전: v1.9.2
 -->
 <!doctype html>
 <html lang="ko">
@@ -1028,13 +1028,6 @@
     line-height:1.45;
   }
   .mabi-info:empty{display:none}
-  .mabi-info-label{
-    display:inline-flex;
-    align-items:center;
-    color:var(--ink);
-    font-weight:600;
-    margin-right:2px;
-  }
   .npc-face{
     width:24px;
     height:24px;
@@ -1654,7 +1647,7 @@
           <div class="creator-credit"><span class="creator-name">By 알리사 르구댕뿐예</span></div>
         </div>
       </div>
-      <span class="version-badge" style="display:inline-block; font-size:11px; font-weight:500; padding:2px 8px; border-radius:6px; background:#e5f0ff; color:#256fd2; align-self:flex-start;">v1.9.1</span>
+      <span class="version-badge" style="display:inline-block; font-size:11px; font-weight:500; padding:2px 8px; border-radius:6px; background:#e5f0ff; color:#256fd2; align-self:flex-start;">v1.9.2</span>
     </div>
 
     <div class="segmented" id="sidebarModeSwitch">
@@ -2438,11 +2431,6 @@
       chips.push(`<span class="method-shop">${face}<span>${escapeHtml(place)}</span><span class="exchange-mark">↔</span>${currencyIcon}<span>${priceText}${escapeHtml(currencyName)}${escapeHtml(limit)}</span></span>`);
     });
     return chips;
-  }
-  function extractObtainInfoHtml(node){
-    const chips = hwShopChipsHtml(node.name);
-    if(!chips.length) return "";
-    return `<span class="mabi-info-label">교환 및 구입처</span>${chips.join("")}`;
   }
   function hwFacilityBadgeHtml(node){
     const info = extractedInfo(node.name);
@@ -3281,7 +3269,7 @@
     icon.onerror = () => { icon.style.visibility = "hidden"; };
     icon.style.visibility = "visible";
     el("selectedMeta").innerHTML = `<span class="badge">${secondaryCategoryLabel(node)}</span>`;
-    el("selectedExtractInfo").innerHTML = node.externalOnly ? extractObtainInfoHtml(node) : "";
+    el("selectedExtractInfo").innerHTML = "";
     el("statTime").textContent = formatSeconds(result.totalTime);
     const key = producedKey(node.name);
     const star = el("headerFavoriteStar");
