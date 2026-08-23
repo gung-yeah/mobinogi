@@ -1,0 +1,363 @@
+{
+  "sourceVideo": "C:/Users/decim/Desktop/제작_무기_전격술사.mp4",
+  "sourceType": "manual_video_extraction",
+  "category": {
+    "primary": "제작",
+    "secondary": "무기 제작",
+    "subtype": "전격술사"
+  },
+  "excludeRules": [
+    "잔영 종류 아이템은 기존 제작식이 있으므로 제외",
+    "해연 종류 아이템은 기존 제작식이 있으므로 제외"
+  ],
+  "recipes": [
+    {
+      "name": "라운드 코일",
+      "yield": 1,
+      "craftingPlace": "무기 제작대",
+      "skill": "매직 크래프트",
+      "level": "Lv.1",
+      "time": "",
+      "materials": [
+        {
+          "name": "철괴",
+          "quantity": 3
+        },
+        {
+          "name": "가죽",
+          "quantity": 1
+        }
+      ],
+      "evidence": {
+        "frame": "frame_003.jpg",
+        "confidence": "medium-high"
+      }
+    },
+    {
+      "name": "마그네틱 코일",
+      "yield": 1,
+      "craftingPlace": "무기 제작대",
+      "skill": "매직 크래프트",
+      "level": "Lv.3",
+      "time": "",
+      "materials": [
+        {
+          "name": "강철괴",
+          "quantity": 3
+        },
+        {
+          "name": "가죽+",
+          "quantity": 1
+        }
+      ],
+      "evidence": {
+        "frame": "frame_009.jpg",
+        "confidence": "medium-high"
+      }
+    },
+    {
+      "name": "라운드 코일S",
+      "canonicalName": "라운드 코일 S",
+      "yield": 1,
+      "craftingPlace": "무기 제작대",
+      "skill": "매직 크래프트",
+      "level": "Lv.6",
+      "time": "",
+      "materials": [
+        {
+          "name": "합금강괴",
+          "quantity": 4
+        },
+        {
+          "name": "가죽+",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_016.jpg",
+        "confidence": "medium-high"
+      }
+    },
+    {
+      "name": "마그네틱 코일S",
+      "canonicalName": "마그네틱 코일 S",
+      "yield": 1,
+      "craftingPlace": "무기 제작대",
+      "skill": "매직 크래프트",
+      "level": "Lv.8",
+      "time": "",
+      "materials": [
+        {
+          "name": "합금강괴",
+          "quantity": 4
+        },
+        {
+          "name": "상급 가죽",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_020.jpg",
+        "confidence": "medium-high"
+      }
+    },
+    {
+      "name": "플라스마 코일S",
+      "canonicalName": "플라스마 코일 S",
+      "yield": 1,
+      "craftingPlace": "무기 제작대",
+      "skill": "매직 크래프트",
+      "level": "Lv.10",
+      "time": "",
+      "materials": [
+        {
+          "name": "특수강괴",
+          "quantity": 4
+        },
+        {
+          "name": "상급 가죽",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_024.jpg",
+        "confidence": "medium-high"
+      }
+    },
+    {
+      "name": "라운드 코일SS",
+      "canonicalName": "라운드 코일 SS",
+      "yield": 1,
+      "craftingPlace": "무기 제작대",
+      "skill": "매직 크래프트",
+      "level": "Lv.11",
+      "time": "",
+      "materials": [
+        {
+          "name": "특수강괴",
+          "quantity": 4
+        },
+        {
+          "name": "상급 가죽+",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_027.jpg",
+        "confidence": "medium-high"
+      }
+    },
+    {
+      "name": "썬더스톰 코일SS",
+      "canonicalName": "썬더스톰 코일 SS",
+      "yield": 1,
+      "craftingPlace": "무기 제작대",
+      "skill": "매직 크래프트",
+      "level": "Lv.12",
+      "time": "",
+      "materials": [
+        {
+          "name": "특수강괴",
+          "quantity": 5
+        },
+        {
+          "name": "상급 가죽+",
+          "quantity": 2
+        },
+        {
+          "name": "항마석 가루",
+          "quantity": 20
+        }
+      ],
+      "evidence": {
+        "frame": "frame_032.jpg",
+        "confidence": "medium-high"
+      }
+    },
+    {
+      "name": "마그네틱 코일SS",
+      "canonicalName": "마그네틱 코일 SS",
+      "yield": 1,
+      "craftingPlace": "무기 제작대",
+      "skill": "매직 크래프트",
+      "level": "Lv.13",
+      "time": "",
+      "materials": [
+        {
+          "name": "특수강괴",
+          "quantity": 5
+        },
+        {
+          "name": "상급 가죽+",
+          "quantity": 3
+        },
+        {
+          "name": "항마석 가루",
+          "quantity": 60
+        },
+        {
+          "name": "지배의 도안(무기)",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_037.jpg",
+        "confidence": "medium-high"
+      }
+    },
+    {
+      "name": "플라스마 코일SS",
+      "canonicalName": "플라스마 코일 SS",
+      "yield": 1,
+      "craftingPlace": "무기 제작대",
+      "skill": "매직 크래프트",
+      "level": "Lv.14",
+      "time": "",
+      "materials": [
+        {
+          "name": "은합금괴",
+          "quantity": 4
+        },
+        {
+          "name": "상급 가죽+",
+          "quantity": 3
+        },
+        {
+          "name": "상급 항마석 가루",
+          "quantity": 60
+        },
+        {
+          "name": "상급 지배의 도안(무기)",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_045.jpg",
+        "confidence": "medium-high"
+      }
+    },
+    {
+      "name": "라운드 코일Z",
+      "yield": 1,
+      "craftingPlace": "무기 제작대",
+      "skill": "매직 크래프트",
+      "level": "Lv.15",
+      "time": "",
+      "materials": [
+        {
+          "name": "운철괴",
+          "quantity": 3
+        },
+        {
+          "name": "최상급 가죽",
+          "quantity": 1
+        }
+      ],
+      "evidence": {
+        "frame": "frame_052.jpg",
+        "confidence": "medium-high"
+      }
+    },
+    {
+      "name": "썬더스톰 코일Z",
+      "yield": 1,
+      "craftingPlace": "무기 제작대",
+      "skill": "매직 크래프트",
+      "level": "Lv.16",
+      "time": "",
+      "materials": [
+        {
+          "name": "운철괴",
+          "quantity": 3
+        },
+        {
+          "name": "최상급 가죽",
+          "quantity": 2
+        },
+        {
+          "name": "상급 항마석 가루+",
+          "quantity": 30
+        }
+      ],
+      "evidence": {
+        "frame": "frame_056.jpg",
+        "confidence": "medium-high"
+      }
+    },
+    {
+      "name": "마그네틱 코일Z",
+      "yield": 1,
+      "craftingPlace": "무기 제작대",
+      "skill": "매직 크래프트",
+      "level": "Lv.17",
+      "time": "",
+      "materials": [
+        {
+          "name": "운철괴",
+          "quantity": 4
+        },
+        {
+          "name": "최상급 가죽",
+          "quantity": 2
+        },
+        {
+          "name": "상급 항마석 가루+",
+          "quantity": 75
+        },
+        {
+          "name": "상급 지배의 도안(무기)+",
+          "quantity": 4
+        }
+      ],
+      "evidence": {
+        "frame": "frame_066.jpg",
+        "confidence": "medium-high"
+      }
+    },
+    {
+      "name": "플라스마 코일Z",
+      "yield": 1,
+      "craftingPlace": "무기 제작대",
+      "skill": "매직 크래프트",
+      "level": "Lv.18",
+      "time": "",
+      "materials": [
+        {
+          "name": "운철괴",
+          "quantity": 5
+        },
+        {
+          "name": "최상급 가죽",
+          "quantity": 2
+        },
+        {
+          "name": "상급 항마석 가루+",
+          "quantity": 90
+        },
+        {
+          "name": "상급 지배의 도안(무기)+",
+          "quantity": 4
+        }
+      ],
+      "evidence": {
+        "frame": "frame_061.jpg",
+        "confidence": "medium-high"
+      }
+    }
+  ],
+  "excluded": [
+    {
+      "name": "잔영의 라운드 코일ZZ",
+      "reason": "잔영/해연 종류 아이템은 기존 제작식이 있으므로 제외"
+    },
+    {
+      "name": "해연의 라운드 코일ZZ",
+      "reason": "잔영/해연 종류 아이템은 기존 제작식이 있으므로 제외"
+    }
+  ],
+  "notes": [
+    "HTML/data.js는 수정하지 않았습니다.",
+    "영상 프레임 판독 기반 JSON입니다. 일부 흐린 이름은 기존 추출 데이터와 영상 목록을 대조해 작성했습니다.",
+    "evidence.frame은 C:/Users/decim/Documents/Codex/2026-07-28/html/magic_recipe_video_frames 아래 각 영상 폴더의 프레임 파일입니다."
+  ]
+}

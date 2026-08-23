@@ -1,0 +1,210 @@
+{
+  "sourceVideo": "C:/Users/decim/Desktop/제작_무기_전사.mp4",
+  "sourceType": "manual_video_extraction",
+  "category": {
+    "primary": "제작",
+    "secondary": "무기 제작",
+    "subtype": "전사"
+  },
+  "excludeRules": [
+    "잔영 종류 아이템은 기존 제작식이 있으므로 제외",
+    "해연 종류 아이템은 기존 제작식이 있으므로 제외"
+  ],
+  "recipes": [
+    {
+      "name": "숏소드",
+      "yield": 1,
+      "craftingPlace": "무기 제작대",
+      "skill": "대장 기술",
+      "level": "Lv.1",
+      "time": "",
+      "materials": [
+        { "name": "철괴", "quantity": 3 },
+        { "name": "목재", "quantity": 1 }
+      ],
+      "evidence": { "frame": "frame_014.jpg", "confidence": "high" }
+    },
+    {
+      "name": "한손 도끼",
+      "yield": 1,
+      "craftingPlace": "무기 제작대",
+      "skill": "대장 기술",
+      "level": "Lv.3",
+      "time": "",
+      "materials": [
+        { "name": "강철괴", "quantity": 3 },
+        { "name": "목재+", "quantity": 1 }
+      ],
+      "evidence": { "frame": "frame_020.jpg", "confidence": "high" }
+    },
+    {
+      "name": "숏소드S",
+      "canonicalName": "숏소드 S",
+      "yield": 1,
+      "craftingPlace": "무기 제작대",
+      "skill": "대장 기술",
+      "level": "Lv.6",
+      "time": "",
+      "materials": [
+        { "name": "합금강괴", "quantity": 4 },
+        { "name": "목재+", "quantity": 2 }
+      ],
+      "evidence": { "frame": "frame_025.jpg", "confidence": "high" }
+    },
+    {
+      "name": "한손 도끼S",
+      "canonicalName": "한손 도끼 S",
+      "yield": 1,
+      "craftingPlace": "무기 제작대",
+      "skill": "대장 기술",
+      "level": "Lv.8",
+      "time": "",
+      "materials": [
+        { "name": "합금강괴", "quantity": 4 },
+        { "name": "상급 목재", "quantity": 2 }
+      ],
+      "evidence": { "frame": "frame_030.jpg", "confidence": "high" }
+    },
+    {
+      "name": "바스타드 소드S",
+      "canonicalName": "바스타드 소드 S",
+      "yield": 1,
+      "craftingPlace": "무기 제작대",
+      "skill": "대장 기술",
+      "level": "Lv.10",
+      "time": "",
+      "materials": [
+        { "name": "특수강괴", "quantity": 4 },
+        { "name": "상급 목재", "quantity": 2 }
+      ],
+      "evidence": { "frame": "frame_035.jpg", "confidence": "high" }
+    },
+    {
+      "name": "숏소드SS",
+      "canonicalName": "숏소드 SS",
+      "yield": 1,
+      "craftingPlace": "무기 제작대",
+      "skill": "대장 기술",
+      "level": "Lv.11",
+      "time": "",
+      "materials": [
+        { "name": "특수강괴", "quantity": 4 },
+        { "name": "상급 목재+", "quantity": 2 }
+      ],
+      "evidence": { "frame": "frame_040.jpg", "confidence": "high" }
+    },
+    {
+      "name": "브로드 소드SS",
+      "canonicalName": "브로드 소드 SS",
+      "yield": 1,
+      "craftingPlace": "무기 제작대",
+      "skill": "대장 기술",
+      "level": "Lv.13",
+      "time": "",
+      "materials": [
+        { "name": "특수강괴", "quantity": 5 },
+        { "name": "상급 목재+", "quantity": 2 },
+        { "name": "항마석 가루", "quantity": 20 }
+      ],
+      "evidence": { "frame": "frame_046.jpg", "confidence": "high" }
+    },
+    {
+      "name": "한손 도끼SS",
+      "canonicalName": "한손 도끼 SS",
+      "yield": 1,
+      "craftingPlace": "무기 제작대",
+      "skill": "대장 기술",
+      "level": "Lv.14",
+      "time": "",
+      "materials": [
+        { "name": "특수강괴", "quantity": 5 },
+        { "name": "상급 목재+", "quantity": 3 },
+        { "name": "항마석 가루", "quantity": 60 },
+        { "name": "지배의 도안(무기)", "quantity": 2 }
+      ],
+      "evidence": { "frame": "frame_051.jpg", "confidence": "high" }
+    },
+    {
+      "name": "바스타드 소드SS",
+      "canonicalName": "바스타드 소드 SS",
+      "yield": 1,
+      "craftingPlace": "무기 제작대",
+      "skill": "대장 기술",
+      "level": "Lv.14",
+      "time": "",
+      "materials": [
+        { "name": "은합금괴", "quantity": 4 },
+        { "name": "상급 목재+", "quantity": 3 },
+        { "name": "상급 항마석 가루", "quantity": 60 },
+        { "name": "상급 지배의 도안(무기)", "quantity": 2 }
+      ],
+      "evidence": { "frame": "frame_055.jpg", "confidence": "high" }
+    },
+    {
+      "name": "숏소드Z",
+      "yield": 1,
+      "craftingPlace": "무기 제작대",
+      "skill": "대장 기술",
+      "level": "Lv.15",
+      "time": "",
+      "materials": [
+        { "name": "운철괴", "quantity": 3 },
+        { "name": "최상급 목재", "quantity": 1 }
+      ],
+      "evidence": { "frame": "frame_067.jpg", "confidence": "high" }
+    },
+    {
+      "name": "브로드 소드Z",
+      "yield": 1,
+      "craftingPlace": "무기 제작대",
+      "skill": "대장 기술",
+      "level": "Lv.16",
+      "time": "",
+      "materials": [
+        { "name": "운철괴", "quantity": 3 },
+        { "name": "최상급 목재", "quantity": 2 },
+        { "name": "상급 항마석 가루+", "quantity": 30 }
+      ],
+      "evidence": { "frame": "frame_072.jpg", "confidence": "high" }
+    },
+    {
+      "name": "한손 도끼Z",
+      "yield": 1,
+      "craftingPlace": "무기 제작대",
+      "skill": "대장 기술",
+      "level": "Lv.17",
+      "time": "",
+      "materials": [
+        { "name": "운철괴", "quantity": 4 },
+        { "name": "최상급 목재", "quantity": 2 },
+        { "name": "상급 항마석 가루+", "quantity": 75 },
+        { "name": "상급 지배의 도안(무기)+", "quantity": 4 }
+      ],
+      "evidence": { "frame": "frame_077.jpg", "confidence": "high" }
+    },
+    {
+      "name": "바스타드 소드Z",
+      "yield": 1,
+      "craftingPlace": "무기 제작대",
+      "skill": "대장 기술",
+      "level": "Lv.18",
+      "time": "",
+      "materials": [
+        { "name": "운철괴", "quantity": 5 },
+        { "name": "최상급 목재", "quantity": 2 },
+        { "name": "상급 항마석 가루+", "quantity": 90 },
+        { "name": "상급 지배의 도안(무기)+", "quantity": 4 }
+      ],
+      "evidence": { "frame": "frame_081.jpg", "confidence": "high" }
+    }
+  ],
+  "excluded": [
+    { "name": "잔영의 숏소드ZZ", "reason": "잔영 종류 아이템은 기존 제작식이 있으므로 제외" },
+    { "name": "해연의 숏소드ZZ", "reason": "해연 종류 아이템은 기존 제작식이 있으므로 제외" }
+  ],
+  "notes": [
+    "영상에서 제작 팝업이 직접 확인된 항목만 포함했습니다.",
+    "후반 목록에 보이는 다른 아이템은 제작 팝업이 확인되지 않아 제외했습니다.",
+    "S/SS 계열은 영상 표기 기준으로 name을 붙여 쓰고, 기존 데이터 대조용 canonicalName을 별도로 기록했습니다."
+  ]
+}

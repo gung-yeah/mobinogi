@@ -1,0 +1,375 @@
+{
+  "sourceVideo": "C:/Users/decim/Desktop/제작_무기_기사.mp4",
+  "sourceType": "manual_video_extraction",
+  "category": {
+    "primary": "제작",
+    "secondary": "무기 제작",
+    "subtype": "기사"
+  },
+  "excludeRules": [
+    "잔영 종류 아이템은 기존 제작식이 있으므로 제외",
+    "해연 종류 아이템은 기존 제작식이 있으므로 제외"
+  ],
+  "recipes": [
+    {
+      "name": "라이트 핼버드",
+      "yield": 1,
+      "craftingPlace": "무기 제작대",
+      "skill": "대장 기술",
+      "level": "Lv.1",
+      "time": "",
+      "materials": [
+        {
+          "name": "철괴",
+          "quantity": 3
+        },
+        {
+          "name": "목재",
+          "quantity": 1
+        }
+      ],
+      "evidence": {
+        "frame": "frame_006.jpg",
+        "confidence": "high"
+      }
+    },
+    {
+      "name": "그레이트 클레이브",
+      "yield": 1,
+      "craftingPlace": "무기 제작대",
+      "skill": "대장 기술",
+      "level": "Lv.3",
+      "time": "",
+      "materials": [
+        {
+          "name": "강철괴",
+          "quantity": 3
+        },
+        {
+          "name": "목재+",
+          "quantity": 1
+        }
+      ],
+      "evidence": {
+        "frame": "frame_011.jpg",
+        "confidence": "high"
+      }
+    },
+    {
+      "name": "라이트 핼버드S",
+      "canonicalName": "라이트 핼버드 S",
+      "yield": 1,
+      "craftingPlace": "무기 제작대",
+      "skill": "대장 기술",
+      "level": "Lv.6",
+      "time": "",
+      "materials": [
+        {
+          "name": "합금강괴",
+          "quantity": 4
+        },
+        {
+          "name": "목재+",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_017.jpg",
+        "confidence": "high"
+      }
+    },
+    {
+      "name": "그레이트 클레이브S",
+      "canonicalName": "그레이트 클레이브 S",
+      "yield": 1,
+      "craftingPlace": "무기 제작대",
+      "skill": "대장 기술",
+      "level": "Lv.8",
+      "time": "",
+      "materials": [
+        {
+          "name": "합금강괴",
+          "quantity": 4
+        },
+        {
+          "name": "상급 목재",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_022.jpg",
+        "confidence": "high"
+      }
+    },
+    {
+      "name": "트윈블레이드 핼버드S",
+      "canonicalName": "트윈블레이드 핼버드 S",
+      "yield": 1,
+      "craftingPlace": "무기 제작대",
+      "skill": "대장 기술",
+      "level": "Lv.10",
+      "time": "",
+      "materials": [
+        {
+          "name": "특수강괴",
+          "quantity": 4
+        },
+        {
+          "name": "상급 목재",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_026.jpg",
+        "confidence": "high"
+      }
+    },
+    {
+      "name": "라이트 핼버드SS",
+      "canonicalName": "라이트 핼버드 SS",
+      "yield": 1,
+      "craftingPlace": "무기 제작대",
+      "skill": "대장 기술",
+      "level": "Lv.11",
+      "time": "",
+      "materials": [
+        {
+          "name": "특수강괴",
+          "quantity": 4
+        },
+        {
+          "name": "상급 목재+",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_030.jpg",
+        "confidence": "high"
+      }
+    },
+    {
+      "name": "시즈 트라이던트SS",
+      "canonicalName": "시즈 트라이던트 SS",
+      "yield": 1,
+      "craftingPlace": "무기 제작대",
+      "skill": "대장 기술",
+      "level": "Lv.12",
+      "time": "",
+      "materials": [
+        {
+          "name": "특수강괴",
+          "quantity": 5
+        },
+        {
+          "name": "상급 목재+",
+          "quantity": 2
+        },
+        {
+          "name": "항마석 가루",
+          "quantity": 20
+        }
+      ],
+      "evidence": {
+        "frame": "frame_035.jpg",
+        "confidence": "high"
+      }
+    },
+    {
+      "name": "그레이트 클레이브SS",
+      "canonicalName": "그레이트 클레이브 SS",
+      "yield": 1,
+      "craftingPlace": "무기 제작대",
+      "skill": "대장 기술",
+      "level": "Lv.13",
+      "time": "",
+      "materials": [
+        {
+          "name": "특수강괴",
+          "quantity": 5
+        },
+        {
+          "name": "상급 목재+",
+          "quantity": 3
+        },
+        {
+          "name": "항마석 가루",
+          "quantity": 60
+        },
+        {
+          "name": "지배의 도안(무기)",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_041.jpg",
+        "confidence": "high"
+      }
+    },
+    {
+      "name": "트윈블레이드 핼버드SS",
+      "canonicalName": "트윈블레이드 핼버드 SS",
+      "yield": 1,
+      "craftingPlace": "무기 제작대",
+      "skill": "대장 기술",
+      "level": "Lv.14",
+      "time": "",
+      "materials": [
+        {
+          "name": "은합금괴",
+          "quantity": 2
+        },
+        {
+          "name": "특수강괴",
+          "quantity": 1
+        },
+        {
+          "name": "최상급 목재",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_049.jpg",
+        "confidence": "high"
+      }
+    },
+    {
+      "name": "라이트 핼버드Z",
+      "yield": 1,
+      "craftingPlace": "무기 제작대",
+      "skill": "대장 기술",
+      "level": "Lv.15",
+      "time": "",
+      "materials": [
+        {
+          "name": "운철괴",
+          "quantity": 2
+        },
+        {
+          "name": "은합금괴",
+          "quantity": 1
+        },
+        {
+          "name": "최상급 목재",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_057.jpg",
+        "confidence": "high"
+      }
+    },
+    {
+      "name": "시즈 트라이던트Z",
+      "yield": 1,
+      "craftingPlace": "무기 제작대",
+      "skill": "대장 기술",
+      "level": "Lv.16",
+      "time": "",
+      "materials": [
+        {
+          "name": "운철괴",
+          "quantity": 2
+        },
+        {
+          "name": "은합금괴",
+          "quantity": 1
+        },
+        {
+          "name": "최상급 목재",
+          "quantity": 3
+        },
+        {
+          "name": "상급 항마석 가루+",
+          "quantity": 30
+        }
+      ],
+      "evidence": {
+        "frame": "frame_062.jpg",
+        "confidence": "high"
+      }
+    },
+    {
+      "name": "그레이트 클레이브Z",
+      "yield": 1,
+      "craftingPlace": "무기 제작대",
+      "skill": "대장 기술",
+      "level": "Lv.17",
+      "time": "",
+      "materials": [
+        {
+          "name": "운철괴",
+          "quantity": 3
+        },
+        {
+          "name": "은합금괴",
+          "quantity": 1
+        },
+        {
+          "name": "최상급 목재",
+          "quantity": 3
+        },
+        {
+          "name": "상급 항마석 가루+",
+          "quantity": 75
+        },
+        {
+          "name": "상급 지배의 도안(무기)+",
+          "quantity": 4
+        }
+      ],
+      "evidence": {
+        "frame": "frame_067.jpg",
+        "confidence": "high"
+      }
+    },
+    {
+      "name": "트윈블레이드 핼버드Z",
+      "yield": 1,
+      "craftingPlace": "무기 제작대",
+      "skill": "대장 기술",
+      "level": "Lv.18",
+      "time": "",
+      "materials": [
+        {
+          "name": "운철괴",
+          "quantity": 4
+        },
+        {
+          "name": "은합금괴",
+          "quantity": 1
+        },
+        {
+          "name": "최상급 목재",
+          "quantity": 3
+        },
+        {
+          "name": "상급 항마석 가루+",
+          "quantity": 90
+        },
+        {
+          "name": "상급 지배의 도안(무기)+",
+          "quantity": 4
+        }
+      ],
+      "evidence": {
+        "frame": "frame_072.jpg",
+        "confidence": "high"
+      }
+    }
+  ],
+  "excluded": [
+    {
+      "name": "잔영의 라이트 핼버드ZZ",
+      "reason": "잔영/해연 종류 아이템은 기존 제작식이 있으므로 제외"
+    },
+    {
+      "name": "해연의 라이트 핼버드ZZ",
+      "reason": "잔영/해연 종류 아이템은 기존 제작식이 있으므로 제외"
+    }
+  ],
+  "notes": [
+    "영상에서 제작 팝업이 직접 확인된 항목만 포함했습니다.",
+    "잔영/해연 계열은 요청에 따라 recipes에는 넣지 않고 excluded에만 기록했습니다.",
+    "HTML/data.js는 수정하지 않았습니다."
+  ]
+}

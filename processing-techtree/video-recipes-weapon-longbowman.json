@@ -1,0 +1,355 @@
+{
+  "sourceVideo": "C:/Users/decim/Desktop/제작_무기_장궁병.mp4",
+  "sourceType": "manual_video_extraction",
+  "category": {
+    "primary": "제작",
+    "secondary": "무기 제작",
+    "subtype": "장궁병"
+  },
+  "excludeRules": [
+    "잔영 종류 아이템은 기존 제작식이 있으므로 제외",
+    "해연 종류 아이템은 기존 제작식이 있으므로 제외"
+  ],
+  "recipes": [
+    {
+      "name": "라이트 롱보우",
+      "yield": 1,
+      "craftingPlace": "무기 제작대",
+      "skill": "목공",
+      "level": "Lv.1",
+      "time": "",
+      "materials": [
+        {
+          "name": "목재",
+          "quantity": 3
+        },
+        {
+          "name": "가죽",
+          "quantity": 1
+        }
+      ],
+      "evidence": {
+        "frame": "frame_006.jpg",
+        "confidence": "high"
+      }
+    },
+    {
+      "name": "그랜드 롱보우",
+      "yield": 1,
+      "craftingPlace": "무기 제작대",
+      "skill": "목공",
+      "level": "Lv.3",
+      "time": "",
+      "materials": [
+        {
+          "name": "목재+",
+          "quantity": 3
+        },
+        {
+          "name": "가죽+",
+          "quantity": 1
+        }
+      ],
+      "evidence": {
+        "frame": "frame_011.jpg",
+        "confidence": "high"
+      }
+    },
+    {
+      "name": "라이트 롱보우S",
+      "canonicalName": "라이트 롱보우 S",
+      "yield": 1,
+      "craftingPlace": "무기 제작대",
+      "skill": "목공",
+      "level": "Lv.6",
+      "time": "",
+      "materials": [
+        {
+          "name": "상급 목재",
+          "quantity": 4
+        },
+        {
+          "name": "가죽+",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_017.jpg",
+        "confidence": "high"
+      }
+    },
+    {
+      "name": "그랜드 롱보우S",
+      "canonicalName": "그랜드 롱보우 S",
+      "yield": 1,
+      "craftingPlace": "무기 제작대",
+      "skill": "목공",
+      "level": "Lv.8",
+      "time": "",
+      "materials": [
+        {
+          "name": "상급 목재",
+          "quantity": 4
+        },
+        {
+          "name": "상급 가죽",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_022.jpg",
+        "confidence": "high"
+      }
+    },
+    {
+      "name": "헌터클랜 롱보우S",
+      "canonicalName": "헌터클랜 롱보우 S",
+      "yield": 1,
+      "craftingPlace": "무기 제작대",
+      "skill": "목공",
+      "level": "Lv.10",
+      "time": "",
+      "materials": [
+        {
+          "name": "상급 목재+",
+          "quantity": 4
+        },
+        {
+          "name": "상급 가죽",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_026.jpg",
+        "confidence": "high"
+      }
+    },
+    {
+      "name": "라이트 롱보우SS",
+      "canonicalName": "라이트 롱보우 SS",
+      "yield": 1,
+      "craftingPlace": "무기 제작대",
+      "skill": "목공",
+      "level": "Lv.11",
+      "time": "",
+      "materials": [
+        {
+          "name": "상급 목재+",
+          "quantity": 4
+        },
+        {
+          "name": "상급 가죽+",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_030.jpg",
+        "confidence": "high"
+      }
+    },
+    {
+      "name": "콤파운드 롱보우SS",
+      "canonicalName": "콤파운드 롱보우 SS",
+      "yield": 1,
+      "craftingPlace": "무기 제작대",
+      "skill": "목공",
+      "level": "Lv.12",
+      "time": "",
+      "materials": [
+        {
+          "name": "상급 목재+",
+          "quantity": 5
+        },
+        {
+          "name": "상급 가죽+",
+          "quantity": 2
+        },
+        {
+          "name": "항마석 가루",
+          "quantity": 20
+        }
+      ],
+      "evidence": {
+        "frame": "frame_035.jpg",
+        "confidence": "high"
+      }
+    },
+    {
+      "name": "그랜드 롱보우SS",
+      "canonicalName": "그랜드 롱보우 SS",
+      "yield": 1,
+      "craftingPlace": "무기 제작대",
+      "skill": "목공",
+      "level": "Lv.13",
+      "time": "",
+      "materials": [
+        {
+          "name": "상급 목재+",
+          "quantity": 5
+        },
+        {
+          "name": "상급 가죽+",
+          "quantity": 3
+        },
+        {
+          "name": "항마석 가루",
+          "quantity": 60
+        },
+        {
+          "name": "지배의 도안(무기)",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_041.jpg",
+        "confidence": "high"
+      }
+    },
+    {
+      "name": "헌터클랜 롱보우SS",
+      "canonicalName": "헌터클랜 롱보우 SS",
+      "yield": 1,
+      "craftingPlace": "무기 제작대",
+      "skill": "목공",
+      "level": "Lv.14",
+      "time": "",
+      "materials": [
+        {
+          "name": "최상급 목재",
+          "quantity": 3
+        },
+        {
+          "name": "최상급 가죽",
+          "quantity": 1
+        }
+      ],
+      "evidence": {
+        "frame": "frame_049.jpg",
+        "confidence": "high"
+      }
+    },
+    {
+      "name": "라이트 롱보우Z",
+      "yield": 1,
+      "craftingPlace": "무기 제작대",
+      "skill": "목공",
+      "level": "Lv.15",
+      "time": "",
+      "materials": [
+        {
+          "name": "최상급 목재+",
+          "quantity": 3
+        },
+        {
+          "name": "최상급 가죽",
+          "quantity": 1
+        }
+      ],
+      "evidence": {
+        "frame": "frame_052.jpg",
+        "confidence": "high"
+      }
+    },
+    {
+      "name": "콤파운드 롱보우Z",
+      "yield": 1,
+      "craftingPlace": "무기 제작대",
+      "skill": "목공",
+      "level": "Lv.16",
+      "time": "",
+      "materials": [
+        {
+          "name": "최상급 목재+",
+          "quantity": 3
+        },
+        {
+          "name": "최상급 가죽",
+          "quantity": 2
+        },
+        {
+          "name": "상급 항마석 가루+",
+          "quantity": 30
+        }
+      ],
+      "evidence": {
+        "frame": "frame_057.jpg",
+        "confidence": "high"
+      }
+    },
+    {
+      "name": "그랜드 롱보우Z",
+      "yield": 1,
+      "craftingPlace": "무기 제작대",
+      "skill": "목공",
+      "level": "Lv.17",
+      "time": "",
+      "materials": [
+        {
+          "name": "최상급 목재+",
+          "quantity": 4
+        },
+        {
+          "name": "최상급 가죽",
+          "quantity": 2
+        },
+        {
+          "name": "상급 항마석 가루+",
+          "quantity": 75
+        },
+        {
+          "name": "상급 지배의 도안(무기)+",
+          "quantity": 4
+        }
+      ],
+      "evidence": {
+        "frame": "frame_062.jpg",
+        "confidence": "high"
+      }
+    },
+    {
+      "name": "헌터클랜 롱보우Z",
+      "yield": 1,
+      "craftingPlace": "무기 제작대",
+      "skill": "목공",
+      "level": "Lv.18",
+      "time": "",
+      "materials": [
+        {
+          "name": "최상급 목재+",
+          "quantity": 5
+        },
+        {
+          "name": "최상급 가죽",
+          "quantity": 2
+        },
+        {
+          "name": "상급 항마석 가루+",
+          "quantity": 90
+        },
+        {
+          "name": "상급 지배의 도안(무기)+",
+          "quantity": 4
+        }
+      ],
+      "evidence": {
+        "frame": "frame_067.jpg",
+        "confidence": "high"
+      }
+    }
+  ],
+  "excluded": [
+    {
+      "name": "잔영의 라이트 롱보우ZZ",
+      "reason": "잔영/해연 종류 아이템은 기존 제작식이 있으므로 제외"
+    },
+    {
+      "name": "해연의 라이트 롱보우ZZ",
+      "reason": "잔영/해연 종류 아이템은 기존 제작식이 있으므로 제외"
+    }
+  ],
+  "notes": [
+    "영상에서 제작 팝업이 직접 확인된 항목만 포함했습니다.",
+    "잔영/해연 계열은 요청에 따라 recipes에는 넣지 않고 excluded에만 기록했습니다.",
+    "HTML/data.js는 수정하지 않았습니다."
+  ]
+}
