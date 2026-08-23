@@ -2,7 +2,7 @@
   © 2026 bbunye. All rights reserved.
   이 파일의 무단 복제, 수정, 재배포를 금지합니다.
   원본: https://bbunye.tistory.com/
-  버전: v1.9.4
+  버전: v1.9.5
 -->
 <!doctype html>
 <html lang="ko">
@@ -1647,7 +1647,7 @@
           <div class="creator-credit"><span class="creator-name">By 알리사 르구댕뿐예</span></div>
         </div>
       </div>
-      <span class="version-badge" style="display:inline-block; font-size:11px; font-weight:500; padding:2px 8px; border-radius:6px; background:#e5f0ff; color:#256fd2; align-self:flex-start;">v1.9.4</span>
+      <span class="version-badge" style="display:inline-block; font-size:11px; font-weight:500; padding:2px 8px; border-radius:6px; background:#e5f0ff; color:#256fd2; align-self:flex-start;">v1.9.5</span>
     </div>
 
     <div class="segmented" id="sidebarModeSwitch">
@@ -2130,7 +2130,12 @@
     "공격력 비약","골드 획득 비약","방어력 비약","브레이크 비약","라이프부스터 전설 비약",
     "던전버스터 전설 비약","상급 브레이크 비약","상급 콤보 강화 비약","콤보 강화 비약","호플리테스 전설 비약",
     "유구한 곡괭이","유구한 곤충 채집망","유구한 낚싯대","유구한 낫","유구한 벌목 도끼",
-    "유구한 약초 괭이","유구한 양털 가위","유구한 호미","달빛 도끼"
+    "유구한 약초 괭이","유구한 양털 가위","유구한 호미","달빛 도끼",
+    "샤기테일 펜던트","새끼너구리 샤기테일 펜던트","쁘띠캣 링","비틀린 생명의 고리",
+    "검붉은 안개의 고리","불길한 오닉스 반지","실버 링","실버 링 토크",
+    "심볼 포인트 링","심볼 포인트 펜던트","젬 포인트 링","젬 포인트 펜던트","타락한 생명의 고리",
+    "블루 스피넬 링ZZ","블루 스피넬 펜던트ZZ","샤인 지르콘 네크리스ZZ","샤인 지르콘 링ZZ",
+    "티어 가넷 네크리스ZZ","티어 가넷 링ZZ","페리도트 네크리스ZZ","페리도트 링ZZ"
   ]);
   // 악기(categoryLabel "악기")는 종류가 매우 많고 대부분 획득 경로가 불확실해서,
   // 골드 상점 구매로 확인된 것만 남긴다. gold-shop-instrument-obtain.json 기준.
@@ -3062,7 +3067,10 @@
     const list = SECONDARY_CATEGORIES[state.primaryCategory] || SECONDARY_CATEGORIES.processing;
     return list.find(item => item.id === state.secondaryCategory) || list[0];
   }
+  // 이름이 "목걸이/반지"로 끝나서 장신구로 오분류되지만 실제로는 장신구가 아닌 아이템
+  const PRODUCTION_GROUP_OVERRIDE = { "고양이의 방울 목걸이": "item" };
   function productionGroupOf(node){
+    if(PRODUCTION_GROUP_OVERRIDE[node.name]) return PRODUCTION_GROUP_OVERRIDE[node.name];
     if(["cook_simple","cook_power"].includes(node.category)) return "food";
     if(node.category === "craft_tool" || node.type === "생활 도구") return "tool";
     if(node.category !== "craft_item") return null;
