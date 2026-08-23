@@ -1,0 +1,426 @@
+{
+  "sourceVideo": "C:/Users/decim/Desktop/제작_장신구_목걸이.mp4",
+  "sourceType": "manual_video_extraction",
+  "category": {
+    "primary": "제작",
+    "secondary": "목걸이",
+    "subtype": "목걸이"
+  },
+  "excludeRules": [
+    "영상 제작 목록에 표시된 기본/S/SS/Z 장신구만 포함"
+  ],
+  "recipes": [
+    {
+      "name": "페리도트 네크리스",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "핸디크래프트",
+      "level": "Lv.1",
+      "time": "",
+      "materials": [
+        {
+          "name": "세공된 페리도트",
+          "quantity": 1
+        },
+        {
+          "name": "철괴",
+          "quantity": 1
+        }
+      ],
+      "evidence": {
+        "frame": "frame_001-025.jpg",
+        "confidence": "high",
+        "note": "개별 프레임/시트에서 직접 판독"
+      }
+    },
+    {
+      "name": "티어 가넷 네크리스",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "핸디크래프트",
+      "level": "Lv.2",
+      "time": "",
+      "materials": [
+        {
+          "name": "세공된 가넷",
+          "quantity": 1
+        },
+        {
+          "name": "강철괴",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_001-025.jpg",
+        "confidence": "high",
+        "note": "개별 프레임/시트에서 직접 판독"
+      }
+    },
+    {
+      "name": "블루 스피넬 펜던트",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "핸디크래프트",
+      "level": "Lv.3",
+      "time": "",
+      "materials": [
+        {
+          "name": "세공된 블루 스피넬",
+          "quantity": 1
+        },
+        {
+          "name": "강철괴",
+          "quantity": 3
+        }
+      ],
+      "evidence": {
+        "frame": "frame_001-025.jpg",
+        "confidence": "high",
+        "note": "개별 프레임/시트에서 직접 판독"
+      }
+    },
+    {
+      "name": "샤인 지르콘 네크리스",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "핸디크래프트",
+      "level": "Lv.5",
+      "time": "",
+      "materials": [
+        {
+          "name": "세공된 지르콘",
+          "quantity": 1
+        },
+        {
+          "name": "합금강괴",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_001-025.jpg",
+        "confidence": "high",
+        "note": "개별 프레임/시트에서 직접 판독"
+      }
+    },
+    {
+      "name": "페리도트 네크리스S",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "핸디크래프트",
+      "level": "Lv.6",
+      "time": "",
+      "materials": [
+        {
+          "name": "세공된 페리도트S",
+          "quantity": 1
+        },
+        {
+          "name": "합금강괴",
+          "quantity": 3
+        }
+      ],
+      "evidence": {
+        "frame": "frame_026-050.jpg",
+        "confidence": "high",
+        "note": "개별 프레임/시트에서 직접 판독"
+      }
+    },
+    {
+      "name": "티어 가넷 네크리스S",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "핸디크래프트",
+      "level": "Lv.7",
+      "time": "",
+      "materials": [
+        {
+          "name": "세공된 가넷S",
+          "quantity": 1
+        },
+        {
+          "name": "특수강괴",
+          "quantity": 4
+        },
+        {
+          "name": "강화제 가루",
+          "quantity": 20
+        }
+      ],
+      "evidence": {
+        "frame": "frame_026-050.jpg",
+        "confidence": "high",
+        "note": "개별 프레임/시트에서 직접 판독"
+      }
+    },
+    {
+      "name": "블루 스피넬 펜던트S",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "핸디크래프트",
+      "level": "Lv.8",
+      "time": "",
+      "materials": [
+        {
+          "name": "세공된 블루 스피넬S",
+          "quantity": 1
+        },
+        {
+          "name": "특수강괴",
+          "quantity": 4
+        },
+        {
+          "name": "강화제 가루",
+          "quantity": 20
+        }
+      ],
+      "evidence": {
+        "frame": "frame_026-050.jpg",
+        "confidence": "high",
+        "note": "개별 프레임/시트에서 직접 판독"
+      }
+    },
+    {
+      "name": "샤인 지르콘 네크리스S",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "핸디크래프트",
+      "level": "Lv.10",
+      "time": "",
+      "materials": [
+        {
+          "name": "세공된 지르콘S",
+          "quantity": 1
+        },
+        {
+          "name": "은합금괴",
+          "quantity": 2
+        },
+        {
+          "name": "강화제 가루",
+          "quantity": 20
+        }
+      ],
+      "evidence": {
+        "frame": "frame_026-050.jpg",
+        "confidence": "high",
+        "note": "개별 프레임/시트에서 직접 판독"
+      }
+    },
+    {
+      "name": "페리도트 네크리스SS",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "핸디크래프트",
+      "level": "Lv.11",
+      "time": "",
+      "materials": [
+        {
+          "name": "세공된 페리도트SS",
+          "quantity": 1
+        },
+        {
+          "name": "특수강괴",
+          "quantity": 3
+        }
+      ],
+      "evidence": {
+        "frame": "frame_051-075.jpg",
+        "confidence": "high",
+        "note": "개별 프레임/시트에서 직접 판독"
+      }
+    },
+    {
+      "name": "티어 가넷 네크리스SS",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "핸디크래프트",
+      "level": "Lv.12",
+      "time": "",
+      "materials": [
+        {
+          "name": "세공된 가넷SS",
+          "quantity": 1
+        },
+        {
+          "name": "특수강괴",
+          "quantity": 4
+        },
+        {
+          "name": "상급 강화제 가루",
+          "quantity": 20
+        }
+      ],
+      "evidence": {
+        "frame": "frame_051-075.jpg",
+        "confidence": "high",
+        "note": "개별 프레임/시트에서 직접 판독"
+      }
+    },
+    {
+      "name": "블루 스피넬 펜던트SS",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "핸디크래프트",
+      "level": "Lv.13",
+      "time": "",
+      "materials": [
+        {
+          "name": "세공된 블루 스피넬SS",
+          "quantity": 1
+        },
+        {
+          "name": "특수강괴",
+          "quantity": 4
+        },
+        {
+          "name": "상급 강화제 가루",
+          "quantity": 20
+        }
+      ],
+      "evidence": {
+        "frame": "frame_051-075.jpg",
+        "confidence": "high",
+        "note": "개별 프레임/시트에서 직접 판독"
+      }
+    },
+    {
+      "name": "샤인 지르콘 네크리스SS",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "핸디크래프트",
+      "level": "Lv.14",
+      "time": "",
+      "materials": [
+        {
+          "name": "세공된 지르콘SS",
+          "quantity": 1
+        },
+        {
+          "name": "은합금괴",
+          "quantity": 3
+        },
+        {
+          "name": "상급 강화제 가루",
+          "quantity": 30
+        }
+      ],
+      "evidence": {
+        "frame": "frame_051-075.jpg",
+        "confidence": "high",
+        "note": "개별 프레임/시트에서 직접 판독"
+      }
+    },
+    {
+      "name": "페리도트 네크리스Z",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "핸디크래프트",
+      "level": "Lv.15",
+      "time": "",
+      "materials": [
+        {
+          "name": "세공된 페리도트Z",
+          "quantity": 1
+        },
+        {
+          "name": "운철괴",
+          "quantity": 2
+        },
+        {
+          "name": "상급 강화제 가루+",
+          "quantity": 30
+        }
+      ],
+      "evidence": {
+        "frame": "frame_076-091.jpg",
+        "confidence": "medium",
+        "note": "영상 후반부 판독 및 반복 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "티어 가넷 네크리스Z",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "핸디크래프트",
+      "level": "Lv.16",
+      "time": "",
+      "materials": [
+        {
+          "name": "세공된 가넷Z",
+          "quantity": 1
+        },
+        {
+          "name": "운철괴",
+          "quantity": 2
+        },
+        {
+          "name": "상급 강화제 가루+",
+          "quantity": 30
+        }
+      ],
+      "evidence": {
+        "frame": "frame_076-091.jpg",
+        "confidence": "medium",
+        "note": "영상 후반부 판독 및 반복 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "블루 스피넬 펜던트Z",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "핸디크래프트",
+      "level": "Lv.17",
+      "time": "",
+      "materials": [
+        {
+          "name": "세공된 블루 스피넬Z",
+          "quantity": 1
+        },
+        {
+          "name": "운철괴",
+          "quantity": 3
+        },
+        {
+          "name": "상급 강화제 가루+",
+          "quantity": 30
+        }
+      ],
+      "evidence": {
+        "frame": "frame_076-091.jpg",
+        "confidence": "medium",
+        "note": "영상 후반부 판독 및 반복 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "샤인 지르콘 네크리스Z",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "핸디크래프트",
+      "level": "Lv.17",
+      "time": "",
+      "materials": [
+        {
+          "name": "세공된 지르콘Z",
+          "quantity": 1
+        },
+        {
+          "name": "백금강괴",
+          "quantity": 2
+        },
+        {
+          "name": "상급 강화제 가루+",
+          "quantity": 30
+        }
+      ],
+      "evidence": {
+        "frame": "frame_076-091.jpg",
+        "confidence": "medium",
+        "note": "영상 후반부 판독 및 반복 규칙 기반 전개"
+      }
+    }
+  ],
+  "notes": [
+    "목걸이와 반지는 동일한 보석/금속 재료 규칙을 공유한다.",
+    "confidence가 medium인 Z 항목은 HTML 반영 전 표본 검토 권장."
+  ]
+}

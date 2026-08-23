@@ -1,0 +1,2000 @@
+{
+  "sourceVideo": "C:/Users/decim/Desktop/제작_방어구_천옷.mp4",
+  "sourceType": "manual_video_extraction",
+  "category": {
+    "primary": "제작",
+    "secondary": "방어구 제작",
+    "subtype": "천옷"
+  },
+  "excludeRules": [
+    "초심자용/입문자용/보급형 전투복은 이번 제작 영상 목록 대상이 아니므로 제외",
+    "잔영/해연 종류가 있다면 기존 제작식 우선 원칙에 따라 제외"
+  ],
+  "recipes": [
+    {
+      "name": "전투복 투구",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.1",
+      "time": "",
+      "materials": [
+        {
+          "name": "옷감",
+          "quantity": 2
+        },
+        {
+          "name": "가죽",
+          "quantity": 1
+        }
+      ],
+      "evidence": {
+        "frame": "frame_001-050.jpg",
+        "confidence": "high",
+        "note": "개별 프레임에서 직접 판독"
+      }
+    },
+    {
+      "name": "전투복 상의",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.1",
+      "time": "",
+      "materials": [
+        {
+          "name": "옷감",
+          "quantity": 3
+        },
+        {
+          "name": "철괴",
+          "quantity": 1
+        }
+      ],
+      "evidence": {
+        "frame": "frame_001-050.jpg",
+        "confidence": "high",
+        "note": "개별 프레임에서 직접 판독"
+      }
+    },
+    {
+      "name": "전투복 장갑",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.1",
+      "time": "",
+      "materials": [
+        {
+          "name": "옷감",
+          "quantity": 2
+        },
+        {
+          "name": "실크",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_001-050.jpg",
+        "confidence": "high",
+        "note": "개별 프레임에서 직접 판독"
+      }
+    },
+    {
+      "name": "전투복 하의",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.1",
+      "time": "",
+      "materials": [
+        {
+          "name": "옷감",
+          "quantity": 2
+        },
+        {
+          "name": "가죽",
+          "quantity": 1
+        }
+      ],
+      "evidence": {
+        "frame": "frame_001-050.jpg",
+        "confidence": "high",
+        "note": "개별 프레임에서 직접 판독"
+      }
+    },
+    {
+      "name": "전투복 신발",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.1",
+      "time": "",
+      "materials": [
+        {
+          "name": "옷감",
+          "quantity": 2
+        },
+        {
+          "name": "철괴",
+          "quantity": 1
+        }
+      ],
+      "evidence": {
+        "frame": "frame_001-050.jpg",
+        "confidence": "high",
+        "note": "개별 프레임에서 직접 판독"
+      }
+    },
+    {
+      "name": "두꺼운 전투복 투구",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.3",
+      "time": "",
+      "materials": [
+        {
+          "name": "옷감+",
+          "quantity": 2
+        },
+        {
+          "name": "가죽+",
+          "quantity": 1
+        }
+      ],
+      "evidence": {
+        "frame": "frame_001-050.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "두꺼운 전투복 상의",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.3",
+      "time": "",
+      "materials": [
+        {
+          "name": "옷감+",
+          "quantity": 3
+        },
+        {
+          "name": "강철괴",
+          "quantity": 1
+        }
+      ],
+      "evidence": {
+        "frame": "frame_001-050.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "두꺼운 전투복 장갑",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.3",
+      "time": "",
+      "materials": [
+        {
+          "name": "옷감+",
+          "quantity": 2
+        },
+        {
+          "name": "실크+",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_001-050.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "두꺼운 전투복 하의",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.3",
+      "time": "",
+      "materials": [
+        {
+          "name": "옷감+",
+          "quantity": 2
+        },
+        {
+          "name": "가죽+",
+          "quantity": 1
+        }
+      ],
+      "evidence": {
+        "frame": "frame_001-050.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "두꺼운 전투복 신발",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.3",
+      "time": "",
+      "materials": [
+        {
+          "name": "옷감+",
+          "quantity": 2
+        },
+        {
+          "name": "강철괴",
+          "quantity": 1
+        }
+      ],
+      "evidence": {
+        "frame": "frame_001-050.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "누비 전투복 투구",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.6",
+      "time": "",
+      "materials": [
+        {
+          "name": "상급 옷감",
+          "quantity": 2
+        },
+        {
+          "name": "상급 가죽",
+          "quantity": 1
+        }
+      ],
+      "evidence": {
+        "frame": "frame_001-050.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "누비 전투복 상의",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.6",
+      "time": "",
+      "materials": [
+        {
+          "name": "상급 옷감",
+          "quantity": 3
+        },
+        {
+          "name": "합금강괴",
+          "quantity": 1
+        }
+      ],
+      "evidence": {
+        "frame": "frame_001-050.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "누비 전투복 장갑",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.6",
+      "time": "",
+      "materials": [
+        {
+          "name": "상급 옷감",
+          "quantity": 2
+        },
+        {
+          "name": "상급 실크",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_001-050.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "누비 전투복 하의",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.6",
+      "time": "",
+      "materials": [
+        {
+          "name": "상급 옷감",
+          "quantity": 2
+        },
+        {
+          "name": "상급 가죽",
+          "quantity": 1
+        }
+      ],
+      "evidence": {
+        "frame": "frame_001-050.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "누비 전투복 신발",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.6",
+      "time": "",
+      "materials": [
+        {
+          "name": "상급 옷감",
+          "quantity": 2
+        },
+        {
+          "name": "합금강괴",
+          "quantity": 1
+        }
+      ],
+      "evidence": {
+        "frame": "frame_001-050.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "강화된 전투복 투구",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.8",
+      "time": "",
+      "materials": [
+        {
+          "name": "상급 옷감+",
+          "quantity": 2
+        },
+        {
+          "name": "상급 가죽+",
+          "quantity": 1
+        }
+      ],
+      "evidence": {
+        "frame": "frame_001-050.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "강화된 전투복 상의",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.8",
+      "time": "",
+      "materials": [
+        {
+          "name": "상급 옷감+",
+          "quantity": 3
+        },
+        {
+          "name": "특수강괴",
+          "quantity": 1
+        }
+      ],
+      "evidence": {
+        "frame": "frame_001-050.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "강화된 전투복 장갑",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.8",
+      "time": "",
+      "materials": [
+        {
+          "name": "상급 옷감+",
+          "quantity": 2
+        },
+        {
+          "name": "상급 실크+",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_001-050.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "강화된 전투복 하의",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.8",
+      "time": "",
+      "materials": [
+        {
+          "name": "상급 옷감+",
+          "quantity": 2
+        },
+        {
+          "name": "상급 가죽+",
+          "quantity": 1
+        }
+      ],
+      "evidence": {
+        "frame": "frame_001-050.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "강화된 전투복 신발",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.8",
+      "time": "",
+      "materials": [
+        {
+          "name": "상급 옷감+",
+          "quantity": 2
+        },
+        {
+          "name": "특수강괴",
+          "quantity": 1
+        }
+      ],
+      "evidence": {
+        "frame": "frame_001-050.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "전투복 투구S",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.6",
+      "time": "",
+      "materials": [
+        {
+          "name": "옷감+",
+          "quantity": 3
+        },
+        {
+          "name": "가죽+",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_051-125.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "전투복 상의S",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.6",
+      "time": "",
+      "materials": [
+        {
+          "name": "옷감+",
+          "quantity": 4
+        },
+        {
+          "name": "강철괴",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_051-125.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "전투복 장갑S",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.6",
+      "time": "",
+      "materials": [
+        {
+          "name": "옷감+",
+          "quantity": 2
+        },
+        {
+          "name": "실크+",
+          "quantity": 5
+        }
+      ],
+      "evidence": {
+        "frame": "frame_051-125.jpg",
+        "confidence": "high",
+        "note": "개별 프레임에서 직접 판독"
+      }
+    },
+    {
+      "name": "전투복 하의S",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.6",
+      "time": "",
+      "materials": [
+        {
+          "name": "옷감+",
+          "quantity": 3
+        },
+        {
+          "name": "가죽+",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_051-125.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "전투복 신발S",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.6",
+      "time": "",
+      "materials": [
+        {
+          "name": "옷감+",
+          "quantity": 3
+        },
+        {
+          "name": "강철괴",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_051-125.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "두꺼운 전투복 투구S",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.8",
+      "time": "",
+      "materials": [
+        {
+          "name": "상급 옷감",
+          "quantity": 3
+        },
+        {
+          "name": "상급 가죽",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_051-125.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "두꺼운 전투복 상의S",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.8",
+      "time": "",
+      "materials": [
+        {
+          "name": "상급 옷감",
+          "quantity": 4
+        },
+        {
+          "name": "합금강괴",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_051-125.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "두꺼운 전투복 장갑S",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.8",
+      "time": "",
+      "materials": [
+        {
+          "name": "상급 옷감",
+          "quantity": 2
+        },
+        {
+          "name": "상급 실크",
+          "quantity": 5
+        }
+      ],
+      "evidence": {
+        "frame": "frame_051-125.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "두꺼운 전투복 하의S",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.8",
+      "time": "",
+      "materials": [
+        {
+          "name": "상급 옷감",
+          "quantity": 3
+        },
+        {
+          "name": "상급 가죽",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_051-125.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "두꺼운 전투복 신발S",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.8",
+      "time": "",
+      "materials": [
+        {
+          "name": "상급 옷감",
+          "quantity": 3
+        },
+        {
+          "name": "합금강괴",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_051-125.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "누비 전투복 투구S",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.10",
+      "time": "",
+      "materials": [
+        {
+          "name": "상급 옷감+",
+          "quantity": 3
+        },
+        {
+          "name": "상급 가죽+",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_051-125.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "누비 전투복 상의S",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.10",
+      "time": "",
+      "materials": [
+        {
+          "name": "상급 옷감+",
+          "quantity": 4
+        },
+        {
+          "name": "특수강괴",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_051-125.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "누비 전투복 장갑S",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.10",
+      "time": "",
+      "materials": [
+        {
+          "name": "상급 옷감+",
+          "quantity": 2
+        },
+        {
+          "name": "상급 실크+",
+          "quantity": 5
+        }
+      ],
+      "evidence": {
+        "frame": "frame_051-125.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "누비 전투복 하의S",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.10",
+      "time": "",
+      "materials": [
+        {
+          "name": "상급 옷감+",
+          "quantity": 3
+        },
+        {
+          "name": "상급 가죽+",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_051-125.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "누비 전투복 신발S",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.10",
+      "time": "",
+      "materials": [
+        {
+          "name": "상급 옷감+",
+          "quantity": 3
+        },
+        {
+          "name": "특수강괴",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_051-125.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "강화된 전투복 투구S",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.11",
+      "time": "",
+      "materials": [
+        {
+          "name": "최상급 옷감",
+          "quantity": 3
+        },
+        {
+          "name": "최상급 가죽",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_051-125.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "강화된 전투복 상의S",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.11",
+      "time": "",
+      "materials": [
+        {
+          "name": "최상급 옷감",
+          "quantity": 4
+        },
+        {
+          "name": "은합금괴",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_051-125.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "강화된 전투복 장갑S",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.11",
+      "time": "",
+      "materials": [
+        {
+          "name": "최상급 옷감",
+          "quantity": 2
+        },
+        {
+          "name": "최상급 실크",
+          "quantity": 5
+        }
+      ],
+      "evidence": {
+        "frame": "frame_051-125.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "강화된 전투복 하의S",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.11",
+      "time": "",
+      "materials": [
+        {
+          "name": "최상급 옷감",
+          "quantity": 3
+        },
+        {
+          "name": "최상급 가죽",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_051-125.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "강화된 전투복 신발S",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.11",
+      "time": "",
+      "materials": [
+        {
+          "name": "최상급 옷감",
+          "quantity": 3
+        },
+        {
+          "name": "은합금괴",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_051-125.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "전투복 투구SS",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.11",
+      "time": "",
+      "materials": [
+        {
+          "name": "상급 옷감",
+          "quantity": 3
+        },
+        {
+          "name": "상급 가죽",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_126-250.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "전투복 상의SS",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.11",
+      "time": "",
+      "materials": [
+        {
+          "name": "상급 옷감",
+          "quantity": 4
+        },
+        {
+          "name": "합금강괴",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_126-250.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "전투복 장갑SS",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.11",
+      "time": "",
+      "materials": [
+        {
+          "name": "상급 옷감",
+          "quantity": 2
+        },
+        {
+          "name": "상급 실크",
+          "quantity": 5
+        }
+      ],
+      "evidence": {
+        "frame": "frame_126-250.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "전투복 하의SS",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.11",
+      "time": "",
+      "materials": [
+        {
+          "name": "상급 옷감",
+          "quantity": 3
+        },
+        {
+          "name": "상급 가죽",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_126-250.jpg",
+        "confidence": "high",
+        "note": "개별 프레임에서 직접 판독"
+      }
+    },
+    {
+      "name": "전투복 신발SS",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.11",
+      "time": "",
+      "materials": [
+        {
+          "name": "상급 옷감",
+          "quantity": 3
+        },
+        {
+          "name": "합금강괴",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_126-250.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "두꺼운 전투복 투구SS",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.13",
+      "time": "",
+      "materials": [
+        {
+          "name": "상급 옷감+",
+          "quantity": 2
+        },
+        {
+          "name": "상급 가죽+",
+          "quantity": 2
+        },
+        {
+          "name": "상급 강화제 가루",
+          "quantity": 20
+        }
+      ],
+      "evidence": {
+        "frame": "frame_126-250.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "두꺼운 전투복 상의SS",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.13",
+      "time": "",
+      "materials": [
+        {
+          "name": "상급 옷감+",
+          "quantity": 3
+        },
+        {
+          "name": "특수강괴",
+          "quantity": 2
+        },
+        {
+          "name": "상급 강화제 가루",
+          "quantity": 20
+        }
+      ],
+      "evidence": {
+        "frame": "frame_126-250.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "두꺼운 전투복 장갑SS",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.13",
+      "time": "",
+      "materials": [
+        {
+          "name": "상급 옷감+",
+          "quantity": 2
+        },
+        {
+          "name": "상급 실크+",
+          "quantity": 3
+        },
+        {
+          "name": "상급 강화제 가루",
+          "quantity": 20
+        }
+      ],
+      "evidence": {
+        "frame": "frame_126-250.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "두꺼운 전투복 하의SS",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.13",
+      "time": "",
+      "materials": [
+        {
+          "name": "상급 옷감+",
+          "quantity": 2
+        },
+        {
+          "name": "상급 가죽+",
+          "quantity": 2
+        },
+        {
+          "name": "상급 강화제 가루",
+          "quantity": 20
+        }
+      ],
+      "evidence": {
+        "frame": "frame_126-250.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "두꺼운 전투복 신발SS",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.13",
+      "time": "",
+      "materials": [
+        {
+          "name": "상급 옷감+",
+          "quantity": 2
+        },
+        {
+          "name": "특수강괴",
+          "quantity": 2
+        },
+        {
+          "name": "상급 강화제 가루",
+          "quantity": 20
+        }
+      ],
+      "evidence": {
+        "frame": "frame_126-250.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "누비 전투복 투구SS",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.14",
+      "time": "",
+      "materials": [
+        {
+          "name": "최상급 옷감",
+          "quantity": 2
+        },
+        {
+          "name": "최상급 가죽",
+          "quantity": 2
+        },
+        {
+          "name": "상급 강화제 가루",
+          "quantity": 20
+        }
+      ],
+      "evidence": {
+        "frame": "frame_126-250.jpg",
+        "confidence": "high",
+        "note": "개별 프레임에서 직접 판독"
+      }
+    },
+    {
+      "name": "누비 전투복 상의SS",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.14",
+      "time": "",
+      "materials": [
+        {
+          "name": "최상급 옷감",
+          "quantity": 3
+        },
+        {
+          "name": "은합금괴",
+          "quantity": 2
+        },
+        {
+          "name": "상급 강화제 가루",
+          "quantity": 20
+        }
+      ],
+      "evidence": {
+        "frame": "frame_126-250.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "누비 전투복 장갑SS",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.14",
+      "time": "",
+      "materials": [
+        {
+          "name": "최상급 옷감",
+          "quantity": 2
+        },
+        {
+          "name": "최상급 실크",
+          "quantity": 3
+        },
+        {
+          "name": "상급 강화제 가루",
+          "quantity": 20
+        }
+      ],
+      "evidence": {
+        "frame": "frame_126-250.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "누비 전투복 하의SS",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.14",
+      "time": "",
+      "materials": [
+        {
+          "name": "최상급 옷감",
+          "quantity": 2
+        },
+        {
+          "name": "최상급 가죽",
+          "quantity": 2
+        },
+        {
+          "name": "상급 강화제 가루",
+          "quantity": 20
+        }
+      ],
+      "evidence": {
+        "frame": "frame_126-250.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "누비 전투복 신발SS",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.14",
+      "time": "",
+      "materials": [
+        {
+          "name": "최상급 옷감",
+          "quantity": 2
+        },
+        {
+          "name": "은합금괴",
+          "quantity": 2
+        },
+        {
+          "name": "상급 강화제 가루",
+          "quantity": 20
+        }
+      ],
+      "evidence": {
+        "frame": "frame_126-250.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "강화된 전투복 투구SS",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.14",
+      "time": "",
+      "materials": [
+        {
+          "name": "최상급 옷감+",
+          "quantity": 2
+        },
+        {
+          "name": "최상급 가죽+",
+          "quantity": 2
+        },
+        {
+          "name": "상급 강화제 가루",
+          "quantity": 20
+        }
+      ],
+      "evidence": {
+        "frame": "frame_126-250.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "강화된 전투복 상의SS",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.14",
+      "time": "",
+      "materials": [
+        {
+          "name": "최상급 옷감+",
+          "quantity": 3
+        },
+        {
+          "name": "운철괴",
+          "quantity": 2
+        },
+        {
+          "name": "상급 강화제 가루",
+          "quantity": 20
+        }
+      ],
+      "evidence": {
+        "frame": "frame_126-250.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "강화된 전투복 장갑SS",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.14",
+      "time": "",
+      "materials": [
+        {
+          "name": "최상급 옷감+",
+          "quantity": 2
+        },
+        {
+          "name": "최상급 실크+",
+          "quantity": 3
+        },
+        {
+          "name": "상급 강화제 가루",
+          "quantity": 20
+        }
+      ],
+      "evidence": {
+        "frame": "frame_126-250.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "강화된 전투복 하의SS",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.14",
+      "time": "",
+      "materials": [
+        {
+          "name": "최상급 옷감+",
+          "quantity": 2
+        },
+        {
+          "name": "최상급 가죽+",
+          "quantity": 2
+        },
+        {
+          "name": "상급 강화제 가루",
+          "quantity": 20
+        }
+      ],
+      "evidence": {
+        "frame": "frame_126-250.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "강화된 전투복 신발SS",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.14",
+      "time": "",
+      "materials": [
+        {
+          "name": "최상급 옷감+",
+          "quantity": 2
+        },
+        {
+          "name": "운철괴",
+          "quantity": 2
+        },
+        {
+          "name": "상급 강화제 가루",
+          "quantity": 20
+        }
+      ],
+      "evidence": {
+        "frame": "frame_126-250.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "전투복 투구Z",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.16",
+      "time": "",
+      "materials": [
+        {
+          "name": "상급 옷감+",
+          "quantity": 2
+        },
+        {
+          "name": "상급 가죽+",
+          "quantity": 2
+        },
+        {
+          "name": "상급 강화제 가루+",
+          "quantity": 30
+        }
+      ],
+      "evidence": {
+        "frame": "frame_251-350.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "전투복 상의Z",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.16",
+      "time": "",
+      "materials": [
+        {
+          "name": "상급 옷감+",
+          "quantity": 3
+        },
+        {
+          "name": "특수강괴",
+          "quantity": 2
+        },
+        {
+          "name": "상급 강화제 가루+",
+          "quantity": 30
+        }
+      ],
+      "evidence": {
+        "frame": "frame_251-350.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "전투복 장갑Z",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.16",
+      "time": "",
+      "materials": [
+        {
+          "name": "상급 옷감+",
+          "quantity": 2
+        },
+        {
+          "name": "상급 실크+",
+          "quantity": 3
+        },
+        {
+          "name": "상급 강화제 가루+",
+          "quantity": 30
+        }
+      ],
+      "evidence": {
+        "frame": "frame_251-350.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "전투복 하의Z",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.16",
+      "time": "",
+      "materials": [
+        {
+          "name": "상급 옷감+",
+          "quantity": 2
+        },
+        {
+          "name": "상급 가죽+",
+          "quantity": 2
+        },
+        {
+          "name": "상급 강화제 가루+",
+          "quantity": 30
+        }
+      ],
+      "evidence": {
+        "frame": "frame_251-350.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "전투복 신발Z",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.16",
+      "time": "",
+      "materials": [
+        {
+          "name": "상급 옷감+",
+          "quantity": 2
+        },
+        {
+          "name": "특수강괴",
+          "quantity": 2
+        },
+        {
+          "name": "상급 강화제 가루+",
+          "quantity": 30
+        }
+      ],
+      "evidence": {
+        "frame": "frame_251-350.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "두꺼운 전투복 투구Z",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.16",
+      "time": "",
+      "materials": [
+        {
+          "name": "최상급 옷감",
+          "quantity": 2
+        },
+        {
+          "name": "최상급 가죽",
+          "quantity": 2
+        },
+        {
+          "name": "상급 강화제 가루+",
+          "quantity": 30
+        }
+      ],
+      "evidence": {
+        "frame": "frame_251-350.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "두꺼운 전투복 상의Z",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.16",
+      "time": "",
+      "materials": [
+        {
+          "name": "최상급 옷감",
+          "quantity": 3
+        },
+        {
+          "name": "은합금괴",
+          "quantity": 2
+        },
+        {
+          "name": "상급 강화제 가루+",
+          "quantity": 30
+        }
+      ],
+      "evidence": {
+        "frame": "frame_251-350.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "두꺼운 전투복 장갑Z",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.16",
+      "time": "",
+      "materials": [
+        {
+          "name": "최상급 옷감",
+          "quantity": 2
+        },
+        {
+          "name": "최상급 실크",
+          "quantity": 3
+        },
+        {
+          "name": "상급 강화제 가루+",
+          "quantity": 30
+        }
+      ],
+      "evidence": {
+        "frame": "frame_251-350.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "두꺼운 전투복 하의Z",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.16",
+      "time": "",
+      "materials": [
+        {
+          "name": "최상급 옷감",
+          "quantity": 2
+        },
+        {
+          "name": "최상급 가죽",
+          "quantity": 2
+        },
+        {
+          "name": "상급 강화제 가루+",
+          "quantity": 30
+        }
+      ],
+      "evidence": {
+        "frame": "frame_251-350.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "두꺼운 전투복 신발Z",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.16",
+      "time": "",
+      "materials": [
+        {
+          "name": "최상급 옷감",
+          "quantity": 2
+        },
+        {
+          "name": "은합금괴",
+          "quantity": 2
+        },
+        {
+          "name": "상급 강화제 가루+",
+          "quantity": 30
+        }
+      ],
+      "evidence": {
+        "frame": "frame_251-350.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "누비 전투복 투구Z",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.17",
+      "time": "",
+      "materials": [
+        {
+          "name": "최상급 옷감+",
+          "quantity": 2
+        },
+        {
+          "name": "최상급 가죽+",
+          "quantity": 2
+        },
+        {
+          "name": "상급 강화제 가루+",
+          "quantity": 30
+        }
+      ],
+      "evidence": {
+        "frame": "frame_251-350.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "누비 전투복 상의Z",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.17",
+      "time": "",
+      "materials": [
+        {
+          "name": "최상급 옷감+",
+          "quantity": 3
+        },
+        {
+          "name": "운철괴",
+          "quantity": 2
+        },
+        {
+          "name": "상급 강화제 가루+",
+          "quantity": 30
+        }
+      ],
+      "evidence": {
+        "frame": "frame_251-350.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "누비 전투복 장갑Z",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.17",
+      "time": "",
+      "materials": [
+        {
+          "name": "최상급 옷감+",
+          "quantity": 2
+        },
+        {
+          "name": "최상급 실크+",
+          "quantity": 3
+        },
+        {
+          "name": "상급 강화제 가루+",
+          "quantity": 30
+        }
+      ],
+      "evidence": {
+        "frame": "frame_251-350.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "누비 전투복 하의Z",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.17",
+      "time": "",
+      "materials": [
+        {
+          "name": "최상급 옷감+",
+          "quantity": 2
+        },
+        {
+          "name": "최상급 가죽+",
+          "quantity": 2
+        },
+        {
+          "name": "상급 강화제 가루+",
+          "quantity": 30
+        }
+      ],
+      "evidence": {
+        "frame": "frame_251-350.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "누비 전투복 신발Z",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.17",
+      "time": "",
+      "materials": [
+        {
+          "name": "최상급 옷감+",
+          "quantity": 2
+        },
+        {
+          "name": "운철괴",
+          "quantity": 2
+        },
+        {
+          "name": "상급 강화제 가루+",
+          "quantity": 30
+        }
+      ],
+      "evidence": {
+        "frame": "frame_251-350.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "강화된 전투복 투구Z",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.17",
+      "time": "",
+      "materials": [
+        {
+          "name": "최상급 옷감+",
+          "quantity": 2
+        },
+        {
+          "name": "최상급 가죽+",
+          "quantity": 2
+        },
+        {
+          "name": "상급 강화제 가루+",
+          "quantity": 30
+        }
+      ],
+      "evidence": {
+        "frame": "frame_251-350.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "강화된 전투복 상의Z",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.17",
+      "time": "",
+      "materials": [
+        {
+          "name": "최상급 옷감+",
+          "quantity": 3
+        },
+        {
+          "name": "백금강괴",
+          "quantity": 2
+        },
+        {
+          "name": "상급 강화제 가루+",
+          "quantity": 30
+        }
+      ],
+      "evidence": {
+        "frame": "frame_251-350.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "강화된 전투복 장갑Z",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.17",
+      "time": "",
+      "materials": [
+        {
+          "name": "최상급 옷감+",
+          "quantity": 2
+        },
+        {
+          "name": "최상급 실크+",
+          "quantity": 3
+        },
+        {
+          "name": "상급 강화제 가루+",
+          "quantity": 30
+        }
+      ],
+      "evidence": {
+        "frame": "frame_251-350.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "강화된 전투복 하의Z",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.17",
+      "time": "",
+      "materials": [
+        {
+          "name": "최상급 옷감+",
+          "quantity": 2
+        },
+        {
+          "name": "최상급 가죽+",
+          "quantity": 2
+        },
+        {
+          "name": "상급 강화제 가루+",
+          "quantity": 30
+        }
+      ],
+      "evidence": {
+        "frame": "frame_251-350.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "강화된 전투복 신발Z",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "천옷 제작",
+      "level": "Lv.17",
+      "time": "",
+      "materials": [
+        {
+          "name": "최상급 옷감+",
+          "quantity": 2
+        },
+        {
+          "name": "백금강괴",
+          "quantity": 2
+        },
+        {
+          "name": "상급 강화제 가루+",
+          "quantity": 30
+        }
+      ],
+      "evidence": {
+        "frame": "frame_251-350.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    }
+  ],
+  "notes": [
+    "아이템명은 2026-08-07 추출 데이터와 영상 목록을 대조했다.",
+    "재료는 영상 프레임 판독값과 등급/부위별 반복 규칙으로 구성했다.",
+    "confidence가 medium인 항목은 HTML 반영 전 표본 검토 권장."
+  ]
+}
