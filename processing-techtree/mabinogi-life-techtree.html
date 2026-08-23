@@ -2,7 +2,7 @@
   © 2026 bbunye. All rights reserved.
   이 파일의 무단 복제, 수정, 재배포를 금지합니다.
   원본: https://bbunye.tistory.com/
-  버전: v1.9.2
+  버전: v1.9.3
 -->
 <!doctype html>
 <html lang="ko">
@@ -1647,7 +1647,7 @@
           <div class="creator-credit"><span class="creator-name">By 알리사 르구댕뿐예</span></div>
         </div>
       </div>
-      <span class="version-badge" style="display:inline-block; font-size:11px; font-weight:500; padding:2px 8px; border-radius:6px; background:#e5f0ff; color:#256fd2; align-self:flex-start;">v1.9.2</span>
+      <span class="version-badge" style="display:inline-block; font-size:11px; font-weight:500; padding:2px 8px; border-radius:6px; background:#e5f0ff; color:#256fd2; align-self:flex-start;">v1.9.3</span>
     </div>
 
     <div class="segmented" id="sidebarModeSwitch">
@@ -2139,11 +2139,16 @@
     "3화음 하프","류트","바이올린","벨벳 피아노","샬루모","에스닉 류트","에스닉 만돌린",
     "에스닉 바이올린","에스닉 샬루모","에스닉 플루트","페어노트 하프","플루트","피아노","하프"
   ]);
+  // categoryLabel은 "도구"로 잘못 분류돼 있지만 실제로는 실로폰/심벌즈/큰북 계열
+  // 악기다. 이 계열은 골드 상점 구매가 확인된 것이 하나도 없어서 전부 제외한다.
+  const MISLABELED_INSTRUMENT_PATTERN = /실로폰|심벌즈|큰북/;
   const isAllowedExtractedNode = infoNode => {
     const info = infoNode.extractedInfo;
-    if(isExistingNodeName(infoNode.name)) return false;
-    if(HIDDEN_ITEM_NAMES.has(String(infoNode.name).trim())) return false;
-    if(info?.categoryLabel === "악기" && !INSTRUMENT_GOLD_SHOP_NAMES.has(String(infoNode.name).trim())) return false;
+    const name = String(infoNode.name).trim();
+    if(isExistingNodeName(name)) return false;
+    if(HIDDEN_ITEM_NAMES.has(name)) return false;
+    if(info?.categoryLabel === "악기" && !INSTRUMENT_GOLD_SHOP_NAMES.has(name)) return false;
+    if(MISLABELED_INSTRUMENT_PATTERN.test(name)) return false;
     return true;
   };
   const extractedDisplayNodes = extractedNodes.filter(infoNode => {
