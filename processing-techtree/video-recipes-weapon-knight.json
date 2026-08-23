@@ -34,7 +34,7 @@
       }
     },
     {
-      "name": "그레이트 클레이브",
+      "name": "그레이트 글레이브",
       "yield": 1,
       "craftingPlace": "무기 제작대",
       "skill": "대장 기술",
@@ -79,8 +79,8 @@
       }
     },
     {
-      "name": "그레이트 클레이브S",
-      "canonicalName": "그레이트 클레이브 S",
+      "name": "그레이트 글레이브S",
+      "canonicalName": "그레이트 글레이브 S",
       "yield": 1,
       "craftingPlace": "무기 제작대",
       "skill": "대장 기술",
@@ -175,8 +175,8 @@
       }
     },
     {
-      "name": "그레이트 클레이브SS",
-      "canonicalName": "그레이트 클레이브 SS",
+      "name": "그레이트 글레이브SS",
+      "canonicalName": "그레이트 글레이브 SS",
       "yield": 1,
       "craftingPlace": "무기 제작대",
       "skill": "대장 기술",
@@ -289,7 +289,7 @@
       }
     },
     {
-      "name": "그레이트 클레이브Z",
+      "name": "그레이트 글레이브Z",
       "yield": 1,
       "craftingPlace": "무기 제작대",
       "skill": "대장 기술",
