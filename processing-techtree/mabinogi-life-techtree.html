@@ -2,7 +2,7 @@
   © 2026 bbunye. All rights reserved.
   이 파일의 무단 복제, 수정, 재배포를 금지합니다.
   원본: https://bbunye.tistory.com/
-  버전: v1.9.7
+  버전: v1.9.8
 -->
 <!doctype html>
 <html lang="ko">
@@ -1647,7 +1647,7 @@
           <div class="creator-credit"><span class="creator-name">By 알리사 르구댕뿐예</span></div>
         </div>
       </div>
-      <span class="version-badge" style="display:inline-block; font-size:11px; font-weight:500; padding:2px 8px; border-radius:6px; background:#e5f0ff; color:#256fd2; align-self:flex-start;">v1.9.7</span>
+      <span class="version-badge" style="display:inline-block; font-size:11px; font-weight:500; padding:2px 8px; border-radius:6px; background:#e5f0ff; color:#256fd2; align-self:flex-start;">v1.9.8</span>
     </div>
 
     <div class="segmented" id="sidebarModeSwitch">
@@ -2171,7 +2171,14 @@
     "콤파운드 롱보우","콤파운드 롱보우S","크리스탈 완드","크리스탈 힐링 완드",
     "클래식 쿼터스태프","클래식 쿼터스태프S","클래식 하프","트윈블레이드 폴액스","티어드롭 류트",
     "파이어플린트 케인","페더드 의식용 단검","페더드 의식용 단검S","프라임 너클",
-    "프로스트 오브","프로스트 오브S","플라스마 코일","해머헤드 케인","해머헤드 케인S","헌터클랜 롱보우"
+    "프로스트 오브","프로스트 오브S","플라스마 코일","해머헤드 케인","해머헤드 케인S","헌터클랜 롱보우",
+    "아란웬의 검","왕가의 검","요정의 활","의식용 칼1","저주의 뿌리","전직전사 송곳니 숏소드",
+    "천둥주먹","체인 액스","퍼거스의 잃어버린 망치","페스카즈","페스카즈S","페스카즈SS","페스카즈Z",
+    "크림슨 크리스탈","킬 샷","타르라크의 지팡이","트윈 팽","하얀 사신","한바탕 축제 특수 장갑","할로윈 뿅망치",
+    "광전사의 면갑","균형의 수호자","낯선 여행자의 상의","낯선 여행자의 신발","낯선 여행자의 하의",
+    "뉴비웨어 상의","뉴비웨어 신발","뉴비웨어 하의","리시타의 수련용 각반","리시타의 실전용 전투화",
+    "모리안의 가호","모리안의 은총","악몽의 손길","잠복자의 껍질","정복자의 쌍둥이 수호 갑옷",
+    "정복자의 쌍둥이 외투","채워지지 않는 굶주림","컷신용 볼륨 체크 의상","화염의 궤적","황금의 손"
   ]);
   // 무기/방어구/장신구 계열 아이템명이 ZZ로 끝나면(해연/잔영 접두 계열 제외) 목록에서 제외.
   // 대부분 최상위 등급으로 별도 제작식이 없거나 확인 불가능한 항목들이기 때문.
@@ -2191,6 +2198,8 @@
   // 악기다. 이 계열은 골드 상점 구매가 확인된 것이 하나도 없어서 전부 제외한다.
   const MISLABELED_INSTRUMENT_PATTERN = /실로폰|심벌즈|큰북/;
   const ZZ_ELIGIBLE_CATEGORY_LABELS = new Set(["무기","모자","상의","신발","장갑","하의","목걸이","반지"]);
+  // 입문용/초심자용/훈련용/이름 없는 계열은 스타터·플레이스홀더 장비라 별도 제작식이 없음.
+  const STARTER_GEAR_PATTERN = /^(입문용|입문자용|초심자용|훈련용|이름 없는)\s/;
   const isAllowedExtractedNode = infoNode => {
     const info = infoNode.extractedInfo;
     const name = String(infoNode.name).trim();
@@ -2199,6 +2208,7 @@
     if(info?.categoryLabel === "악기" && !INSTRUMENT_GOLD_SHOP_NAMES.has(name)) return false;
     if(MISLABELED_INSTRUMENT_PATTERN.test(name)) return false;
     if(ZZ_ELIGIBLE_CATEGORY_LABELS.has(info?.categoryLabel) && isHiddenBareZZ(name)) return false;
+    if(STARTER_GEAR_PATTERN.test(name)) return false;
     return true;
   };
   const extractedDisplayNodes = extractedNodes.filter(infoNode => {
