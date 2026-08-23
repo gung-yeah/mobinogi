@@ -1,0 +1,2001 @@
+{
+  "sourceVideo": "C:/Users/decim/Desktop/제작_방어구_중갑.mp4",
+  "sourceType": "manual_video_extraction",
+  "category": {
+    "primary": "제작",
+    "secondary": "방어구 제작",
+    "subtype": "중갑"
+  },
+  "excludeRules": [
+    "잔영 종류 아이템은 기존 제작식이 있으므로 제외",
+    "해연 종류 아이템은 기존 제작식이 있으므로 제외",
+    "초심자용/입문자용/보급형 가죽 갑옷은 이번 제작 영상 목록 대상이 아니므로 제외"
+  ],
+  "recipes": [
+    {
+      "name": "비늘 갑옷 투구",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.1",
+      "time": "",
+      "materials": [
+        {
+          "name": "철괴",
+          "quantity": 2
+        },
+        {
+          "name": "가죽",
+          "quantity": 1
+        }
+      ],
+      "evidence": {
+        "frame": "frame_001-050.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "비늘 갑옷 상의",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.1",
+      "time": "",
+      "materials": [
+        {
+          "name": "철괴",
+          "quantity": 3
+        },
+        {
+          "name": "옷감",
+          "quantity": 1
+        }
+      ],
+      "evidence": {
+        "frame": "frame_001-050.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "비늘 갑옷 장갑",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.1",
+      "time": "",
+      "materials": [
+        {
+          "name": "철괴",
+          "quantity": 2
+        },
+        {
+          "name": "실크",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_001-050.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "비늘 갑옷 하의",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.1",
+      "time": "",
+      "materials": [
+        {
+          "name": "철괴",
+          "quantity": 2
+        },
+        {
+          "name": "옷감",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_001-050.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "비늘 갑옷 신발",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.1",
+      "time": "",
+      "materials": [
+        {
+          "name": "철괴",
+          "quantity": 2
+        },
+        {
+          "name": "가죽",
+          "quantity": 1
+        }
+      ],
+      "evidence": {
+        "frame": "frame_001-050.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "사슬 갑옷 투구",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.3",
+      "time": "",
+      "materials": [
+        {
+          "name": "강철괴",
+          "quantity": 2
+        },
+        {
+          "name": "가죽+",
+          "quantity": 1
+        }
+      ],
+      "evidence": {
+        "frame": "frame_001-050.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "사슬 갑옷 상의",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.3",
+      "time": "",
+      "materials": [
+        {
+          "name": "강철괴",
+          "quantity": 3
+        },
+        {
+          "name": "옷감+",
+          "quantity": 1
+        }
+      ],
+      "evidence": {
+        "frame": "frame_001-050.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "사슬 갑옷 장갑",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.3",
+      "time": "",
+      "materials": [
+        {
+          "name": "강철괴",
+          "quantity": 2
+        },
+        {
+          "name": "실크+",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_001-050.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "사슬 갑옷 하의",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.3",
+      "time": "",
+      "materials": [
+        {
+          "name": "강철괴",
+          "quantity": 2
+        },
+        {
+          "name": "옷감+",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_001-050.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "사슬 갑옷 신발",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.3",
+      "time": "",
+      "materials": [
+        {
+          "name": "강철괴",
+          "quantity": 2
+        },
+        {
+          "name": "가죽+",
+          "quantity": 1
+        }
+      ],
+      "evidence": {
+        "frame": "frame_001-050.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "철판 갑옷 투구",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.6",
+      "time": "",
+      "materials": [
+        {
+          "name": "합금강괴",
+          "quantity": 2
+        },
+        {
+          "name": "상급 가죽",
+          "quantity": 1
+        }
+      ],
+      "evidence": {
+        "frame": "frame_050-090.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "철판 갑옷 상의",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.6",
+      "time": "",
+      "materials": [
+        {
+          "name": "합금강괴",
+          "quantity": 3
+        },
+        {
+          "name": "상급 옷감",
+          "quantity": 1
+        }
+      ],
+      "evidence": {
+        "frame": "frame_050-090.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "철판 갑옷 장갑",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.6",
+      "time": "",
+      "materials": [
+        {
+          "name": "합금강괴",
+          "quantity": 2
+        },
+        {
+          "name": "상급 실크",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_050-090.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "철판 갑옷 하의",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.6",
+      "time": "",
+      "materials": [
+        {
+          "name": "합금강괴",
+          "quantity": 2
+        },
+        {
+          "name": "상급 옷감",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_050-090.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "철판 갑옷 신발",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.6",
+      "time": "",
+      "materials": [
+        {
+          "name": "합금강괴",
+          "quantity": 2
+        },
+        {
+          "name": "상급 가죽",
+          "quantity": 1
+        }
+      ],
+      "evidence": {
+        "frame": "frame_050-090.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "판금 갑옷 투구",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.8",
+      "time": "",
+      "materials": [
+        {
+          "name": "특수강괴",
+          "quantity": 2
+        },
+        {
+          "name": "상급 가죽+",
+          "quantity": 1
+        }
+      ],
+      "evidence": {
+        "frame": "frame_050-090.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "판금 갑옷 상의",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.8",
+      "time": "",
+      "materials": [
+        {
+          "name": "특수강괴",
+          "quantity": 3
+        },
+        {
+          "name": "상급 옷감+",
+          "quantity": 1
+        }
+      ],
+      "evidence": {
+        "frame": "frame_050-090.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "판금 갑옷 장갑",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.8",
+      "time": "",
+      "materials": [
+        {
+          "name": "특수강괴",
+          "quantity": 2
+        },
+        {
+          "name": "상급 실크+",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_050-090.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "판금 갑옷 하의",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.8",
+      "time": "",
+      "materials": [
+        {
+          "name": "특수강괴",
+          "quantity": 2
+        },
+        {
+          "name": "상급 옷감+",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_050-090.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "판금 갑옷 신발",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.8",
+      "time": "",
+      "materials": [
+        {
+          "name": "특수강괴",
+          "quantity": 2
+        },
+        {
+          "name": "상급 가죽+",
+          "quantity": 1
+        }
+      ],
+      "evidence": {
+        "frame": "frame_050-090.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "비늘 갑옷 투구S",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.6",
+      "time": "",
+      "materials": [
+        {
+          "name": "합금강괴",
+          "quantity": 3
+        },
+        {
+          "name": "가죽+",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_051-125.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "비늘 갑옷 상의S",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.6",
+      "time": "",
+      "materials": [
+        {
+          "name": "합금강괴",
+          "quantity": 4
+        },
+        {
+          "name": "옷감+",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_051-125.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "비늘 갑옷 장갑S",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.6",
+      "time": "",
+      "materials": [
+        {
+          "name": "합금강괴",
+          "quantity": 2
+        },
+        {
+          "name": "실크+",
+          "quantity": 4
+        }
+      ],
+      "evidence": {
+        "frame": "frame_051-125.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "비늘 갑옷 하의S",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.6",
+      "time": "",
+      "materials": [
+        {
+          "name": "합금강괴",
+          "quantity": 3
+        },
+        {
+          "name": "옷감+",
+          "quantity": 3
+        }
+      ],
+      "evidence": {
+        "frame": "frame_051-125.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "비늘 갑옷 신발S",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.6",
+      "time": "",
+      "materials": [
+        {
+          "name": "합금강괴",
+          "quantity": 3
+        },
+        {
+          "name": "가죽+",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_051-125.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "사슬 갑옷 투구S",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.8",
+      "time": "",
+      "materials": [
+        {
+          "name": "합금강괴",
+          "quantity": 3
+        },
+        {
+          "name": "상급 가죽",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_051-125.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "사슬 갑옷 상의S",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.8",
+      "time": "",
+      "materials": [
+        {
+          "name": "합금강괴",
+          "quantity": 4
+        },
+        {
+          "name": "상급 옷감",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_051-125.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "사슬 갑옷 장갑S",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.8",
+      "time": "",
+      "materials": [
+        {
+          "name": "합금강괴",
+          "quantity": 2
+        },
+        {
+          "name": "상급 실크",
+          "quantity": 4
+        }
+      ],
+      "evidence": {
+        "frame": "frame_051-125.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "사슬 갑옷 하의S",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.8",
+      "time": "",
+      "materials": [
+        {
+          "name": "합금강괴",
+          "quantity": 3
+        },
+        {
+          "name": "상급 옷감",
+          "quantity": 3
+        }
+      ],
+      "evidence": {
+        "frame": "frame_051-125.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "사슬 갑옷 신발S",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.8",
+      "time": "",
+      "materials": [
+        {
+          "name": "합금강괴",
+          "quantity": 3
+        },
+        {
+          "name": "상급 가죽",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_051-125.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "철판 갑옷 투구S",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.10",
+      "time": "",
+      "materials": [
+        {
+          "name": "특수강괴",
+          "quantity": 3
+        },
+        {
+          "name": "상급 가죽",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_051-125.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "철판 갑옷 상의S",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.10",
+      "time": "",
+      "materials": [
+        {
+          "name": "특수강괴",
+          "quantity": 4
+        },
+        {
+          "name": "상급 옷감",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_051-125.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "철판 갑옷 장갑S",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.10",
+      "time": "",
+      "materials": [
+        {
+          "name": "특수강괴",
+          "quantity": 2
+        },
+        {
+          "name": "상급 실크",
+          "quantity": 4
+        }
+      ],
+      "evidence": {
+        "frame": "frame_051-125.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "철판 갑옷 하의S",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.10",
+      "time": "",
+      "materials": [
+        {
+          "name": "특수강괴",
+          "quantity": 3
+        },
+        {
+          "name": "상급 옷감",
+          "quantity": 3
+        }
+      ],
+      "evidence": {
+        "frame": "frame_051-125.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "철판 갑옷 신발S",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.10",
+      "time": "",
+      "materials": [
+        {
+          "name": "특수강괴",
+          "quantity": 3
+        },
+        {
+          "name": "상급 가죽",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_051-125.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "판금 갑옷 투구S",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.11",
+      "time": "",
+      "materials": [
+        {
+          "name": "특수강괴",
+          "quantity": 3
+        },
+        {
+          "name": "상급 가죽+",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_051-125.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "판금 갑옷 상의S",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.11",
+      "time": "",
+      "materials": [
+        {
+          "name": "특수강괴",
+          "quantity": 4
+        },
+        {
+          "name": "상급 옷감+",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_051-125.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "판금 갑옷 장갑S",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.11",
+      "time": "",
+      "materials": [
+        {
+          "name": "특수강괴",
+          "quantity": 2
+        },
+        {
+          "name": "상급 실크+",
+          "quantity": 4
+        }
+      ],
+      "evidence": {
+        "frame": "frame_051-125.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "판금 갑옷 하의S",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.11",
+      "time": "",
+      "materials": [
+        {
+          "name": "특수강괴",
+          "quantity": 3
+        },
+        {
+          "name": "상급 옷감+",
+          "quantity": 3
+        }
+      ],
+      "evidence": {
+        "frame": "frame_051-125.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "판금 갑옷 신발S",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.11",
+      "time": "",
+      "materials": [
+        {
+          "name": "특수강괴",
+          "quantity": 3
+        },
+        {
+          "name": "상급 가죽+",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_051-125.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "비늘 갑옷 투구SS",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.11",
+      "time": "",
+      "materials": [
+        {
+          "name": "특수강괴",
+          "quantity": 3
+        },
+        {
+          "name": "상급 가죽+",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_126-250.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "비늘 갑옷 상의SS",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.11",
+      "time": "",
+      "materials": [
+        {
+          "name": "특수강괴",
+          "quantity": 4
+        },
+        {
+          "name": "상급 옷감+",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_126-250.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "비늘 갑옷 장갑SS",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.11",
+      "time": "",
+      "materials": [
+        {
+          "name": "특수강괴",
+          "quantity": 2
+        },
+        {
+          "name": "상급 실크+",
+          "quantity": 4
+        }
+      ],
+      "evidence": {
+        "frame": "frame_126-250.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "비늘 갑옷 하의SS",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.11",
+      "time": "",
+      "materials": [
+        {
+          "name": "특수강괴",
+          "quantity": 3
+        },
+        {
+          "name": "상급 옷감+",
+          "quantity": 3
+        }
+      ],
+      "evidence": {
+        "frame": "frame_126-250.jpg",
+        "confidence": "high",
+        "note": "개별 프레임에서 직접 판독"
+      }
+    },
+    {
+      "name": "비늘 갑옷 신발SS",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.11",
+      "time": "",
+      "materials": [
+        {
+          "name": "특수강괴",
+          "quantity": 3
+        },
+        {
+          "name": "상급 가죽+",
+          "quantity": 2
+        }
+      ],
+      "evidence": {
+        "frame": "frame_126-250.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "사슬 갑옷 투구SS",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.13",
+      "time": "",
+      "materials": [
+        {
+          "name": "특수강괴",
+          "quantity": 2
+        },
+        {
+          "name": "상급 가죽+",
+          "quantity": 2
+        },
+        {
+          "name": "상급 강화제 가루",
+          "quantity": 20
+        }
+      ],
+      "evidence": {
+        "frame": "frame_126-250.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "사슬 갑옷 상의SS",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.13",
+      "time": "",
+      "materials": [
+        {
+          "name": "특수강괴",
+          "quantity": 3
+        },
+        {
+          "name": "상급 옷감+",
+          "quantity": 2
+        },
+        {
+          "name": "상급 강화제 가루",
+          "quantity": 20
+        }
+      ],
+      "evidence": {
+        "frame": "frame_126-250.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "사슬 갑옷 장갑SS",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.13",
+      "time": "",
+      "materials": [
+        {
+          "name": "특수강괴",
+          "quantity": 2
+        },
+        {
+          "name": "상급 실크+",
+          "quantity": 3
+        },
+        {
+          "name": "상급 강화제 가루",
+          "quantity": 20
+        }
+      ],
+      "evidence": {
+        "frame": "frame_126-250.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "사슬 갑옷 하의SS",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.13",
+      "time": "",
+      "materials": [
+        {
+          "name": "특수강괴",
+          "quantity": 2
+        },
+        {
+          "name": "상급 옷감+",
+          "quantity": 3
+        },
+        {
+          "name": "상급 강화제 가루",
+          "quantity": 20
+        }
+      ],
+      "evidence": {
+        "frame": "frame_126-250.jpg",
+        "confidence": "high",
+        "note": "개별 프레임에서 직접 판독"
+      }
+    },
+    {
+      "name": "사슬 갑옷 신발SS",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.13",
+      "time": "",
+      "materials": [
+        {
+          "name": "특수강괴",
+          "quantity": 2
+        },
+        {
+          "name": "상급 가죽+",
+          "quantity": 2
+        },
+        {
+          "name": "상급 강화제 가루",
+          "quantity": 20
+        }
+      ],
+      "evidence": {
+        "frame": "frame_126-250.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "철판 갑옷 투구SS",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.14",
+      "time": "",
+      "materials": [
+        {
+          "name": "은합금괴",
+          "quantity": 2
+        },
+        {
+          "name": "최상급 가죽",
+          "quantity": 2
+        },
+        {
+          "name": "상급 강화제 가루",
+          "quantity": 20
+        }
+      ],
+      "evidence": {
+        "frame": "frame_126-250.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "철판 갑옷 상의SS",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.14",
+      "time": "",
+      "materials": [
+        {
+          "name": "은합금괴",
+          "quantity": 3
+        },
+        {
+          "name": "최상급 옷감",
+          "quantity": 2
+        },
+        {
+          "name": "상급 강화제 가루",
+          "quantity": 20
+        }
+      ],
+      "evidence": {
+        "frame": "frame_126-250.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "철판 갑옷 장갑SS",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.14",
+      "time": "",
+      "materials": [
+        {
+          "name": "은합금괴",
+          "quantity": 2
+        },
+        {
+          "name": "최상급 실크",
+          "quantity": 3
+        },
+        {
+          "name": "상급 강화제 가루",
+          "quantity": 20
+        }
+      ],
+      "evidence": {
+        "frame": "frame_126-250.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "철판 갑옷 하의SS",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.14",
+      "time": "",
+      "materials": [
+        {
+          "name": "은합금괴",
+          "quantity": 2
+        },
+        {
+          "name": "최상급 옷감",
+          "quantity": 3
+        },
+        {
+          "name": "상급 강화제 가루",
+          "quantity": 20
+        }
+      ],
+      "evidence": {
+        "frame": "frame_126-250.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "철판 갑옷 신발SS",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.14",
+      "time": "",
+      "materials": [
+        {
+          "name": "은합금괴",
+          "quantity": 2
+        },
+        {
+          "name": "최상급 가죽",
+          "quantity": 2
+        },
+        {
+          "name": "상급 강화제 가루",
+          "quantity": 20
+        }
+      ],
+      "evidence": {
+        "frame": "frame_126-250.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "판금 갑옷 투구SS",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.14",
+      "time": "",
+      "materials": [
+        {
+          "name": "은합금괴",
+          "quantity": 2
+        },
+        {
+          "name": "최상급 가죽",
+          "quantity": 2
+        },
+        {
+          "name": "상급 강화제 가루",
+          "quantity": 20
+        }
+      ],
+      "evidence": {
+        "frame": "frame_126-250.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "판금 갑옷 상의SS",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.14",
+      "time": "",
+      "materials": [
+        {
+          "name": "은합금괴",
+          "quantity": 3
+        },
+        {
+          "name": "최상급 옷감",
+          "quantity": 2
+        },
+        {
+          "name": "상급 강화제 가루",
+          "quantity": 20
+        }
+      ],
+      "evidence": {
+        "frame": "frame_126-250.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "판금 갑옷 장갑SS",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.14",
+      "time": "",
+      "materials": [
+        {
+          "name": "은합금괴",
+          "quantity": 2
+        },
+        {
+          "name": "최상급 실크",
+          "quantity": 3
+        },
+        {
+          "name": "상급 강화제 가루",
+          "quantity": 20
+        }
+      ],
+      "evidence": {
+        "frame": "frame_126-250.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "판금 갑옷 하의SS",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.14",
+      "time": "",
+      "materials": [
+        {
+          "name": "은합금괴",
+          "quantity": 2
+        },
+        {
+          "name": "최상급 옷감",
+          "quantity": 3
+        },
+        {
+          "name": "상급 강화제 가루",
+          "quantity": 20
+        }
+      ],
+      "evidence": {
+        "frame": "frame_126-250.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "판금 갑옷 신발SS",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.14",
+      "time": "",
+      "materials": [
+        {
+          "name": "은합금괴",
+          "quantity": 2
+        },
+        {
+          "name": "최상급 가죽",
+          "quantity": 2
+        },
+        {
+          "name": "상급 강화제 가루",
+          "quantity": 20
+        }
+      ],
+      "evidence": {
+        "frame": "frame_126-250.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "비늘 갑옷 투구Z",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.16",
+      "time": "",
+      "materials": [
+        {
+          "name": "운철괴",
+          "quantity": 2
+        },
+        {
+          "name": "최상급 가죽",
+          "quantity": 2
+        },
+        {
+          "name": "상급 강화제 가루+",
+          "quantity": 30
+        }
+      ],
+      "evidence": {
+        "frame": "frame_251-360.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "비늘 갑옷 상의Z",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.16",
+      "time": "",
+      "materials": [
+        {
+          "name": "운철괴",
+          "quantity": 3
+        },
+        {
+          "name": "최상급 옷감",
+          "quantity": 2
+        },
+        {
+          "name": "상급 강화제 가루+",
+          "quantity": 30
+        }
+      ],
+      "evidence": {
+        "frame": "frame_251-360.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "비늘 갑옷 장갑Z",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.16",
+      "time": "",
+      "materials": [
+        {
+          "name": "운철괴",
+          "quantity": 2
+        },
+        {
+          "name": "최상급 실크",
+          "quantity": 3
+        },
+        {
+          "name": "상급 강화제 가루+",
+          "quantity": 30
+        }
+      ],
+      "evidence": {
+        "frame": "frame_251-360.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "비늘 갑옷 하의Z",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.16",
+      "time": "",
+      "materials": [
+        {
+          "name": "운철괴",
+          "quantity": 2
+        },
+        {
+          "name": "최상급 옷감",
+          "quantity": 3
+        },
+        {
+          "name": "상급 강화제 가루+",
+          "quantity": 30
+        }
+      ],
+      "evidence": {
+        "frame": "frame_251-360.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "비늘 갑옷 신발Z",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.16",
+      "time": "",
+      "materials": [
+        {
+          "name": "운철괴",
+          "quantity": 2
+        },
+        {
+          "name": "최상급 가죽",
+          "quantity": 2
+        },
+        {
+          "name": "상급 강화제 가루+",
+          "quantity": 30
+        }
+      ],
+      "evidence": {
+        "frame": "frame_251-360.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "사슬 갑옷 투구Z",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.16",
+      "time": "",
+      "materials": [
+        {
+          "name": "운철괴",
+          "quantity": 2
+        },
+        {
+          "name": "최상급 가죽",
+          "quantity": 2
+        },
+        {
+          "name": "상급 강화제 가루+",
+          "quantity": 30
+        }
+      ],
+      "evidence": {
+        "frame": "frame_251-360.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "사슬 갑옷 상의Z",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.16",
+      "time": "",
+      "materials": [
+        {
+          "name": "운철괴",
+          "quantity": 3
+        },
+        {
+          "name": "최상급 옷감",
+          "quantity": 2
+        },
+        {
+          "name": "상급 강화제 가루+",
+          "quantity": 30
+        }
+      ],
+      "evidence": {
+        "frame": "frame_251-360.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "사슬 갑옷 장갑Z",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.16",
+      "time": "",
+      "materials": [
+        {
+          "name": "운철괴",
+          "quantity": 2
+        },
+        {
+          "name": "최상급 실크",
+          "quantity": 3
+        },
+        {
+          "name": "상급 강화제 가루+",
+          "quantity": 30
+        }
+      ],
+      "evidence": {
+        "frame": "frame_251-360.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "사슬 갑옷 하의Z",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.16",
+      "time": "",
+      "materials": [
+        {
+          "name": "운철괴",
+          "quantity": 2
+        },
+        {
+          "name": "최상급 옷감",
+          "quantity": 3
+        },
+        {
+          "name": "상급 강화제 가루+",
+          "quantity": 30
+        }
+      ],
+      "evidence": {
+        "frame": "frame_251-360.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "사슬 갑옷 신발Z",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.16",
+      "time": "",
+      "materials": [
+        {
+          "name": "운철괴",
+          "quantity": 2
+        },
+        {
+          "name": "최상급 가죽",
+          "quantity": 2
+        },
+        {
+          "name": "상급 강화제 가루+",
+          "quantity": 30
+        }
+      ],
+      "evidence": {
+        "frame": "frame_251-360.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "철판 갑옷 투구Z",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.17",
+      "time": "",
+      "materials": [
+        {
+          "name": "백금강괴",
+          "quantity": 2
+        },
+        {
+          "name": "최상급 가죽+",
+          "quantity": 2
+        },
+        {
+          "name": "상급 강화제 가루+",
+          "quantity": 30
+        }
+      ],
+      "evidence": {
+        "frame": "frame_251-360.jpg",
+        "confidence": "high",
+        "note": "개별 프레임에서 직접 판독"
+      }
+    },
+    {
+      "name": "철판 갑옷 상의Z",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.17",
+      "time": "",
+      "materials": [
+        {
+          "name": "백금강괴",
+          "quantity": 3
+        },
+        {
+          "name": "최상급 옷감+",
+          "quantity": 2
+        },
+        {
+          "name": "상급 강화제 가루+",
+          "quantity": 30
+        }
+      ],
+      "evidence": {
+        "frame": "frame_251-360.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "철판 갑옷 장갑Z",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.17",
+      "time": "",
+      "materials": [
+        {
+          "name": "백금강괴",
+          "quantity": 2
+        },
+        {
+          "name": "최상급 실크+",
+          "quantity": 3
+        },
+        {
+          "name": "상급 강화제 가루+",
+          "quantity": 30
+        }
+      ],
+      "evidence": {
+        "frame": "frame_251-360.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "철판 갑옷 하의Z",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.17",
+      "time": "",
+      "materials": [
+        {
+          "name": "백금강괴",
+          "quantity": 2
+        },
+        {
+          "name": "최상급 옷감+",
+          "quantity": 3
+        },
+        {
+          "name": "상급 강화제 가루+",
+          "quantity": 30
+        }
+      ],
+      "evidence": {
+        "frame": "frame_251-360.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "철판 갑옷 신발Z",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.17",
+      "time": "",
+      "materials": [
+        {
+          "name": "백금강괴",
+          "quantity": 2
+        },
+        {
+          "name": "최상급 가죽+",
+          "quantity": 2
+        },
+        {
+          "name": "상급 강화제 가루+",
+          "quantity": 30
+        }
+      ],
+      "evidence": {
+        "frame": "frame_251-360.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "판금 갑옷 투구Z",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.17",
+      "time": "",
+      "materials": [
+        {
+          "name": "백금강괴",
+          "quantity": 2
+        },
+        {
+          "name": "최상급 가죽+",
+          "quantity": 2
+        },
+        {
+          "name": "상급 강화제 가루+",
+          "quantity": 30
+        }
+      ],
+      "evidence": {
+        "frame": "frame_251-360.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "판금 갑옷 상의Z",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.17",
+      "time": "",
+      "materials": [
+        {
+          "name": "백금강괴",
+          "quantity": 3
+        },
+        {
+          "name": "최상급 옷감+",
+          "quantity": 2
+        },
+        {
+          "name": "상급 강화제 가루+",
+          "quantity": 30
+        }
+      ],
+      "evidence": {
+        "frame": "frame_251-360.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "판금 갑옷 장갑Z",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.17",
+      "time": "",
+      "materials": [
+        {
+          "name": "백금강괴",
+          "quantity": 2
+        },
+        {
+          "name": "최상급 실크+",
+          "quantity": 3
+        },
+        {
+          "name": "상급 강화제 가루+",
+          "quantity": 30
+        }
+      ],
+      "evidence": {
+        "frame": "frame_251-360.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "판금 갑옷 하의Z",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.17",
+      "time": "",
+      "materials": [
+        {
+          "name": "백금강괴",
+          "quantity": 2
+        },
+        {
+          "name": "최상급 옷감+",
+          "quantity": 3
+        },
+        {
+          "name": "상급 강화제 가루+",
+          "quantity": 30
+        }
+      ],
+      "evidence": {
+        "frame": "frame_251-360.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    },
+    {
+      "name": "판금 갑옷 신발Z",
+      "yield": 1,
+      "craftingPlace": "방어구 제작대",
+      "skill": "중갑 제작",
+      "level": "Lv.17",
+      "time": "",
+      "materials": [
+        {
+          "name": "백금강괴",
+          "quantity": 2
+        },
+        {
+          "name": "최상급 가죽+",
+          "quantity": 2
+        },
+        {
+          "name": "상급 강화제 가루+",
+          "quantity": 30
+        }
+      ],
+      "evidence": {
+        "frame": "frame_251-360.jpg",
+        "confidence": "medium",
+        "note": "영상 판독 재료 규칙 기반 전개"
+      }
+    }
+  ],
+  "notes": [
+    "아이템명은 2026-08-07 추출 데이터와 영상 목록을 대조했다.",
+    "재료는 영상 프레임 판독값과 등급/부위별 반복 규칙으로 구성했다.",
+    "confidence가 medium인 항목은 HTML 반영 전 표본 검토 권장."
+  ]
+}
