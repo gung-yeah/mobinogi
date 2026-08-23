@@ -102,8 +102,8 @@
       }
     },
     {
-      "name": "트윈블레이드 핼버드S",
-      "canonicalName": "트윈블레이드 핼버드 S",
+      "name": "트윈블레이드 폴액스S",
+      "canonicalName": "트윈블레이드 폴액스 S",
       "yield": 1,
       "craftingPlace": "무기 제작대",
       "skill": "대장 기술",
@@ -148,8 +148,8 @@
       }
     },
     {
-      "name": "시즈 트라이던트SS",
-      "canonicalName": "시즈 트라이던트 SS",
+      "name": "샤프 트라이던트SS",
+      "canonicalName": "샤프 트라이던트 SS",
       "yield": 1,
       "craftingPlace": "무기 제작대",
       "skill": "대장 기술",
@@ -206,8 +206,8 @@
       }
     },
     {
-      "name": "트윈블레이드 핼버드SS",
-      "canonicalName": "트윈블레이드 핼버드 SS",
+      "name": "트윈블레이드 폴액스SS",
+      "canonicalName": "트윈블레이드 폴액스 SS",
       "yield": 1,
       "craftingPlace": "무기 제작대",
       "skill": "대장 기술",
@@ -259,7 +259,7 @@
       }
     },
     {
-      "name": "시즈 트라이던트Z",
+      "name": "샤프 트라이던트Z",
       "yield": 1,
       "craftingPlace": "무기 제작대",
       "skill": "대장 기술",
@@ -323,7 +323,7 @@
       }
     },
     {
-      "name": "트윈블레이드 핼버드Z",
+      "name": "트윈블레이드 폴액스Z",
       "yield": 1,
       "craftingPlace": "무기 제작대",
       "skill": "대장 기술",

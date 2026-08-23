@@ -148,8 +148,8 @@
       }
     },
     {
-      "name": "홀리 쿼터스태프SS",
-      "canonicalName": "홀리 쿼터스태프 SS",
+      "name": "클래식 쿼터스태프SS",
+      "canonicalName": "클래식 쿼터스태프 SS",
       "yield": 1,
       "craftingPlace": "무기 제작대",
       "skill": "매직 크래프트",
@@ -259,7 +259,7 @@
       }
     },
     {
-      "name": "홀리 쿼터스태프Z",
+      "name": "클래식 쿼터스태프Z",
       "yield": 1,
       "craftingPlace": "무기 제작대",
       "skill": "매직 크래프트",

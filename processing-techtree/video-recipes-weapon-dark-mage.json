@@ -175,8 +175,8 @@
       }
     },
     {
-      "name": "블레이드 의식용 단검SS",
-      "canonicalName": "블레이드 의식용 단검 SS",
+      "name": "페더드 의식용 단검SS",
+      "canonicalName": "페더드 의식용 단검 SS",
       "yield": 1,
       "craftingPlace": "무기 제작대",
       "skill": "매직 크래프트",
@@ -285,7 +285,7 @@
       }
     },
     {
-      "name": "블레이드 의식용 단검Z",
+      "name": "페더드 의식용 단검Z",
       "yield": 1,
       "craftingPlace": "무기 제작대",
       "skill": "매직 크래프트",

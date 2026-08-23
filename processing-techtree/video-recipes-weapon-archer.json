@@ -102,8 +102,8 @@
       }
     },
     {
-      "name": "리인포스트 보우S",
-      "canonicalName": "리인포스트 보우 S",
+      "name": "리인포스드 보우S",
+      "canonicalName": "리인포스드 보우 S",
       "yield": 1,
       "craftingPlace": "무기 제작대",
       "skill": "목공",
@@ -206,8 +206,8 @@
       }
     },
     {
-      "name": "리인포스트 보우SS",
-      "canonicalName": "리인포스트 보우 SS",
+      "name": "리인포스드 보우SS",
+      "canonicalName": "리인포스드 보우 SS",
       "yield": 1,
       "craftingPlace": "무기 제작대",
       "skill": "목공",
@@ -307,7 +307,7 @@
       }
     },
     {
-      "name": "리인포스트 보우Z",
+      "name": "리인포스드 보우Z",
       "yield": 1,
       "craftingPlace": "무기 제작대",
       "skill": "목공",

@@ -148,8 +148,8 @@
       }
     },
     {
-      "name": "세인트 스태프SS",
-      "canonicalName": "세인트 스태프 SS",
+      "name": "심볼 크로스 스태프SS",
+      "canonicalName": "심볼 크로스 스태프 SS",
       "yield": 1,
       "craftingPlace": "무기 제작대",
       "skill": "매직 크래프트",
@@ -255,7 +255,7 @@
       }
     },
     {
-      "name": "세인트 스태프Z",
+      "name": "심볼 크로스 스태프Z",
       "yield": 1,
       "craftingPlace": "무기 제작대",
       "skill": "매직 크래프트",

@@ -34,7 +34,7 @@
       }
     },
     {
-      "name": "셉틱 완드",
+      "name": "켈틱 완드",
       "yield": 1,
       "craftingPlace": "무기 제작대",
       "skill": "매직 크래프트",
@@ -79,8 +79,8 @@
       }
     },
     {
-      "name": "셉틱 완드S",
-      "canonicalName": "셉틱 완드 S",
+      "name": "켈틱 완드S",
+      "canonicalName": "켈틱 완드 S",
       "yield": 1,
       "craftingPlace": "무기 제작대",
       "skill": "매직 크래프트",
@@ -175,8 +175,8 @@
       }
     },
     {
-      "name": "셉틱 완드SS",
-      "canonicalName": "셉틱 완드 SS",
+      "name": "켈틱 완드SS",
+      "canonicalName": "켈틱 완드 SS",
       "yield": 1,
       "craftingPlace": "무기 제작대",
       "skill": "매직 크래프트",
@@ -289,7 +289,7 @@
       }
     },
     {
-      "name": "셉틱 완드Z",
+      "name": "켈틱 완드Z",
       "yield": 1,
       "craftingPlace": "무기 제작대",
       "skill": "매직 크래프트",

@@ -102,8 +102,8 @@
       }
     },
     {
-      "name": "파이어볼트 케인S",
-      "canonicalName": "파이어볼트 케인 S",
+      "name": "파이어플린트 케인S",
+      "canonicalName": "파이어플린트 케인 S",
       "yield": 1,
       "craftingPlace": "무기 제작대",
       "skill": "매직 크래프트",
@@ -206,8 +206,8 @@
       }
     },
     {
-      "name": "파이어볼트 케인SS",
-      "canonicalName": "파이어볼트 케인 SS",
+      "name": "파이어플린트 케인SS",
+      "canonicalName": "파이어플린트 케인 SS",
       "yield": 1,
       "craftingPlace": "무기 제작대",
       "skill": "매직 크래프트",
@@ -315,7 +315,7 @@
       }
     },
     {
-      "name": "파이어볼트 케인Z",
+      "name": "파이어플린트 케인Z",
       "yield": 1,
       "craftingPlace": "무기 제작대",
       "skill": "매직 크래프트",
