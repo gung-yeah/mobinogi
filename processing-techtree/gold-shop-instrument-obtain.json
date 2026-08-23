@@ -1,0 +1,721 @@
+{
+  "generatedAt": "2026-08-23T08:15:09.217Z",
+  "source": "C:\\Users\\decim\\Desktop\\git\\mobinogi\\processing-techtree\\mabimobi-extracted-data.js",
+  "filter": {
+    "categoryLabel": "악기",
+    "obtainType": "상점 구매",
+    "currency": "골드",
+    "excluded": [
+      "상자",
+      "이벤트 보상",
+      "토큰/조각/기타 재화 교환"
+    ]
+  },
+  "count": 29,
+  "items": [
+    {
+      "name": "2화음 류트",
+      "id": 5524,
+      "sheetId": 1701490232,
+      "categoryLabel": "악기",
+      "iconUrl": "icons/2화음_류트.png",
+      "remoteIconUrl": "https://cdn.mabimobi.life/image/item/Tool_Instrument_Lute_Basic_00_ColoredIcon.png",
+      "obtain": [
+        "상점 구매 · 말콤의 잡화점 · 6000 골드 · 1개"
+      ],
+      "obtainSources": []
+    },
+    {
+      "name": "2화음 만돌린",
+      "id": 5528,
+      "sheetId": 828243257,
+      "categoryLabel": "악기",
+      "iconUrl": "icons/2화음_만돌린.png",
+      "remoteIconUrl": "https://cdn.mabimobi.life/image/item/Tool_Instrument_Mandolin_Basic_00_ColoredIcon.png",
+      "obtain": [
+        "상점 구매 · 말콤의 잡화점 · 40000 골드 · 1개"
+      ],
+      "obtainSources": []
+    },
+    {
+      "name": "2화음 벨벳 피아노",
+      "id": 5565,
+      "sheetId": 1596031432,
+      "categoryLabel": "악기",
+      "iconUrl": "icons/2화음_벨벳_피아노.png",
+      "remoteIconUrl": "https://cdn.mabimobi.life/image/item/Tool_Instrument_Piano_Rare_00_ColoredIcon.png",
+      "obtain": [
+        "상점 구매 · 길모어의 잡화점 · 344000 골드 · 1개"
+      ],
+      "obtainSources": []
+    },
+    {
+      "name": "2화음 에스닉 류트",
+      "id": 5529,
+      "sheetId": 1461809995,
+      "categoryLabel": "악기",
+      "iconUrl": "icons/2화음_에스닉_류트.png",
+      "remoteIconUrl": "https://cdn.mabimobi.life/image/item/Tool_Instrument_Lute_Rare_00_ColoredIcon.png",
+      "obtain": [
+        "상점 구매 · 말콤의 잡화점 · 97000 골드 · 1개"
+      ],
+      "obtainSources": []
+    },
+    {
+      "name": "2화음 에스닉 만돌린",
+      "id": 5530,
+      "sheetId": 1834832788,
+      "categoryLabel": "악기",
+      "iconUrl": "icons/2화음_에스닉_만돌린.png",
+      "remoteIconUrl": "https://cdn.mabimobi.life/image/item/Tool_Instrument_Mandolin_Rare_00_ColoredIcon.png",
+      "obtain": [
+        "상점 구매 · 말콤의 잡화점 · 145000 골드 · 1개"
+      ],
+      "obtainSources": []
+    },
+    {
+      "name": "2화음 페어노트 하프",
+      "id": 5582,
+      "sheetId": 765653472,
+      "categoryLabel": "악기",
+      "iconUrl": "icons/2화음_페어노트_하프.png",
+      "remoteIconUrl": "https://cdn.mabimobi.life/image/item/Tool_Instrument_Harp_Rare_00_ColoredIcon.png",
+      "obtain": [
+        "상점 구매 · 네일의 음악 상점 · 295000 골드 · 1개"
+      ],
+      "obtainSources": [
+        {
+          "type": "",
+          "label": "네일의 음악 상점",
+          "text": "네일의 음악 상점",
+          "shopName": "네일의 음악 상점",
+          "npcName": "네일",
+          "price": 295000,
+          "currencyName": "골드",
+          "quantity": 1,
+          "purchaseLimit": "",
+          "raw": {
+            "label": "네일의 음악 상점",
+            "method": "purchase",
+            "summary": "상점 구매",
+            "detail": "",
+            "shopName": "네일의 음악 상점",
+            "npcName": "네일",
+            "npcFaceUrl": "https://mabimobi.life/assets/image/npc/%EB%84%A4%EC%9D%BC.png",
+            "npcProfileImage": "악상을 떠올리는",
+            "isShop": true,
+            "price": 295000,
+            "currencyName": "골드",
+            "currencyIconUrl": "https://cdn.mabimobi.life/image/item/Coin_GoldBag.png",
+            "quantity": 1,
+            "limit": "",
+            "requirements": [
+              "생활 점수 15500 이상"
+            ]
+          }
+        },
+        {
+          "type": "",
+          "label": "네일의 음악 상점",
+          "text": "네일의 음악 상점",
+          "shopName": "네일의 음악 상점",
+          "npcName": "네일",
+          "price": 295000,
+          "currencyName": "골드",
+          "quantity": 1,
+          "purchaseLimit": "",
+          "raw": {
+            "label": "네일의 음악 상점",
+            "method": "purchase",
+            "summary": "상점 구매",
+            "detail": "",
+            "shopName": "네일의 음악 상점",
+            "npcName": "네일",
+            "npcProfileImage": "악상을 떠올리는",
+            "isShop": true,
+            "price": 295000,
+            "currencyName": "골드",
+            "currencyIconUrl": "https://cdn.mabimobi.life/image/item/Coin_GoldBag.png",
+            "quantity": 1,
+            "limit": "",
+            "requirements": [
+              "생활 점수 15500 이상"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "2화음 피아노",
+      "id": 5560,
+      "sheetId": 2008303423,
+      "categoryLabel": "악기",
+      "iconUrl": "icons/2화음_피아노.png",
+      "remoteIconUrl": "https://cdn.mabimobi.life/image/item/Tool_Instrument_Piano_Basic_00_ColoredIcon.png",
+      "obtain": [
+        "상점 구매 · 길모어의 잡화점 · 142000 골드 · 1개"
+      ],
+      "obtainSources": []
+    },
+    {
+      "name": "2화음 하프",
+      "id": 5578,
+      "sheetId": 467465685,
+      "categoryLabel": "악기",
+      "iconUrl": "icons/2화음_하프.png",
+      "remoteIconUrl": "https://cdn.mabimobi.life/image/item/Tool_Instrument_Harp_Basic_00_ColoredIcon.png",
+      "obtain": [
+        "상점 구매 · 네일의 음악 상점 · 114000 골드 · 1개"
+      ],
+      "obtainSources": [
+        {
+          "type": "",
+          "label": "네일의 음악 상점",
+          "text": "네일의 음악 상점",
+          "shopName": "네일의 음악 상점",
+          "npcName": "네일",
+          "price": 114000,
+          "currencyName": "골드",
+          "quantity": 1,
+          "purchaseLimit": "",
+          "raw": {
+            "label": "네일의 음악 상점",
+            "method": "purchase",
+            "summary": "상점 구매",
+            "detail": "",
+            "shopName": "네일의 음악 상점",
+            "npcName": "네일",
+            "npcFaceUrl": "https://mabimobi.life/assets/image/npc/%EB%84%A4%EC%9D%BC.png",
+            "npcProfileImage": "악상을 떠올리는",
+            "isShop": true,
+            "price": 114000,
+            "currencyName": "골드",
+            "currencyIconUrl": "https://cdn.mabimobi.life/image/item/Coin_GoldBag.png",
+            "quantity": 1,
+            "limit": "",
+            "requirements": [
+              "생활 점수 5500 이상"
+            ]
+          }
+        },
+        {
+          "type": "",
+          "label": "네일의 음악 상점",
+          "text": "네일의 음악 상점",
+          "shopName": "네일의 음악 상점",
+          "npcName": "네일",
+          "price": 114000,
+          "currencyName": "골드",
+          "quantity": 1,
+          "purchaseLimit": "",
+          "raw": {
+            "label": "네일의 음악 상점",
+            "method": "purchase",
+            "summary": "상점 구매",
+            "detail": "",
+            "shopName": "네일의 음악 상점",
+            "npcName": "네일",
+            "npcProfileImage": "악상을 떠올리는",
+            "isShop": true,
+            "price": 114000,
+            "currencyName": "골드",
+            "currencyIconUrl": "https://cdn.mabimobi.life/image/item/Coin_GoldBag.png",
+            "quantity": 1,
+            "limit": "",
+            "requirements": [
+              "생활 점수 5500 이상"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "3화음 류트",
+      "id": 5541,
+      "sheetId": 2021983382,
+      "categoryLabel": "악기",
+      "iconUrl": "icons/3화음_류트.png",
+      "remoteIconUrl": "https://cdn.mabimobi.life/image/item/Tool_Instrument_Lute_Basic_00_ColoredIcon.png",
+      "obtain": [
+        "상점 구매 · 말콤의 잡화점 · 20000 골드 · 1개"
+      ],
+      "obtainSources": []
+    },
+    {
+      "name": "3화음 만돌린",
+      "id": 5545,
+      "sheetId": 1542776290,
+      "categoryLabel": "악기",
+      "iconUrl": "icons/3화음_만돌린.png",
+      "remoteIconUrl": "https://cdn.mabimobi.life/image/item/Tool_Instrument_Mandolin_Basic_00_ColoredIcon.png",
+      "obtain": [
+        "상점 구매 · 말콤의 잡화점 · 107000 골드 · 1개"
+      ],
+      "obtainSources": []
+    },
+    {
+      "name": "3화음 벨벳 피아노",
+      "id": 5566,
+      "sheetId": 146518029,
+      "categoryLabel": "악기",
+      "iconUrl": "icons/3화음_벨벳_피아노.png",
+      "remoteIconUrl": "https://cdn.mabimobi.life/image/item/Tool_Instrument_Piano_Rare_00_ColoredIcon.png",
+      "obtain": [
+        "상점 구매 · 길모어의 잡화점 · 1086000 골드 · 1개"
+      ],
+      "obtainSources": []
+    },
+    {
+      "name": "3화음 에스닉 류트",
+      "id": 5546,
+      "sheetId": 1484369162,
+      "categoryLabel": "악기",
+      "iconUrl": "icons/3화음_에스닉_류트.png",
+      "remoteIconUrl": "https://cdn.mabimobi.life/image/item/Tool_Instrument_Lute_Rare_00_ColoredIcon.png",
+      "obtain": [
+        "상점 구매 · 말콤의 잡화점 · 218000 골드 · 1개"
+      ],
+      "obtainSources": []
+    },
+    {
+      "name": "3화음 에스닉 만돌린",
+      "id": 5547,
+      "sheetId": 1314966025,
+      "categoryLabel": "악기",
+      "iconUrl": "icons/3화음_에스닉_만돌린.png",
+      "remoteIconUrl": "https://cdn.mabimobi.life/image/item/Tool_Instrument_Mandolin_Rare_00_ColoredIcon.png",
+      "obtain": [
+        "상점 구매 · 말콤의 잡화점 · 326000 골드 · 1개"
+      ],
+      "obtainSources": []
+    },
+    {
+      "name": "3화음 페어노트 하프",
+      "id": 5583,
+      "sheetId": 659380530,
+      "categoryLabel": "악기",
+      "iconUrl": "icons/3화음_페어노트_하프.png",
+      "remoteIconUrl": "https://cdn.mabimobi.life/image/item/Tool_Instrument_Harp_Rare_00_ColoredIcon.png",
+      "obtain": [
+        "상점 구매 · 네일의 음악 상점 · 847000 골드 · 1개"
+      ],
+      "obtainSources": [
+        {
+          "type": "",
+          "label": "네일의 음악 상점",
+          "text": "네일의 음악 상점",
+          "shopName": "네일의 음악 상점",
+          "npcName": "네일",
+          "price": 847000,
+          "currencyName": "골드",
+          "quantity": 1,
+          "purchaseLimit": "",
+          "raw": {
+            "label": "네일의 음악 상점",
+            "method": "purchase",
+            "summary": "상점 구매",
+            "detail": "",
+            "shopName": "네일의 음악 상점",
+            "npcName": "네일",
+            "npcFaceUrl": "https://mabimobi.life/assets/image/npc/%EB%84%A4%EC%9D%BC.png",
+            "npcProfileImage": "악상을 떠올리는",
+            "isShop": true,
+            "price": 847000,
+            "currencyName": "골드",
+            "currencyIconUrl": "https://cdn.mabimobi.life/image/item/Coin_GoldBag.png",
+            "quantity": 1,
+            "limit": "",
+            "requirements": [
+              "생활 점수 18500 이상"
+            ]
+          }
+        },
+        {
+          "type": "",
+          "label": "네일의 음악 상점",
+          "text": "네일의 음악 상점",
+          "shopName": "네일의 음악 상점",
+          "npcName": "네일",
+          "price": 847000,
+          "currencyName": "골드",
+          "quantity": 1,
+          "purchaseLimit": "",
+          "raw": {
+            "label": "네일의 음악 상점",
+            "method": "purchase",
+            "summary": "상점 구매",
+            "detail": "",
+            "shopName": "네일의 음악 상점",
+            "npcName": "네일",
+            "npcProfileImage": "악상을 떠올리는",
+            "isShop": true,
+            "price": 847000,
+            "currencyName": "골드",
+            "currencyIconUrl": "https://cdn.mabimobi.life/image/item/Coin_GoldBag.png",
+            "quantity": 1,
+            "limit": "",
+            "requirements": [
+              "생활 점수 18500 이상"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "3화음 피아노",
+      "id": 5561,
+      "sheetId": 325624306,
+      "categoryLabel": "악기",
+      "iconUrl": "icons/3화음_피아노.png",
+      "remoteIconUrl": "https://cdn.mabimobi.life/image/item/Tool_Instrument_Piano_Basic_00_ColoredIcon.png",
+      "obtain": [
+        "상점 구매 · 길모어의 잡화점 · 206000 골드 · 1개"
+      ],
+      "obtainSources": []
+    },
+    {
+      "name": "3화음 하프",
+      "id": 5579,
+      "sheetId": 1181527114,
+      "categoryLabel": "악기",
+      "iconUrl": "icons/3화음_하프.png",
+      "remoteIconUrl": "https://cdn.mabimobi.life/image/item/Tool_Instrument_Harp_Basic_00_ColoredIcon.png",
+      "obtain": [
+        "상점 구매 · 네일의 음악 상점 · 175000 골드 · 1개"
+      ],
+      "obtainSources": [
+        {
+          "type": "",
+          "label": "네일의 음악 상점",
+          "text": "네일의 음악 상점",
+          "shopName": "네일의 음악 상점",
+          "npcName": "네일",
+          "price": 175000,
+          "currencyName": "골드",
+          "quantity": 1,
+          "purchaseLimit": "",
+          "raw": {
+            "label": "네일의 음악 상점",
+            "method": "purchase",
+            "summary": "상점 구매",
+            "detail": "",
+            "shopName": "네일의 음악 상점",
+            "npcName": "네일",
+            "npcFaceUrl": "https://mabimobi.life/assets/image/npc/%EB%84%A4%EC%9D%BC.png",
+            "npcProfileImage": "악상을 떠올리는",
+            "isShop": true,
+            "price": 175000,
+            "currencyName": "골드",
+            "currencyIconUrl": "https://cdn.mabimobi.life/image/item/Coin_GoldBag.png",
+            "quantity": 1,
+            "limit": "",
+            "requirements": [
+              "생활 점수 6500 이상"
+            ]
+          }
+        },
+        {
+          "type": "",
+          "label": "네일의 음악 상점",
+          "text": "네일의 음악 상점",
+          "shopName": "네일의 음악 상점",
+          "npcName": "네일",
+          "price": 175000,
+          "currencyName": "골드",
+          "quantity": 1,
+          "purchaseLimit": "",
+          "raw": {
+            "label": "네일의 음악 상점",
+            "method": "purchase",
+            "summary": "상점 구매",
+            "detail": "",
+            "shopName": "네일의 음악 상점",
+            "npcName": "네일",
+            "npcProfileImage": "악상을 떠올리는",
+            "isShop": true,
+            "price": 175000,
+            "currencyName": "골드",
+            "currencyIconUrl": "https://cdn.mabimobi.life/image/item/Coin_GoldBag.png",
+            "quantity": 1,
+            "limit": "",
+            "requirements": [
+              "생활 점수 6500 이상"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "류트",
+      "id": 5480,
+      "sheetId": 846477309,
+      "categoryLabel": "악기",
+      "iconUrl": "icons/류트.png",
+      "remoteIconUrl": "https://cdn.mabimobi.life/image/item/Tool_Instrument_Lute_Basic_00_ColoredIcon.png",
+      "obtain": [
+        "상점 구매 · 말콤의 잡화점 · 2000 골드 · 1개"
+      ],
+      "obtainSources": []
+    },
+    {
+      "name": "바이올린",
+      "id": 5482,
+      "sheetId": 1410900280,
+      "categoryLabel": "악기",
+      "iconUrl": "icons/바이올린.png",
+      "remoteIconUrl": "https://cdn.mabimobi.life/image/item/Tool_Instrument_Violin_Basic_00_ColoredIcon.png",
+      "obtain": [
+        "상점 구매 · 발터의 잡화점 · 27000 골드 · 1개"
+      ],
+      "obtainSources": []
+    },
+    {
+      "name": "벨벳 피아노",
+      "id": 5562,
+      "sheetId": 2111500196,
+      "categoryLabel": "악기",
+      "iconUrl": "icons/벨벳_피아노.png",
+      "remoteIconUrl": "https://cdn.mabimobi.life/image/item/Tool_Instrument_Piano_Rare_00_ColoredIcon.png",
+      "obtain": [
+        "상점 구매 · 길모어의 잡화점 · 186000 골드 · 1개"
+      ],
+      "obtainSources": []
+    },
+    {
+      "name": "샬루모",
+      "id": 5483,
+      "sheetId": 356082281,
+      "categoryLabel": "악기",
+      "iconUrl": "icons/샬루모.png",
+      "remoteIconUrl": "https://cdn.mabimobi.life/image/item/Tool_Instrument_Chalumeau_Basic_00_ColoredIcon.png",
+      "obtain": [
+        "상점 구매 · 코너의 잡화점 · 37000 골드 · 1개"
+      ],
+      "obtainSources": []
+    },
+    {
+      "name": "에스닉 류트",
+      "id": 5486,
+      "sheetId": 494007946,
+      "categoryLabel": "악기",
+      "iconUrl": "icons/에스닉_류트.png",
+      "remoteIconUrl": "https://cdn.mabimobi.life/image/item/Tool_Instrument_Lute_Rare_00_ColoredIcon.png",
+      "obtain": [
+        "상점 구매 · 말콤의 잡화점 · 34000 골드 · 1개"
+      ],
+      "obtainSources": []
+    },
+    {
+      "name": "에스닉 만돌린",
+      "id": 5490,
+      "sheetId": 1110458874,
+      "categoryLabel": "악기",
+      "iconUrl": "icons/에스닉_만돌린.png",
+      "remoteIconUrl": "https://cdn.mabimobi.life/image/item/Tool_Instrument_Mandolin_Rare_00_ColoredIcon.png",
+      "obtain": [
+        "상점 구매 · 말콤의 잡화점 · 50000 골드 · 1개"
+      ],
+      "obtainSources": []
+    },
+    {
+      "name": "에스닉 바이올린",
+      "id": 5488,
+      "sheetId": 1517427988,
+      "categoryLabel": "악기",
+      "iconUrl": "icons/에스닉_바이올린.png",
+      "remoteIconUrl": "https://cdn.mabimobi.life/image/item/Tool_Instrument_Violin_Rare_00_ColoredIcon.png",
+      "obtain": [
+        "상점 구매 · 발터의 잡화점 · 123000 골드 · 1개"
+      ],
+      "obtainSources": []
+    },
+    {
+      "name": "에스닉 샬루모",
+      "id": 5489,
+      "sheetId": 544010622,
+      "categoryLabel": "악기",
+      "iconUrl": "icons/에스닉_샬루모.png",
+      "remoteIconUrl": "https://cdn.mabimobi.life/image/item/Tool_Instrument_Chalumeau_Rare_00_ColoredIcon.png",
+      "obtain": [
+        "상점 구매 · 코너의 잡화점 · 91000 골드 · 1개"
+      ],
+      "obtainSources": []
+    },
+    {
+      "name": "에스닉 플루트",
+      "id": 5487,
+      "sheetId": 640863427,
+      "categoryLabel": "악기",
+      "iconUrl": "icons/에스닉_플루트.png",
+      "remoteIconUrl": "https://cdn.mabimobi.life/image/item/Tool_Instrument_Flute_Rare_00_ColoredIcon.png",
+      "obtain": [
+        "상점 구매 · 발터의 잡화점 · 98000 골드 · 1개"
+      ],
+      "obtainSources": []
+    },
+    {
+      "name": "페어노트 하프",
+      "id": 5581,
+      "sheetId": 1595742205,
+      "categoryLabel": "악기",
+      "iconUrl": "icons/페어노트_하프.png",
+      "remoteIconUrl": "https://cdn.mabimobi.life/image/item/Tool_Instrument_Harp_Rare_00_ColoredIcon.png",
+      "obtain": [
+        "상점 구매 · 네일의 음악 상점 · 152000 골드 · 1개"
+      ],
+      "obtainSources": [
+        {
+          "type": "",
+          "label": "네일의 음악 상점",
+          "text": "네일의 음악 상점",
+          "shopName": "네일의 음악 상점",
+          "npcName": "네일",
+          "price": 152000,
+          "currencyName": "골드",
+          "quantity": 1,
+          "purchaseLimit": "",
+          "raw": {
+            "label": "네일의 음악 상점",
+            "method": "purchase",
+            "summary": "상점 구매",
+            "detail": "",
+            "shopName": "네일의 음악 상점",
+            "npcName": "네일",
+            "npcFaceUrl": "https://mabimobi.life/assets/image/npc/%EB%84%A4%EC%9D%BC.png",
+            "npcProfileImage": "악상을 떠올리는",
+            "isShop": true,
+            "price": 152000,
+            "currencyName": "골드",
+            "currencyIconUrl": "https://cdn.mabimobi.life/image/item/Coin_GoldBag.png",
+            "quantity": 1,
+            "limit": "",
+            "requirements": [
+              "생활 점수 13500 이상"
+            ]
+          }
+        },
+        {
+          "type": "",
+          "label": "네일의 음악 상점",
+          "text": "네일의 음악 상점",
+          "shopName": "네일의 음악 상점",
+          "npcName": "네일",
+          "price": 152000,
+          "currencyName": "골드",
+          "quantity": 1,
+          "purchaseLimit": "",
+          "raw": {
+            "label": "네일의 음악 상점",
+            "method": "purchase",
+            "summary": "상점 구매",
+            "detail": "",
+            "shopName": "네일의 음악 상점",
+            "npcName": "네일",
+            "npcProfileImage": "악상을 떠올리는",
+            "isShop": true,
+            "price": 152000,
+            "currencyName": "골드",
+            "currencyIconUrl": "https://cdn.mabimobi.life/image/item/Coin_GoldBag.png",
+            "quantity": 1,
+            "limit": "",
+            "requirements": [
+              "생활 점수 13500 이상"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "플루트",
+      "id": 5481,
+      "sheetId": 1329010314,
+      "categoryLabel": "악기",
+      "iconUrl": "icons/플루트.png",
+      "remoteIconUrl": "https://cdn.mabimobi.life/image/item/Tool_Instrument_Flute_Basic_00_ColoredIcon.png",
+      "obtain": [
+        "상점 구매 · 발터의 잡화점 · 21000 골드 · 1개"
+      ],
+      "obtainSources": []
+    },
+    {
+      "name": "피아노",
+      "id": 5558,
+      "sheetId": 1126220084,
+      "categoryLabel": "악기",
+      "iconUrl": "icons/피아노.png",
+      "remoteIconUrl": "https://cdn.mabimobi.life/image/item/Tool_Instrument_Piano_Basic_00_ColoredIcon.png",
+      "obtain": [
+        "상점 구매 · 길모어의 잡화점 · 82000 골드 · 1개"
+      ],
+      "obtainSources": []
+    },
+    {
+      "name": "하프",
+      "id": 5577,
+      "sheetId": 214150233,
+      "categoryLabel": "악기",
+      "iconUrl": "icons/하프.png",
+      "remoteIconUrl": "https://cdn.mabimobi.life/image/item/Tool_Instrument_Harp_Basic_00_ColoredIcon.png",
+      "obtain": [
+        "상점 구매 · 네일의 음악 상점 · 77000 골드 · 1개"
+      ],
+      "obtainSources": [
+        {
+          "type": "",
+          "label": "네일의 음악 상점",
+          "text": "네일의 음악 상점",
+          "shopName": "네일의 음악 상점",
+          "npcName": "네일",
+          "price": 77000,
+          "currencyName": "골드",
+          "quantity": 1,
+          "purchaseLimit": "",
+          "raw": {
+            "label": "네일의 음악 상점",
+            "method": "purchase",
+            "summary": "상점 구매",
+            "detail": "",
+            "shopName": "네일의 음악 상점",
+            "npcName": "네일",
+            "npcFaceUrl": "https://mabimobi.life/assets/image/npc/%EB%84%A4%EC%9D%BC.png",
+            "npcProfileImage": "악상을 떠올리는",
+            "isShop": true,
+            "price": 77000,
+            "currencyName": "골드",
+            "currencyIconUrl": "https://cdn.mabimobi.life/image/item/Coin_GoldBag.png",
+            "quantity": 1,
+            "limit": "",
+            "requirements": []
+          }
+        },
+        {
+          "type": "",
+          "label": "네일의 음악 상점",
+          "text": "네일의 음악 상점",
+          "shopName": "네일의 음악 상점",
+          "npcName": "네일",
+          "price": 77000,
+          "currencyName": "골드",
+          "quantity": 1,
+          "purchaseLimit": "",
+          "raw": {
+            "label": "네일의 음악 상점",
+            "method": "purchase",
+            "summary": "상점 구매",
+            "detail": "",
+            "shopName": "네일의 음악 상점",
+            "npcName": "네일",
+            "npcProfileImage": "악상을 떠올리는",
+            "isShop": true,
+            "price": 77000,
+            "currencyName": "골드",
+            "currencyIconUrl": "https://cdn.mabimobi.life/image/item/Coin_GoldBag.png",
+            "quantity": 1,
+            "limit": "",
+            "requirements": []
+          }
+        }
+      ]
+    }
+  ]
+}

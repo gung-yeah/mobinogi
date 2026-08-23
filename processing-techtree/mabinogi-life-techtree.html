@@ -2,7 +2,7 @@
   © 2026 bbunye. All rights reserved.
   이 파일의 무단 복제, 수정, 재배포를 금지합니다.
   원본: https://bbunye.tistory.com/
-  버전: v1.9.0
+  버전: v1.9.1
 -->
 <!doctype html>
 <html lang="ko">
@@ -1028,6 +1028,13 @@
     line-height:1.45;
   }
   .mabi-info:empty{display:none}
+  .mabi-info-label{
+    display:inline-flex;
+    align-items:center;
+    color:var(--ink);
+    font-weight:600;
+    margin-right:2px;
+  }
   .npc-face{
     width:24px;
     height:24px;
@@ -1647,7 +1654,7 @@
           <div class="creator-credit"><span class="creator-name">By 알리사 르구댕뿐예</span></div>
         </div>
       </div>
-      <span class="version-badge" style="display:inline-block; font-size:11px; font-weight:500; padding:2px 8px; border-radius:6px; background:#e5f0ff; color:#256fd2; align-self:flex-start;">v1.9.0</span>
+      <span class="version-badge" style="display:inline-block; font-size:11px; font-weight:500; padding:2px 8px; border-radius:6px; background:#e5f0ff; color:#256fd2; align-self:flex-start;">v1.9.1</span>
     </div>
 
     <div class="segmented" id="sidebarModeSwitch">
@@ -2130,13 +2137,28 @@
     "공격력 비약","골드 획득 비약","방어력 비약","브레이크 비약","라이프부스터 전설 비약",
     "던전버스터 전설 비약","상급 브레이크 비약","상급 콤보 강화 비약","콤보 강화 비약","호플리테스 전설 비약"
   ]);
-  const extractedDisplayNodes = extractedNodes.filter(infoNode => {
+  // 악기(categoryLabel "악기")는 종류가 매우 많고 대부분 획득 경로가 불확실해서,
+  // 골드 상점 구매로 확인된 것만 남긴다. gold-shop-instrument-obtain.json 기준.
+  const INSTRUMENT_GOLD_SHOP_NAMES = new Set([
+    "2화음 류트","2화음 만돌린","2화음 벨벳 피아노","2화음 에스닉 류트","2화음 에스닉 만돌린",
+    "2화음 페어노트 하프","2화음 피아노","2화음 하프","3화음 류트","3화음 만돌린",
+    "3화음 벨벳 피아노","3화음 에스닉 류트","3화음 에스닉 만돌린","3화음 페어노트 하프","3화음 피아노",
+    "3화음 하프","류트","바이올린","벨벳 피아노","샬루모","에스닉 류트","에스닉 만돌린",
+    "에스닉 바이올린","에스닉 샬루모","에스닉 플루트","페어노트 하프","플루트","피아노","하프"
+  ]);
+  const isAllowedExtractedNode = infoNode => {
     const info = infoNode.extractedInfo;
     if(isExistingNodeName(infoNode.name)) return false;
     if(HIDDEN_ITEM_NAMES.has(String(infoNode.name).trim())) return false;
+    if(info?.categoryLabel === "악기" && !INSTRUMENT_GOLD_SHOP_NAMES.has(String(infoNode.name).trim())) return false;
+    return true;
+  };
+  const extractedDisplayNodes = extractedNodes.filter(infoNode => {
+    const info = infoNode.extractedInfo;
+    if(!isAllowedExtractedNode(infoNode)) return false;
     return info?.itemType === "equipment" || info?.itemType === "tool";
   });
-  const allSearchNodes = [...NODES, ...extractedNodes.filter(infoNode => !isExistingNodeName(infoNode.name) && !HIDDEN_ITEM_NAMES.has(String(infoNode.name).trim()))];
+  const allSearchNodes = [...NODES, ...extractedNodes.filter(isAllowedExtractedNode)];
   const getNodeById = id => nodeById.get(id) || extractedNodes.find(node => node.id === id) || null;
   const categoryById = new Map(CATEGORIES.map(category => [category.id, category]));
   const PRIMARY_CATEGORIES = [
@@ -2416,6 +2438,11 @@
       chips.push(`<span class="method-shop">${face}<span>${escapeHtml(place)}</span><span class="exchange-mark">↔</span>${currencyIcon}<span>${priceText}${escapeHtml(currencyName)}${escapeHtml(limit)}</span></span>`);
     });
     return chips;
+  }
+  function extractObtainInfoHtml(node){
+    const chips = hwShopChipsHtml(node.name);
+    if(!chips.length) return "";
+    return `<span class="mabi-info-label">교환 및 구입처</span>${chips.join("")}`;
   }
   function hwFacilityBadgeHtml(node){
     const info = extractedInfo(node.name);
@@ -3254,7 +3281,7 @@
     icon.onerror = () => { icon.style.visibility = "hidden"; };
     icon.style.visibility = "visible";
     el("selectedMeta").innerHTML = `<span class="badge">${secondaryCategoryLabel(node)}</span>`;
-    el("selectedExtractInfo").innerHTML = "";
+    el("selectedExtractInfo").innerHTML = node.externalOnly ? extractObtainInfoHtml(node) : "";
     el("statTime").textContent = formatSeconds(result.totalTime);
     const key = producedKey(node.name);
     const star = el("headerFavoriteStar");
